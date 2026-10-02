@@ -1,0 +1,104 @@
+{
+  "substitutionVersion": 1,
+  "comment": "Busy mode parameters. ratios: logged weight that equals the family reference lift (ratio 1.0); kettlebell and dumbbell weights are per implement. Values are rough starting points, the app always rounds down and multiplies by safetyFactor.",
+  "stations": [
+    "rack", "bench", "adjustable_bench", "leg_press", "leg_extension", "leg_curl", "cable_station",
+    "lat_pulldown", "cable_row", "chest_press_machine", "hyperextension", "dip_bars"
+  ],
+  "unavailableEquipment": ["dumbbells"],
+  "sessionMuscleCap": 10,
+  "safetyFactor": 0.9,
+  "waitExtras": [
+    "plank", "dead_bug", "side_plank", "band_pull_apart", "hanging_knee_raise", "dead_hang",
+    "push_up", "pull_up", "farmer_carry_kettlebell"
+  ],
+  "families": {
+    "legs": "barbell_back_squat",
+    "hinge": "barbell_deadlift",
+    "chest": "barbell_bench_press",
+    "shoulders": "barbell_overhead_press",
+    "rear_delts": "face_pull",
+    "back": "barbell_bent_over_row",
+    "biceps": "barbell_curl",
+    "triceps": "cable_triceps_pushdown",
+    "calves": "standing_calf_raise",
+    "core_load": "cable_crunch",
+    "carry": "farmer_carry_kettlebell"
+  },
+  "ratios": {
+    "barbell_back_squat": { "family": "legs", "ratio": 1.0 },
+    "barbell_front_squat": { "family": "legs", "ratio": 0.8 },
+    "paused_back_squat": { "family": "legs", "ratio": 0.85 },
+    "kettlebell_goblet_squat": { "family": "legs", "ratio": 0.3 },
+    "double_kettlebell_front_squat": { "family": "legs", "ratio": 0.25 },
+    "leg_press": { "family": "legs", "ratio": 1.8 },
+    "leg_extension": { "family": "legs", "ratio": 0.5 },
+    "bulgarian_split_squat": { "family": "legs", "ratio": 0.2 },
+    "reverse_lunge_kettlebell": { "family": "legs", "ratio": 0.22 },
+    "walking_lunge_kettlebell": { "family": "legs", "ratio": 0.22 },
+    "step_up_kettlebell": { "family": "legs", "ratio": 0.2 },
+    "barbell_reverse_lunge": { "family": "legs", "ratio": 0.5 },
+
+    "barbell_deadlift": { "family": "hinge", "ratio": 1.0 },
+    "barbell_romanian_deadlift": { "family": "hinge", "ratio": 0.7 },
+    "kettlebell_deadlift": { "family": "hinge", "ratio": 0.35 },
+    "kettlebell_romanian_deadlift": { "family": "hinge", "ratio": 0.3 },
+    "single_leg_rdl_kettlebell": { "family": "hinge", "ratio": 0.15 },
+    "kettlebell_swing": { "family": "hinge", "ratio": 0.2 },
+    "single_arm_kettlebell_swing": { "family": "hinge", "ratio": 0.14 },
+    "kettlebell_snatch": { "family": "hinge", "ratio": 0.1 },
+    "barbell_hip_thrust": { "family": "hinge", "ratio": 0.9 },
+    "glute_bridge": { "family": "hinge", "ratio": 0.25 },
+    "leg_curl": { "family": "hinge", "ratio": 0.3 },
+    "good_morning": { "family": "hinge", "ratio": 0.4 },
+
+    "barbell_bench_press": { "family": "chest", "ratio": 1.0 },
+    "incline_barbell_bench_press": { "family": "chest", "ratio": 0.8 },
+    "close_grip_bench_press": { "family": "chest", "ratio": 0.85 },
+    "paused_bench_press": { "family": "chest", "ratio": 0.9 },
+    "chest_press_machine": { "family": "chest", "ratio": 0.9 },
+    "cable_chest_fly": { "family": "chest", "ratio": 0.2 },
+
+    "barbell_overhead_press": { "family": "shoulders", "ratio": 1.0 },
+    "push_press": { "family": "shoulders", "ratio": 1.2 },
+    "kettlebell_press": { "family": "shoulders", "ratio": 0.35 },
+    "double_kettlebell_press": { "family": "shoulders", "ratio": 0.3 },
+    "half_kneeling_kettlebell_press": { "family": "shoulders", "ratio": 0.3 },
+    "cable_lateral_raise": { "family": "shoulders", "ratio": 0.12 },
+    "dumbbell_lateral_raise": { "family": "shoulders", "ratio": 0.15 },
+
+    "face_pull": { "family": "rear_delts", "ratio": 1.0 },
+    "reverse_cable_fly": { "family": "rear_delts", "ratio": 0.6 },
+
+    "barbell_bent_over_row": { "family": "back", "ratio": 1.0 },
+    "pendlay_row": { "family": "back", "ratio": 0.95 },
+    "kettlebell_row": { "family": "back", "ratio": 0.45 },
+    "gorilla_row": { "family": "back", "ratio": 0.35 },
+    "seated_cable_row": { "family": "back", "ratio": 1.0 },
+    "single_arm_cable_row": { "family": "back", "ratio": 0.45 },
+    "lat_pulldown": { "family": "back", "ratio": 0.9 },
+    "close_grip_lat_pulldown": { "family": "back", "ratio": 0.9 },
+    "straight_arm_pulldown": { "family": "back", "ratio": 0.35 },
+
+    "barbell_curl": { "family": "biceps", "ratio": 1.0 },
+    "cable_curl": { "family": "biceps", "ratio": 0.9 },
+    "dumbbell_hammer_curl": { "family": "biceps", "ratio": 0.4 },
+    "kettlebell_hammer_curl": { "family": "biceps", "ratio": 0.4 },
+
+    "cable_triceps_pushdown": { "family": "triceps", "ratio": 1.0 },
+    "overhead_cable_triceps_extension": { "family": "triceps", "ratio": 0.8 },
+    "kettlebell_overhead_triceps_extension": { "family": "triceps", "ratio": 0.6 },
+    "skull_crusher": { "family": "triceps", "ratio": 1.0 },
+
+    "standing_calf_raise": { "family": "calves", "ratio": 1.0 },
+    "leg_press_calf_raise": { "family": "calves", "ratio": 4.0 },
+    "barbell_calf_raise": { "family": "calves", "ratio": 2.5 },
+
+    "cable_crunch": { "family": "core_load", "ratio": 1.0 },
+    "pallof_press": { "family": "core_load", "ratio": 0.4 },
+
+    "farmer_carry_kettlebell": { "family": "carry", "ratio": 1.0 },
+    "suitcase_carry": { "family": "carry", "ratio": 0.9 },
+    "kettlebell_rack_carry": { "family": "carry", "ratio": 0.6 }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "templatesVersion": 1,
+  "templates": [
+    {
+      "id": "fullbody_ab",
+      "name": "Полное тело A/B",
+      "days": [
+        {
+          "title": "Полное тело A",
+          "exercises": [
+            {"exercise": "barbell_back_squat", "sets": 3, "reps": [5, 8], "rir": [1, 2], "rest": 120},
+            {"exercise": "barbell_bench_press", "sets": 3, "reps": [5, 8], "rir": [1, 2], "rest": 120},
+            {"exercise": "barbell_bent_over_row", "superset": "A", "sets": 3, "reps": [6, 10], "rir": [1, 2], "rest": 90},
+            {"exercise": "dips", "superset": "A", "sets": 3, "reps": [6, 12], "rir": [0, 1], "rest": 90},
+            {"exercise": "kettlebell_romanian_deadlift", "sets": 3, "reps": [8, 12], "rir": [1, 2], "rest": 90},
+            {"exercise": "barbell_curl", "superset": "B", "sets": 2, "reps": [10, 15], "rir": [0, 1], "rest": 60},
+            {"exercise": "cable_triceps_pushdown", "superset": "B", "sets": 2, "reps": [10, 15], "rir": [0, 1], "rest": 60},
+            {"exercise": "leg_press_calf_raise", "superset": "C", "sets": 2, "reps": [12, 20], "rir": [0, 1], "rest": 45},
+            {"exercise": "cable_crunch", "superset": "C", "sets": 2, "reps": [10, 15], "rir": [0, 1], "rest": 45}
+          ]
+        },
+        {
+          "title": "Полное тело B",
+          "exercises": [
+            {"exercise": "barbell_deadlift", "sets": 3, "reps": [4, 6], "rir": [1, 2], "rest": 120},
+            {"exercise": "barbell_overhead_press", "sets": 3, "reps": [5, 8], "rir": [1, 2], "rest": 120},
+            {"exercise": "pull_up", "superset": "A", "sets": 3, "reps": [5, 10], "rir": [1, 2], "rest": 90},
+            {"exercise": "reverse_lunge_kettlebell", "superset": "A", "sets": 3, "reps": [8, 12], "rir": [1, 2], "rest": 90},
+            {"exercise": "seated_cable_row", "sets": 3, "reps": [8, 12], "rir": [0, 1], "rest": 75},
+            {"exercise": "kettlebell_swing", "superset": "B", "sets": 3, "reps": [12, 20], "rest": 60, "note": "До падения скорости или качества техники, не до отказа"},
+            {"exercise": "cable_lateral_raise", "superset": "B", "sets": 3, "reps": [12, 20], "rir": [0, 1], "rest": 45},
+            {"exercise": "leg_curl", "superset": "C", "sets": 2, "reps": [10, 15], "rir": [0, 1], "rest": 60},
+            {"exercise": "hanging_leg_raise", "superset": "C", "sets": 2, "reps": [8, 15], "rir": [0, 1], "rest": 45}
+          ]
+        }
+      ]
+    }
+  ]
+}

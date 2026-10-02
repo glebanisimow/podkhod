@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 10-11 auto backup. Whitelist mirrors data_extraction_rules.xml; Strava tokens are never included. -->
+<full-backup-content>
+    <include domain="database" path="." />
+    <include domain="file" path="datastore/settings.preferences_pb" />
+</full-backup-content>

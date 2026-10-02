@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Barbell glyph inside the 66dp adaptive-icon safe zone (108dp canvas). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFC247"
+        android:pathData="M26,51h56v6h-56z" />
+    <path
+        android:fillColor="#FFFFC247"
+        android:pathData="M40,37h7v34h-7zM61,37h7v34h-7z" />
+    <path
+        android:fillColor="#FFFFC247"
+        android:pathData="M34,43h5v22h-5zM69,43h5v22h-5z" />
+</vector>

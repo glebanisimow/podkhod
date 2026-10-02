@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Onboarding and profile -->
+    <string name="onb_title">Настроим программу</string>
+    <string name="profile_title">Профиль</string>
+    <string name="onb_step_of">Шаг %1$d из %2$d</string>
+    <string name="onb_next">Далее</string>
+    <string name="onb_skip">Пропустить</string>
+    <string name="onb_skip_all">Пропустить всё</string>
+    <string name="onb_skip_all_hint">Будут значения по умолчанию: баланс, 3 тренировки по 45 мин, интенсивный стиль, стандартный набор блинов. Всё можно поменять в профиле.</string>
+    <string name="onb_create">Создать программу</string>
+    <string name="profile_save">Сохранить и пересчитать</string>
+    <string name="onb_working">Собираем программу…</string>
+
+    <string name="onb_goal_title">Цель</string>
+    <string name="goal_strength">Сила</string>
+    <string name="goal_strength_hint">Меньше повторов в базовых, больше подходов</string>
+    <string name="goal_hypertrophy">Масса</string>
+    <string name="goal_hypertrophy_hint">Больше повторов и подходов в изоляции</string>
+    <string name="goal_balance">Баланс</string>
+    <string name="goal_balance_hint">Сила и масса поровну — по умолчанию</string>
+    <string name="onb_priorities">Приоритетные группы (до двух): +2–4 подхода в неделю</string>
+
+    <string name="onb_schedule_title">Расписание</string>
+    <string name="onb_days">Тренировок в неделю</string>
+    <string name="onb_days_hint">Если неделя на неделю не приходится — выбери обычное число: программа идёт по кругу, пропуск сдвигает следующую тренировку.</string>
+    <string name="onb_minutes">Длительность тренировки, мин</string>
+    <string name="onb_preferred_days">Удобные дни</string>
+    <string name="onb_long_days">Дни длинной нагрузки (велосипед, бег, поход)</string>
+    <string name="onb_long_days_hint">Накануне ноги облегчаются автоматически.</string>
+    <string name="onb_cardio_days">Дни кардио</string>
+    <string name="onb_mesocycle">Длина мезоцикла: %1$d нед. (последняя — разгрузка)</string>
+
+    <string name="onb_style_title">Стиль</string>
+    <string name="style_intensive">Интенсивный</string>
+    <string name="style_intensive_hint">Суперсеты антагонистов, отдых 45–120 с, больше упражнений за то же время. По умолчанию.</string>
+    <string name="style_classic">Классическая сила</string>
+    <string name="style_classic_hint">Базовые на 3–6 повторов с запасом 1–3, отдых 2–4 мин, меньше упражнений.</string>
+
+    <string name="onb_baselines_title">Базовые веса</string>
+    <string name="onb_baselines_hint">Недавний подход, который ты точно сделаешь: вес и повторы. Можно ввести 1ПМ вручную или отметить «не делаю» — упражнение не попадёт в программу. Пусто — вес подберёшь на разминке.</string>
+    <string name="baseline_weight">Вес, кг</string>
+    <string name="baseline_added">Доп. вес, кг</string>
+    <string name="baseline_reps">Повторы</string>
+    <string name="baseline_override">1ПМ вручную, кг</string>
+    <string name="baseline_skip">Не делаю</string>
+    <string name="baseline_e1rm">1ПМ ≈ %1$s кг (Эпли %2$s, Бжицкий %3$s)</string>
+    <string name="baseline_e1rm_unreliable">Больше 10 повторов — оценка неточная</string>
+
+    <string name="onb_inventory_title">Инвентарь</string>
+    <string name="inv_bar">Гриф, кг</string>
+    <string name="inv_plates">Блины (пар)</string>
+    <string name="inv_kettlebells">Гири (штук)</string>
+    <string name="inv_dumbbells">Гантели (пар)</string>
+    <string name="inv_dumbbells_toggle">Есть гантели</string>
+    <string name="inv_add_weight">Добавить вес, кг</string>
+    <string name="inv_add">Добавить</string>
+    <string name="inv_equipment">Оборудование</string>
+
+    <string name="onb_restrictions_title">Ограничения</string>
+    <string name="onb_restrictions_hint">Упражнения с такой нагрузкой не попадут в программу. Это не медицинский совет: при боли остановись и обратись к специалисту.</string>
+    <string name="restriction_note">Что ещё учесть (для себя)</string>
+    <string name="restr_knees">Колени</string>
+    <string name="restr_lower_back">Поясница</string>
+    <string name="restr_shoulders">Плечи</string>
+    <string name="restr_grip">Хват и кисти</string>
+    <string name="restr_no_overhead">Без жимов над головой</string>
+    <string name="restr_no_ballistic">Без рывковых и махов</string>
+    <string name="restr_spine_flexion">Без скручиваний</string>
+
+    <string name="onb_body_title">Вес тела и единицы</string>
+    <string name="body_mass">Вес тела, кг</string>
+    <string name="body_mass_hint">Нужен для подтягиваний и отжиманий на брусьях с отягощением.</string>
+    <string name="units_kg">Килограммы</string>
+    <string name="units_lb_later">Фунты — позже</string>
+
+    <string name="diff_title">Что изменится в программе</string>
+    <string name="diff_apply">Применить</string>
+    <string name="diff_none">Программа не изменилась.</string>
+    <string name="profile_saved">Профиль сохранён, программа пересчитана</string>
+
+    <!-- Program -->
+    <string name="program_source_generated">Собрана генератором под твой профиль · мезоцикл %1$d</string>
+    <string name="program_template_hint">Это стартовый шаблон. Заполни профиль — генератор соберёт программу под твой зал, расписание и ограничения.</string>
+    <string name="program_fill_profile">Заполнить профиль</string>
+    <string name="program_edit_profile">Профиль</string>
+    <string name="program_why">Почему так?</string>
+    <string name="program_week">Неделя %1$d из %2$d</string>
+    <string name="program_week_deload">Неделя %1$d из %2$d · разгрузка</string>
+    <string name="program_week_done">Мезоцикл завершён</string>
+    <string name="program_deload_short">разгр.</string>
+    <string name="program_minutes">≈ %1$d мин</string>
+    <string name="program_new_mesocycle">Начать новый мезоцикл</string>
+    <string name="program_new_mesocycle_hint">Вариации сменятся, маркерные упражнения останутся, рабочие веса сохранятся.</string>
+    <string name="scheme_weight">%1$d × %2$s @ %3$s кг</string>
+    <string name="scheme_added">%1$d × %2$s, +%3$s кг</string>
+    <string name="scheme_no_weight">%1$d × %2$s</string>
+    <string name="scheme_rir">запас %1$s</string>
+    <string name="scheme_weight_unknown">вес — по разминке</string>
+    <string name="slot_lock">Не менять</string>
+    <string name="slot_lock_hint">Генератор сохранит упражнение, подходы и вес при пересчёте</string>
+    <string name="slot_minus_set">− подход</string>
+    <string name="slot_plus_set">+ подход</string>
+    <string name="slot_replace">Заменить</string>
+    <string name="slot_replace_title">Чем заменить</string>
+    <string name="slot_reasons">Почему это упражнение</string>
+    <string name="slot_locked">зафиксировано</string>
+    <string name="slot_marker">маркер</string>
+
+    <string name="why_title">Почему так?</string>
+    <string name="why_volume">Объём за неделю (рабочих подходов)</string>
+    <string name="why_volume_row">%1$s: %2$s · цель %3$s</string>
+    <string name="why_shortfalls">Что не получилось</string>
+    <string name="why_notes">Как собрана программа</string>
+    <string name="why_days">Упражнения</string>
+    <string name="why_template">Шаблон без генератора: объяснений нет. Заполни профиль, чтобы получить программу с объяснениями.</string>
+
+    <!-- Today -->
+    <string name="today_deload_offer_title">Предлагаю разгрузку</string>
+    <string name="today_deload_offer_body">%1$s Неделя полегче: подходов ×0,55, вес ×0,9. Можно отказаться.</string>
+    <string name="today_deload_accept">Разгрузиться</string>
+    <string name="today_deload_decline">Не сейчас</string>
+    <string name="today_deload_active">Внеплановая разгрузка: осталось тренировок — %1$d</string>
+    <string name="today_mesocycle_done_title">Мезоцикл завершён</string>
+    <string name="today_mesocycle_done_body">Разгрузка позади. Новый мезоцикл сменит вариации и сохранит рабочие веса.</string>
+    <string name="checkin_title">Как ты сегодня?</string>
+    <string name="checkin_sleep">Сон</string>
+    <string name="checkin_legs">Ноги</string>
+    <string name="checkin_ready">Готовность</string>
+    <string name="checkin_good">Хорошо</string>
+    <string name="checkin_mid">Средне</string>
+    <string name="checkin_bad">Плохо</string>
+    <string name="checkin_long">Завтра длинная нагрузка</string>
+    <string name="checkin_start">Начать</string>
+    <string name="checkin_skip">Без чек-ина</string>
+
+    <!-- Workout -->
+    <string name="warmup_title">Разминка</string>
+    <string name="warmup_chip">%1$s × %2$s</string>
+    <string name="plates_per_side">На сторону: %1$s</string>
+    <string name="plates_bar_only">Пустой гриф</string>
+    <string name="plates_not_exact">Точно не собрать</string>
+    <string name="plates_title">Блины</string>
+    <string name="plates_lower">Ближе вниз: %1$s кг</string>
+    <string name="plates_upper">Ближе вверх: %1$s кг</string>
+    <string name="plates_exact">%1$s кг: гриф %2$s + на сторону %3$s</string>
+    <string name="e1rm_line">1ПМ ≈ %1$s кг</string>
+    <string name="e1rm_unreliable">· больше 10 повторов, оценка неточная</string>
+
+    <!-- Summary -->
+    <string name="summary_progress">Прогрессия</string>
+
+    <!-- Settings -->
+    <string name="settings_section_program">Программа</string>
+    <string name="settings_profile">Профиль</string>
+    <string name="settings_profile_hint">Цель, расписание, инвентарь, ограничения — с пересчётом программы</string>
+    <string name="settings_plate_calc">Калькулятор блинов</string>
+    <string name="settings_plate_calc_hint">Как собрать вес на грифе из твоих блинов</string>
+    <string name="settings_accessory_warmup">Разминка перед вспомогательными: %1$d подх.</string>
+    <string name="settings_accessory_warmup_hint">Лёгкие подходы перед изоляцией и подсобными; у базовых со штангой — своя лесенка</string>
+    <string name="settings_config_export">Экспорт параметров генератора</string>
+    <string name="settings_config_export_hint">JSON: объёмы, схемы, отдых, шаги прогрессии</string>
+    <string name="settings_config_import">Импорт параметров генератора</string>
+    <string name="settings_config_import_hint">Файл проверяется; с ошибками не применяется</string>
+    <string name="settings_config_reset">Вернуть встроенные параметры</string>
+    <string name="settings_config_custom">Сейчас используются свои параметры</string>
+    <string name="settings_config_ok">Параметры применены. Пересчитай программу в профиле.</string>
+    <string name="settings_config_errors">Файл не применён: %1$s</string>
+    <string name="settings_config_exported">Параметры сохранены</string>
+    <string name="plate_calc_title">Калькулятор блинов</string>
+    <string name="plate_calc_target">Нужный вес, кг</string>
+</resources>

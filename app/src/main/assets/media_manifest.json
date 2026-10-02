@@ -1,0 +1,799 @@
+{
+ "manifestVersion": 1,
+ "sources": [
+  {
+   "id": "free-exercise-db",
+   "title": "Free Exercise DB",
+   "url": "https://github.com/yuhonas/free-exercise-db",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "license": "Unlicense",
+   "licenseUrl": "https://unlicense.org/",
+   "commit": "f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5"
+  }
+ ],
+ "items": {
+  "barbell_back_squat": {
+   "file": "media/barbell_squat.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Barbell_Squat",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "8517a0dfa4ceb11fac1d1c4435c179c3cb17b917ee61749caf124f79ecf345d5"
+  },
+  "barbell_front_squat": {
+   "file": "media/front_barbell_squat.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Front_Barbell_Squat",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "d693a140130198a46bca337f7c109ef827ff0829d032c45607fe50e0f6ebe3b1"
+  },
+  "paused_back_squat": {
+   "file": "media/barbell_squat.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Barbell_Squat",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "8517a0dfa4ceb11fac1d1c4435c179c3cb17b917ee61749caf124f79ecf345d5"
+  },
+  "kettlebell_goblet_squat": {
+   "file": "media/goblet_squat.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Goblet_Squat",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "cfad8b385dee7613ad4ba630bba61d78d8a8d2bb57b68c70fc75eb6a1e4d7d34"
+  },
+  "double_kettlebell_front_squat": {
+   "file": "media/front_squats_with_two_kettlebells.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Front_Squats_With_Two_Kettlebells",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "a1597a0aebc347b34c327ffc5e25b7e34539cb6b961558d17e2de79bf10a4480"
+  },
+  "leg_press": {
+   "file": "media/leg_press.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Leg_Press",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "1ce3715180d3339047d40c6c32ccfb7279f188dd976584e37e3fb5f273a7c2ed"
+  },
+  "leg_extension": {
+   "file": "media/leg_extensions.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Leg_Extensions",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "b8a1e5194d5f2c7217936ac2354c439de9802460008a042ea51dd15d00eb2bbd"
+  },
+  "bodyweight_squat": {
+   "file": "media/bodyweight_squat.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Bodyweight_Squat",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "d20255647e0e9c5623103ed52064255ee3f6bf1fd69b38e76e77d784460d50e7"
+  },
+  "barbell_deadlift": {
+   "file": "media/barbell_deadlift.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Barbell_Deadlift",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "69f202f75ba7e1903b5e86d26f6fac380eebedbc3d1c5401df81cc9fd877362a"
+  },
+  "barbell_romanian_deadlift": {
+   "file": "media/romanian_deadlift.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Romanian_Deadlift",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "a8085c416b0f4a5e2326d5382b3bf857640fdd4924fa1d7e2c8feeff3150fa7d"
+  },
+  "kettlebell_romanian_deadlift": {
+   "file": "media/stiff_legged_dumbbell_deadlift.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Stiff-Legged_Dumbbell_Deadlift",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "66d387c897103bfa4a5e8732d858a27e5b34224a04d7445478672f8cb156ede7"
+  },
+  "single_leg_rdl_kettlebell": {
+   "file": "media/kettlebell_one_legged_deadlift.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Kettlebell_One-Legged_Deadlift",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "2910ca0f1c1c3deafb45b0a1f22337a95e916c73cdfd93cda876e0f280a7d255"
+  },
+  "kettlebell_swing": {
+   "file": "media/one_arm_kettlebell_swings.webp",
+   "source": "free-exercise-db",
+   "sourceId": "One-Arm_Kettlebell_Swings",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "9651d74f498e19e054e1f13d7da564b66f1cd4ffbb653f43290a2d4a0b45a170"
+  },
+  "single_arm_kettlebell_swing": {
+   "file": "media/one_arm_kettlebell_swings.webp",
+   "source": "free-exercise-db",
+   "sourceId": "One-Arm_Kettlebell_Swings",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "9651d74f498e19e054e1f13d7da564b66f1cd4ffbb653f43290a2d4a0b45a170"
+  },
+  "kettlebell_snatch": {
+   "file": "media/one_arm_kettlebell_snatch.webp",
+   "source": "free-exercise-db",
+   "sourceId": "One-Arm_Kettlebell_Snatch",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "5962d8e611c8e319f0c79e756f60249d6f375e7a49b43fc757650b4b87ee4fcd"
+  },
+  "barbell_hip_thrust": {
+   "file": "media/barbell_hip_thrust.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Barbell_Hip_Thrust",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "1f8d862689bc7cbd14d6b1c4b397f348177ef31cafb0abf0bfa621987ace695d"
+  },
+  "glute_bridge": {
+   "file": "media/barbell_glute_bridge.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Barbell_Glute_Bridge",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "c783ac8aa52ef0e83aaea4f6d80de48bd739ea6c61c5cddc8f8a39607cd59dc6"
+  },
+  "back_extension": {
+   "file": "media/hyperextensions_back_extensions.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Hyperextensions_Back_Extensions",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "312a10585364e2daae6d30501554cbc264076d69a3f3caa0b92505841b597409"
+  },
+  "leg_curl": {
+   "file": "media/lying_leg_curls.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Lying_Leg_Curls",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "03362b5c7750efed592d9eb283c575badfc3617faac65ec7ec2aae66ba9ba0cb"
+  },
+  "good_morning": {
+   "file": "media/good_morning.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Good_Morning",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "320517e82a68b9f0b930d642df86c2d6e6f7f78c8f262b8191a0486570fbcbd1"
+  },
+  "bulgarian_split_squat": {
+   "file": "media/split_squat_with_dumbbells.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Split_Squat_with_Dumbbells",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "0cc0087edfdf4d5a1edd49531f4e63ec646d13aa7526c186556654e528380779"
+  },
+  "reverse_lunge_kettlebell": {
+   "file": "media/dumbbell_rear_lunge.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Dumbbell_Rear_Lunge",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "c7e16139ffee36fc276484695381c6cd3f5e34e86a6962cf1d0e025e14db1114"
+  },
+  "walking_lunge_kettlebell": {
+   "file": "media/dumbbell_lunges.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Dumbbell_Lunges",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "462646197324187ebd19581fc0dce8f3119ec60d62cdb8a0f3cd0b5e5dda4697"
+  },
+  "step_up_kettlebell": {
+   "file": "media/dumbbell_step_ups.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Dumbbell_Step_Ups",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "36dbcdeda6a40b7d497f3b8e40f29a0173d6486e2eccb87bfb9f5516748da93b"
+  },
+  "barbell_reverse_lunge": {
+   "file": "media/barbell_lunge.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Barbell_Lunge",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "0d97fe4c3801810754d93664018991f33cf3bff3c0e1e006c21d16f710f8f978"
+  },
+  "barbell_bench_press": {
+   "file": "media/barbell_bench_press___medium_grip.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Barbell_Bench_Press_-_Medium_Grip",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "752e2efaf89548385b2cd6081befb840fdb170c4af93f401469063f9b2c816af"
+  },
+  "incline_barbell_bench_press": {
+   "file": "media/barbell_incline_bench_press___medium_grip.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "dd6066b0dc2b77f3ed29849117745ae6e7a95081a5b10feaeaf6728c82e63cf9"
+  },
+  "close_grip_bench_press": {
+   "file": "media/close_grip_barbell_bench_press.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Close-Grip_Barbell_Bench_Press",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "146f3f31981fe5fc6db9eed6406b773f17cfe4c0832597df16b57ad1992f21e7"
+  },
+  "paused_bench_press": {
+   "file": "media/barbell_bench_press___medium_grip.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Barbell_Bench_Press_-_Medium_Grip",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "752e2efaf89548385b2cd6081befb840fdb170c4af93f401469063f9b2c816af"
+  },
+  "push_up": {
+   "file": "media/pushups.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Pushups",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "d7fa7fab5131cebd458e8d9a1a3404a396c678faf25e365f0e51f2926d379470"
+  },
+  "weighted_push_up": {
+   "file": "media/pushups.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Pushups",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "d7fa7fab5131cebd458e8d9a1a3404a396c678faf25e365f0e51f2926d379470"
+  },
+  "feet_elevated_push_up": {
+   "file": "media/push_ups_with_feet_elevated.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Push-Ups_With_Feet_Elevated",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "cf99f6dbf2028f0fffafbddc83f59df792540708ffac0e9901fd2d14174917e3"
+  },
+  "ring_push_up": {
+   "file": "media/suspended_push_up.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Suspended_Push-Up",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "dcf798bcfb3061b9e721d323b1140d63311622c78c900e4f78119333ac919893"
+  },
+  "chest_press_machine": {
+   "file": "media/leverage_chest_press.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Leverage_Chest_Press",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "36ff72694d5215600c6581d86cd12e9e24bb5462c12b37cb40615fd20e270a10"
+  },
+  "dips": {
+   "file": "media/dips___chest_version.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Dips_-_Chest_Version",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "4808d23a19bf52308b8d57ad2e89df8c3d0da8c82ceb4a95941c739cfcf0159e"
+  },
+  "ring_dips": {
+   "file": "media/ring_dips.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Ring_Dips",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "54670fb1eb842e3439e02d69923b4fc052ec0df9402db9968b01e9559c887d91"
+  },
+  "cable_chest_fly": {
+   "file": "media/cable_crossover.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Cable_Crossover",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "6b2bb52930cbe0ced56e827764dea9ea2c5b8c5173848feae00a9bf7686a938d"
+  },
+  "barbell_overhead_press": {
+   "file": "media/standing_military_press.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Standing_Military_Press",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "315d5e02bde7efa2ecb9d32a18f96b9d8122db9a2fa27bb872c3a6e2a272a319"
+  },
+  "push_press": {
+   "file": "media/push_press.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Push_Press",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "e16c020137243b33fa78654497782666b3d561d5f188a9f11aa292de2f20403d"
+  },
+  "kettlebell_press": {
+   "file": "media/one_arm_kettlebell_military_press_to_the_side.webp",
+   "source": "free-exercise-db",
+   "sourceId": "One-Arm_Kettlebell_Military_Press_To_The_Side",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "9d43624c4ffb746942df5d2abedde5362d05f66e469c45fc4522e5e0c91d15d9"
+  },
+  "double_kettlebell_press": {
+   "file": "media/two_arm_kettlebell_military_press.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Two-Arm_Kettlebell_Military_Press",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "f34f8da01bdf10e78f131a56236da8fc7686d18b699c7339b4731c71d33dc3ac"
+  },
+  "half_kneeling_kettlebell_press": {
+   "file": "media/alternating_kettlebell_press.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Alternating_Kettlebell_Press",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "1802e6c6ef33e051775b838e2eb95072d238190245147453f51312dfa24656da"
+  },
+  "pike_push_up": {
+   "file": "media/handstand_push_ups.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Handstand_Push-Ups",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "2205277135e6f02d5b9e95cbbf3581966a633aed60eb5317c5d1d9b7b3563f76"
+  },
+  "cable_lateral_raise": {
+   "file": "media/cable_seated_lateral_raise.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Cable_Seated_Lateral_Raise",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "5e4f1a8156cc4c587e258cb676ddff1e9640bd78d5260442e0fdc8f459d6b719"
+  },
+  "band_lateral_raise": {
+   "file": "media/lateral_raise___with_bands.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Lateral_Raise_-_With_Bands",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "135c863ab2b64834f45db803b80f69c8d0e14fb1cbf604dd562c03b0afa57f65"
+  },
+  "dumbbell_lateral_raise": {
+   "file": "media/side_lateral_raise.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Side_Lateral_Raise",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "5df5048a8b2e78d3c179b3dfb993791855058bff96a499e073e0d314db569d9d"
+  },
+  "face_pull": {
+   "file": "media/face_pull.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Face_Pull",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "909f6a625725602d934b78902e57e3b38dfd5676f2aa396988ca3e13a4bc0c49"
+  },
+  "band_pull_apart": {
+   "file": "media/band_pull_apart.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Band_Pull_Apart",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "35505fcee24b5d47b3d5be38749b8b94ac73b75f2da60498a85d5373efd6389a"
+  },
+  "reverse_cable_fly": {
+   "file": "media/cable_rear_delt_fly.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Cable_Rear_Delt_Fly",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "e03f61e96a71a7451016fb36d72f77b7538f64033d63c9f5937ca16662b673d2"
+  },
+  "barbell_bent_over_row": {
+   "file": "media/bent_over_barbell_row.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Bent_Over_Barbell_Row",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "4ea6e08a04552b014b15a4ec1cf24cd5a14f2f710a8c6d651b820e5d23c9469a"
+  },
+  "pendlay_row": {
+   "file": "media/bent_over_barbell_row.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Bent_Over_Barbell_Row",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "4ea6e08a04552b014b15a4ec1cf24cd5a14f2f710a8c6d651b820e5d23c9469a"
+  },
+  "kettlebell_row": {
+   "file": "media/one_arm_kettlebell_row.webp",
+   "source": "free-exercise-db",
+   "sourceId": "One-Arm_Kettlebell_Row",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "5c2c3eb67ce99d333de80dd7b66b46b11a3e7596a0db1133172b49f40d46ad98"
+  },
+  "gorilla_row": {
+   "file": "media/two_arm_kettlebell_row.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Two-Arm_Kettlebell_Row",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "1ab65bdcf6e7352ea5c7b6cb351ad82e9c29fdc0361e8f4ceec5a9cce86fcb94"
+  },
+  "seated_cable_row": {
+   "file": "media/seated_cable_rows.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Seated_Cable_Rows",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "a669e9fab3fc54a202fabfa98e28ae766269d48a95ca513a3fe3834dada3c1d9"
+  },
+  "inverted_row": {
+   "file": "media/inverted_row_with_straps.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Inverted_Row_with_Straps",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "6ba8e0861c7a3bb597e6d2aedbd93b0a25dc8854c730b7c6f0e1443ebbbc643a"
+  },
+  "single_arm_cable_row": {
+   "file": "media/seated_one_arm_cable_pulley_rows.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Seated_One-arm_Cable_Pulley_Rows",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "9845a1da0f33aa82e7b8c88fe958649effceeb5bece8c615dc08b80dc8dd980e"
+  },
+  "pull_up": {
+   "file": "media/pullups.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Pullups",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "9e0688524ff81e9043bf94768b4117c6b1341c787849d17c1d564d1bdebe7c9c"
+  },
+  "chin_up": {
+   "file": "media/chin_up.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Chin-Up",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "a0a3de8ff015db7e104c5e1a105fadc6acb49eb55b6570c83018dedce6d8b8fe"
+  },
+  "weighted_pull_up": {
+   "file": "media/weighted_pull_ups.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Weighted_Pull_Ups",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "bcbd6f6181de5907c22a11084fc457a8a8653fc8e521277bd652000b74a2409c"
+  },
+  "band_assisted_pull_up": {
+   "file": "media/band_assisted_pull_up.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Band_Assisted_Pull-Up",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "7929187e5f0a2d70822a9f7a035ca3b11df0167f9c73b55bde21347418a056c6"
+  },
+  "lat_pulldown": {
+   "file": "media/wide_grip_lat_pulldown.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Wide-Grip_Lat_Pulldown",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "e4c3abd92e30d03578921a3cc1e986ed7d18b30d949d886ff6e94fce606f8771"
+  },
+  "close_grip_lat_pulldown": {
+   "file": "media/close_grip_front_lat_pulldown.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Close-Grip_Front_Lat_Pulldown",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "ac38791514b3bfaf5c3eb8f49b7265ee6a319f6e8497d1e11490774f3ab4f583"
+  },
+  "straight_arm_pulldown": {
+   "file": "media/straight_arm_pulldown.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Straight-Arm_Pulldown",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "1b417a842db4ee915a6cc0de9315ed42becb9aa95def5288352573e923aec962"
+  },
+  "barbell_shrug": {
+   "file": "media/barbell_shrug.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Barbell_Shrug",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "63d596ecd916adb95d6d664f7ffc7cba4b83205f0da73c3d6fd26b515222dc86"
+  },
+  "barbell_curl": {
+   "file": "media/barbell_curl.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Barbell_Curl",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "d2b5918941d8e645b91a03451682050a06ef84664d360ddf111801586ac94166"
+  },
+  "cable_curl": {
+   "file": "media/standing_biceps_cable_curl.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Standing_Biceps_Cable_Curl",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "c34d7c1339eb1003b3039e3781feb8886db8b0f8be40560d48f25d1393474f69"
+  },
+  "dumbbell_hammer_curl": {
+   "file": "media/hammer_curls.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Hammer_Curls",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "4d8e976d968f3739d60a0f6d02563e7c845a07f3930da3f3ad0a15d4104fed93"
+  },
+  "kettlebell_hammer_curl": {
+   "file": "media/hammer_curls.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Hammer_Curls",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "4d8e976d968f3739d60a0f6d02563e7c845a07f3930da3f3ad0a15d4104fed93"
+  },
+  "cable_triceps_pushdown": {
+   "file": "media/triceps_pushdown.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Triceps_Pushdown",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "a1c1922f7aa6f61ff71cd5b396901c0569d8f93e8076918c54ad4f8fb0db7ba3"
+  },
+  "overhead_cable_triceps_extension": {
+   "file": "media/cable_rope_overhead_triceps_extension.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Cable_Rope_Overhead_Triceps_Extension",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "8cf3d40f6ac1cee0832a680ed53e767d6a7375fdf526237cee08439530869c4d"
+  },
+  "kettlebell_overhead_triceps_extension": {
+   "file": "media/standing_dumbbell_triceps_extension.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Standing_Dumbbell_Triceps_Extension",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "686ead352c121167efbed0e9238bc52dd432f085dc0fada4cbb74e09f3ef7294"
+  },
+  "skull_crusher": {
+   "file": "media/ez_bar_skullcrusher.webp",
+   "source": "free-exercise-db",
+   "sourceId": "EZ-Bar_Skullcrusher",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "49b98911e83d980b08a4af80196fddcb45751b50f7bca4725c1f9720ef14b1c8"
+  },
+  "diamond_push_up": {
+   "file": "media/push_ups___close_triceps_position.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Push-Ups_-_Close_Triceps_Position",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "fa1facb3e3377415afbc26035bab5f9c90f53f70868ddeb46f85c219ba373126"
+  },
+  "standing_calf_raise": {
+   "file": "media/standing_dumbbell_calf_raise.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Standing_Dumbbell_Calf_Raise",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "8e080a8c2194eb551c8c9ab0ff9225a1fd211be931b5de5f64db0fd382d2ba3e"
+  },
+  "leg_press_calf_raise": {
+   "file": "media/calf_press_on_the_leg_press_machine.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Calf_Press_On_The_Leg_Press_Machine",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "e58e9c1e4e461f37cc7880aeb44990bccd19c9f5a4354cec27867bee49927bc9"
+  },
+  "barbell_calf_raise": {
+   "file": "media/standing_barbell_calf_raise.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Standing_Barbell_Calf_Raise",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "2633ca875ec6871f9ae6119608de008f8c4acfb985c7a4b201e71020251713e3"
+  },
+  "plank": {
+   "file": "media/plank.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Plank",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "c5cb2a027024aeec899678d421d6903da60c7137b986b31797385a0cbf73f6f7"
+  },
+  "side_plank": {
+   "file": "media/side_bridge.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Side_Bridge",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "48dc003915353b81b23d21e1a88dce510fecc977e568c2a1e74ab09f12bcde6e"
+  },
+  "dead_bug": {
+   "file": "media/dead_bug.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Dead_Bug",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "d9a9bddfaa0a440d45fd4513ed936c90bd6b1ae49b7ce9345bb2c537a9d9b8c1"
+  },
+  "hanging_leg_raise": {
+   "file": "media/hanging_leg_raise.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Hanging_Leg_Raise",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "98397d78b4ceb7df5af0b89063f8012ee303ffb42a9ed0fa0915581931f81302"
+  },
+  "hanging_knee_raise": {
+   "file": "media/hanging_leg_raise.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Hanging_Leg_Raise",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "98397d78b4ceb7df5af0b89063f8012ee303ffb42a9ed0fa0915581931f81302"
+  },
+  "cable_crunch": {
+   "file": "media/cable_crunch.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Cable_Crunch",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "0fec7dcfee35e709d672f4c4d03cdbf955efef756d15838c824463e0ce6b1e87"
+  },
+  "pallof_press": {
+   "file": "media/pallof_press.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Pallof_Press",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "1b8005d26fc25ec6bd089b75cc3663b60aa5a05398baf0ec79d549160b12ed23"
+  },
+  "turkish_get_up": {
+   "file": "media/kettlebell_turkish_get_up_lunge_style.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Kettlebell_Turkish_Get-Up_Lunge_style",
+   "match": "exact",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "87ff3d2fb42fe97516120ec8870c2b01ab23b39820d0bac18a4307c6ca84b2be"
+  },
+  "dead_hang": {
+   "file": "media/one_handed_hang.webp",
+   "source": "free-exercise-db",
+   "sourceId": "One_Handed_Hang",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "d536986fcd568daacc946e758b95d14f6b3c3a5c68d6b0a907ded4040b4af0e3"
+  },
+  "farmer_carry_kettlebell": {
+   "file": "media/farmers_walk.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Farmers_Walk",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "8d238a067e53ddc17c00c0bdf57f527bc37dfa4f38c67859e8d06426be897d37"
+  },
+  "suitcase_carry": {
+   "file": "media/farmers_walk.webp",
+   "source": "free-exercise-db",
+   "sourceId": "Farmers_Walk",
+   "match": "similar",
+   "license": "Unlicense",
+   "author": "yuhonas and contributors (data restructured from wrkout/exercises.json)",
+   "sha256": "8d238a067e53ddc17c00c0bdf57f527bc37dfa4f38c67859e8d06426be897d37"
+  }
+ }
+}

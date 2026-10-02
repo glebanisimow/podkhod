@@ -1,0 +1,243 @@
+{
+  "configVersion": 1,
+  "volume": {
+    "chest": { "min": 8, "max": 14 },
+    "back": { "min": 8, "max": 14 },
+    "quads": { "min": 8, "max": 14 },
+    "hamstrings": { "min": 6, "max": 12 },
+    "glutes": { "min": 6, "max": 12 },
+    "delts": { "min": 6, "max": 12 },
+    "biceps": { "min": 6, "max": 12 },
+    "triceps": { "min": 6, "max": 12 },
+    "calves": { "min": 4, "max": 8 },
+    "abs": { "min": 4, "max": 8 }
+  },
+  "secondaryWeight": 0.5,
+  "secondaryWeightByGroup": { "abs": 0.0 },
+  "priorityBonus": { "2": 2, "3": 3, "4": 4 },
+  "intensiveLowDaysMax": 3,
+  "exercisesPerSession": {
+    "intensive": { "40": 6, "45": 7, "60": 8, "75": 9 },
+    "classic": { "40": 4, "45": 5, "60": 6, "75": 7 }
+  },
+  "mesocycle": { "weeks": 6, "minWeeks": 4, "maxWeeks": 8, "markers": 2 },
+  "splits": {
+    "2": [
+      {
+        "title": "Полное тело A",
+        "slots": [
+          { "role": "compound", "patterns": ["squat"] },
+          { "role": "compound", "patterns": ["h_push"] },
+          { "role": "accessory", "patterns": ["v_pull", "h_pull"], "muscles": ["lats"] },
+          { "role": "accessory", "patterns": ["hinge"], "muscles": ["hamstrings"] },
+          { "role": "isolation", "muscles": ["delts_side"] },
+          { "role": "core", "muscles": ["abs"] },
+          { "role": "isolation", "muscles": ["triceps"] },
+          { "role": "isolation", "muscles": ["calves"] },
+          { "role": "isolation", "muscles": ["biceps"] }
+        ]
+      },
+      {
+        "title": "Полное тело B",
+        "slots": [
+          { "role": "compound", "patterns": ["hinge"] },
+          { "role": "compound", "patterns": ["v_push"] },
+          { "role": "accessory", "patterns": ["h_pull"] },
+          { "role": "accessory", "patterns": ["lunge", "squat"], "muscles": ["quads"] },
+          { "role": "accessory", "patterns": ["h_push"] },
+          { "role": "isolation", "muscles": ["biceps"] },
+          { "role": "isolation", "muscles": ["calves"] },
+          { "role": "core", "muscles": ["abs"] },
+          { "role": "isolation", "muscles": ["delts_rear"] }
+        ]
+      }
+    ],
+    "3": [
+      {
+        "title": "Полное тело A",
+        "slots": [
+          { "role": "compound", "patterns": ["squat"] },
+          { "role": "compound", "patterns": ["h_push"] },
+          { "role": "accessory", "patterns": ["h_pull"] },
+          { "role": "accessory", "patterns": ["hinge"], "muscles": ["hamstrings"] },
+          { "role": "isolation", "muscles": ["delts_side"] },
+          { "role": "isolation", "muscles": ["biceps"] },
+          { "role": "core", "muscles": ["abs"] },
+          { "role": "isolation", "muscles": ["calves"] },
+          { "role": "isolation", "muscles": ["triceps"] }
+        ]
+      },
+      {
+        "title": "Полное тело B",
+        "slots": [
+          { "role": "compound", "patterns": ["hinge"] },
+          { "role": "compound", "patterns": ["v_push"] },
+          { "role": "compound", "patterns": ["v_pull"] },
+          { "role": "accessory", "patterns": ["lunge"] },
+          { "role": "isolation", "muscles": ["triceps"] },
+          { "role": "isolation", "muscles": ["calves"] },
+          { "role": "isolation", "muscles": ["delts_rear"] },
+          { "role": "core", "muscles": ["abs"] },
+          { "role": "isolation", "muscles": ["hamstrings"] }
+        ]
+      },
+      {
+        "title": "Полное тело C",
+        "slots": [
+          { "role": "compound", "patterns": ["squat"] },
+          { "role": "accessory", "patterns": ["h_push"] },
+          { "role": "accessory", "patterns": ["v_pull", "h_pull"] },
+          { "role": "isolation", "muscles": ["calves"] },
+          { "role": "isolation", "muscles": ["biceps"] },
+          { "role": "core", "muscles": ["abs"] },
+          { "role": "isolation", "muscles": ["hamstrings"] },
+          { "role": "isolation", "muscles": ["chest"] },
+          { "role": "isolation", "muscles": ["delts_side"] }
+        ]
+      }
+    ],
+    "4": [
+      {
+        "title": "Верх A",
+        "slots": [
+          { "role": "compound", "patterns": ["h_push"] },
+          { "role": "compound", "patterns": ["h_pull"] },
+          { "role": "accessory", "patterns": ["v_pull"] },
+          { "role": "accessory", "patterns": ["h_push"] },
+          { "role": "isolation", "muscles": ["triceps"] },
+          { "role": "isolation", "muscles": ["biceps"] },
+          { "role": "isolation", "muscles": ["delts_side"] },
+          { "role": "isolation", "muscles": ["delts_rear"] },
+          { "role": "isolation", "muscles": ["chest"] }
+        ]
+      },
+      {
+        "title": "Низ A",
+        "slots": [
+          { "role": "compound", "patterns": ["squat"] },
+          { "role": "accessory", "patterns": ["hinge"], "muscles": ["hamstrings"] },
+          { "role": "isolation", "muscles": ["hamstrings"] },
+          { "role": "isolation", "muscles": ["calves"] },
+          { "role": "core", "muscles": ["abs"] },
+          { "role": "accessory", "patterns": ["lunge"] },
+          { "role": "isolation", "muscles": ["quads"] },
+          { "role": "core", "muscles": ["abs"] }
+        ]
+      },
+      {
+        "title": "Верх B",
+        "slots": [
+          { "role": "compound", "patterns": ["v_push"] },
+          { "role": "compound", "patterns": ["v_pull"] },
+          { "role": "accessory", "patterns": ["h_push"] },
+          { "role": "accessory", "patterns": ["h_pull"] },
+          { "role": "isolation", "muscles": ["biceps"] },
+          { "role": "isolation", "muscles": ["triceps"] },
+          { "role": "isolation", "muscles": ["delts_rear"] },
+          { "role": "isolation", "muscles": ["delts_side"] },
+          { "role": "isolation", "muscles": ["chest"] }
+        ]
+      },
+      {
+        "title": "Низ B",
+        "slots": [
+          { "role": "compound", "patterns": ["hinge"] },
+          { "role": "accessory", "patterns": ["squat", "lunge"], "muscles": ["quads"] },
+          { "role": "isolation", "muscles": ["quads"] },
+          { "role": "isolation", "muscles": ["calves"] },
+          { "role": "core", "muscles": ["abs"] },
+          { "role": "isolation", "muscles": ["hamstrings"] },
+          { "role": "accessory", "patterns": ["lunge"] },
+          { "role": "core", "muscles": ["abs"] }
+        ]
+      }
+    ]
+  },
+  "prescription": {
+    "intensive": {
+      "compound": { "sets": 3, "reps": { "min": 4, "max": 8 }, "rir": { "min": 1, "max": 2 }, "restSec": 105 },
+      "accessory": { "sets": 3, "reps": { "min": 6, "max": 12 }, "rir": { "min": 1, "max": 2 }, "restSec": 75 },
+      "isolation": { "sets": 2, "reps": { "min": 10, "max": 20 }, "rir": { "min": 0, "max": 1 }, "restSec": 50 },
+      "core": { "sets": 2, "reps": { "min": 10, "max": 20 }, "rir": { "min": 0, "max": 1 }, "restSec": 45 }
+    },
+    "classic": {
+      "compound": { "sets": 4, "reps": { "min": 3, "max": 6 }, "rir": { "min": 1, "max": 3 }, "restSec": 180 },
+      "accessory": { "sets": 3, "reps": { "min": 6, "max": 10 }, "rir": { "min": 1, "max": 2 }, "restSec": 90 },
+      "isolation": { "sets": 2, "reps": { "min": 10, "max": 15 }, "rir": { "min": 0, "max": 1 }, "restSec": 60 },
+      "core": { "sets": 2, "reps": { "min": 10, "max": 15 }, "rir": { "min": 0, "max": 1 }, "restSec": 60 }
+    }
+  },
+  "rirNonBarbell": { "min": 0, "max": 1 },
+  "ballistic": { "rir": { "min": 2, "max": 3 }, "note": "До потери скорости: темп упал — подход закончен" },
+  "goals": {
+    "strength": { "compoundReps": { "min": 3, "max": 6 }, "compoundSets": 4 },
+    "hypertrophy": { "compoundReps": { "min": 6, "max": 10 }, "isolationSets": 3 },
+    "balance": {}
+  },
+  "sets": { "min": 2, "max": 4, "compoundMax": 5 },
+  "timing": { "workSec": 40, "transitionSec": 45, "barbellWarmupMin": 4.0, "lightWarmupSetMin": 1.0, "tolerance": 0.1 },
+  "equipmentClass": {
+    "barbell": 0,
+    "kettlebell": 1,
+    "dumbbells": 1,
+    "lat_pulldown": 3,
+    "cable_row": 3,
+    "chest_press_machine": 3,
+    "leg_press": 3,
+    "leg_extension": 3,
+    "leg_curl": 3,
+    "cable_station": 3,
+    "hyperextension": 3
+  },
+  "defaultEquipmentClass": 2,
+  "stations": [
+    "barbell", "rack", "bench", "adjustable_bench", "pullup_bar", "dip_bars", "rings", "lat_pulldown", "cable_row",
+    "chest_press_machine", "leg_press", "leg_extension", "leg_curl", "cable_station", "hyperextension"
+  ],
+  "progression": {
+    "stepKg": { "squat": 5.0, "hinge": 5.0, "default": 2.5 },
+    "failureReduction": 0.1,
+    "missesForReduction": 2,
+    "startFactor": 0.95,
+    "e1rmHistory": 5
+  },
+  "deload": { "volumeFactor": 0.55, "weightFactor": 0.9, "e1rmDrops": 2, "hardCheckins": 2 },
+  "checkin": { "hardAt": 2, "rirBump": 1, "setCut": 1 },
+  "endurance": { "legSetCut": 1, "legRirBump": 1, "heavyLegWeightFactor": 0.9 },
+  "baselineExercises": {
+    "squat": "barbell_back_squat",
+    "bench": "barbell_bench_press",
+    "deadlift": "barbell_deadlift",
+    "rdl": "barbell_romanian_deadlift",
+    "ohp": "barbell_overhead_press",
+    "row": "barbell_bent_over_row",
+    "pullup": "pull_up",
+    "dips": "dips",
+    "kb_swing": "kettlebell_swing",
+    "kb_snatch": "kettlebell_snatch",
+    "kb_goblet": "kettlebell_goblet_squat"
+  },
+  "restrictionTags": {
+    "knees": ["knee_stress", "deep_squat"],
+    "lower_back": ["lower_back_stress", "axial_load"],
+    "shoulders": ["shoulder_stress", "overhead", "behind_neck"],
+    "grip": ["grip_intensive"],
+    "no_overhead": ["overhead"],
+    "no_ballistic": ["ballistic"],
+    "spine_flexion": ["spinal_flexion"]
+  },
+  "busyThreshold": 3,
+  "warmup": {
+    "barbellSteps": [
+      { "fraction": 0.45, "repMin": 5, "repMax": 5 },
+      { "fraction": 0.65, "repMin": 3, "repMax": 3 },
+      { "fraction": 0.82, "repMin": 1, "repMax": 2 }
+    ],
+    "emptyBarReps": [8, 10],
+    "lightSteps": [
+      [],
+      [{ "fraction": 0.5, "repMin": 10, "repMax": 10 }],
+      [{ "fraction": 0.4, "repMin": 10, "repMax": 10 }, { "fraction": 0.7, "repMin": 5, "repMax": 5 }]
+    ]
+  }
+}

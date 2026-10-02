@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Подход</string>
+
+    <string name="nav_today">Сегодня</string>
+    <string name="nav_program">Программа</string>
+    <string name="nav_history">История</string>
+    <string name="nav_settings">Настройки</string>
+
+    <string name="save">Сохранить</string>
+    <string name="cancel">Отмена</string>
+    <string name="delete">Удалить</string>
+    <string name="back">Назад</string>
+    <string name="unit_kg">кг</string>
+    <string name="unit_sec">с</string>
+
+    <!-- Today -->
+    <string name="today_title">Сегодня</string>
+    <string name="today_loading">Готовим программу…</string>
+    <string name="today_next_title">Следующая тренировка</string>
+    <string name="today_day_of">День %1$d из %2$d · %3$s</string>
+    <string name="today_start">Начать тренировку</string>
+    <string name="today_skip">Пропустить день</string>
+    <string name="today_skip_title">Пропустить «%1$s»?</string>
+    <string name="today_skip_body">Следующей станет «%1$s». Пропуск не попадает в историю.</string>
+    <string name="today_skip_confirm">Пропустить</string>
+    <string name="today_active_title">Тренировка идёт</string>
+    <string name="today_active_body">«%1$s», начата %2$s</string>
+    <string name="today_continue">Продолжить тренировку</string>
+    <string name="today_resume_title">Незавершённая тренировка</string>
+    <string name="today_resume_body">«%1$s» начата %2$s, записано подходов: %3$d. Продолжить?</string>
+    <string name="today_resume_continue">Продолжить</string>
+    <string name="today_resume_later">Позже</string>
+    <string name="today_notifications_hint">Уведомления выключены: сигнал конца отдыха при погашенном экране не придёт. Таймер в приложении работает.</string>
+
+    <!-- Program -->
+    <string name="program_title">Программа</string>
+    <string name="program_empty">Программа ещё не создана.</string>
+    <string name="program_source_template">Шаблон. Генератор под твой зал появится на этапе 2.</string>
+    <string name="program_next">следующая</string>
+    <string name="superset_label">Суперсет %1$s</string>
+    <string name="plan_line">%1$d × %2$s</string>
+    <string name="plan_rest">отдых %1$s</string>
+    <string name="plan_rir">запас %1$s</string>
+
+    <!-- Workout -->
+    <string name="workout_finish">Завершить</string>
+    <string name="workout_all_done">Все подходы выполнены</string>
+    <string name="workout_last_time">В прошлый раз: %1$s</string>
+    <string name="workout_last_time_none">В прошлый раз: нет данных</string>
+    <string name="workout_weight">Вес, кг</string>
+    <string name="workout_added_weight">Доп. вес, кг</string>
+    <string name="workout_reps">Повторы</string>
+    <string name="workout_seconds">Секунды</string>
+    <string name="workout_log_set">Подход выполнен</string>
+    <string name="workout_log_warmup">Разминка выполнена</string>
+    <string name="workout_warmup_toggle">Разминочный</string>
+    <string name="workout_rir">Запас</string>
+    <string name="workout_rir_hint">Сколько повторов ещё мог сделать</string>
+    <string name="workout_rest">Отдых</string>
+    <string name="workout_rest_over">Отдых окончен</string>
+    <string name="workout_rest_skip">Пропустить</string>
+    <string name="workout_rest_minus">−15 с</string>
+    <string name="workout_rest_plus">+15 с</string>
+    <string name="history_busiest">Чаще всего занято</string>
+    <string name="history_busiest_row">%1$s — %2$d</string>
+    <string name="busy">Занято</string>
+    <string name="busy_title">Занято: %1$s</string>
+    <string name="busy_later">Сделать позже</string>
+    <string name="busy_wait">Что сделать, пока жду?</string>
+    <string name="busy_replace_today">Заменить на сегодня</string>
+    <string name="busy_forever">Заменить навсегда (в этой программе)</string>
+    <string name="busy_partial">Записанные подходы останутся, замена получит оставшиеся: %1$d</string>
+    <string name="busy_none">Подходящих замен нет</string>
+    <string name="busy_est_own">вес как в прошлый раз</string>
+    <string name="busy_est_ratio">пересчёт по расчётному 1ПМ</string>
+    <string name="busy_est_bodyweight">начни без отягощения</string>
+    <string name="busy_est_unknown">подбери вес на разминочном подходе</string>
+    <string name="busy_same_station">нужен тот же снаряд</string>
+    <string name="busy_overload">эти мышцы сегодня уже нагружены</string>
+    <string name="busy_wait_from_plan">Из оставшихся в тренировке</string>
+    <string name="busy_wait_extra">Лёгкое дополнительное</string>
+    <string name="busy_wait_go">Перейти: %1$s</string>
+    <string name="busy_wait_add">Добавить: %1$s</string>
+    <string name="busy_wait_none">Свободных вариантов нет</string>
+    <string name="workout_exercise_done">Упражнение выполнено</string>
+    <string name="workout_exercise_of">%1$d / %2$d</string>
+    <string name="workout_minus">Меньше</string>
+    <string name="workout_plus">Больше</string>
+    <string name="workout_finish_title">Завершить тренировку?</string>
+    <string name="workout_finish_done">Все запланированные подходы выполнены.</string>
+    <string name="workout_finish_discard">Удалить тренировку</string>
+    <string name="workout_discard_title">Удалить тренировку?</string>
+    <string name="workout_discard_body">Все подходы этой тренировки будут удалены без возможности восстановления.</string>
+    <string name="workout_loading">Загружаем тренировку…</string>
+
+    <string name="set_kind_warmup">Разминка</string>
+    <string name="set_kind_work">Рабочий</string>
+    <string name="set_kind_failure">До отказа</string>
+    <string name="set_kind_drop">Дроп-сет</string>
+    <string name="set_edit_title">Подход %1$d</string>
+    <string name="set_delete">Удалить подход</string>
+    <string name="input_title_weight">Вес, кг</string>
+    <string name="input_title_reps">Повторы</string>
+    <string name="input_title_seconds">Секунды</string>
+
+    <!-- Summary -->
+    <string name="summary_title">Тренировка завершена</string>
+    <string name="summary_duration">Длительность</string>
+    <string name="summary_sets">Рабочих подходов</string>
+    <string name="summary_volume">Тоннаж</string>
+    <string name="summary_vs_previous">К прошлому разу: %1$s</string>
+    <string name="summary_records">Рекорды</string>
+    <string name="summary_no_records">Новых рекордов нет. Это нормально: прогресс идёт не каждую тренировку.</string>
+    <string name="summary_first_time">Первая тренировка этих упражнений — это точка отсчёта.</string>
+    <string name="record_weight">%1$s: вес %2$s кг (было %3$s)</string>
+    <string name="record_1rm">%1$s: расчётный 1ПМ %2$s кг (было %3$s)</string>
+    <string name="record_reps">%1$s: %2$s повт. (было %3$s)</string>
+    <string name="summary_feeling">Как прошло?</string>
+    <string name="feeling_hard">Тяжело</string>
+    <string name="feeling_ok">Нормально</string>
+    <string name="feeling_easy">Легко</string>
+    <string name="summary_note">Заметка</string>
+    <string name="summary_done">Готово</string>
+
+    <!-- History -->
+    <string name="history_title">История</string>
+    <string name="history_empty">Тренировок пока нет.</string>
+    <string name="history_row">%1$s · %2$s · %3$s кг</string>
+    <string name="history_delete">Удалить из истории</string>
+    <string name="history_delete_title">Удалить тренировку из истории?</string>
+    <string name="history_feeling">Самочувствие: %1$s</string>
+    <string name="history_note">Заметка: %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_section_workout">Тренировка</string>
+    <string name="settings_keep_screen_on">Не гасить экран во время тренировки</string>
+    <string name="settings_one_hand">Режим «одна рука»</string>
+    <string name="settings_one_hand_hint">Все кнопки тренировки в нижней части экрана</string>
+    <string name="settings_rest_sound">Звук в конце отдыха</string>
+    <string name="settings_rest_vibration">Вибрация в конце отдыха</string>
+    <string name="settings_superset_rest">Отдых после каждого упражнения суперсета</string>
+    <string name="settings_superset_rest_hint">Выключено — отдых только после круга</string>
+    <string name="settings_notifications">Уведомления</string>
+    <string name="settings_notifications_hint">Системные настройки звука и вибрации сигнала</string>
+    <string name="settings_about">О приложении</string>
+
+    <!-- About -->
+    <string name="about_title">О приложении</string>
+    <string name="about_version">Версия %1$s (сборка %2$d)</string>
+    <string name="about_disclaimer_title">Важно</string>
+    <string name="about_disclaimer">Приложение предлагает тренировочную логику и не даёт медицинских советов. При боли остановись и обратись к специалисту.</string>
+    <string name="about_privacy_title">Конфиденциальность</string>
+    <string name="about_privacy">Все данные (профиль, программа, журнал, заметки и ограничения) хранятся только на этом телефоне. Приложение не использует аккаунты, аналитику, рекламу и облачные отчёты о сбоях. В интернет уходят только тренировки, которые ты сам отправляешь в Strava, когда интеграция будет подключена.</string>
+    <string name="about_licenses_title">Лицензии</string>
+    <string name="about_licenses_body">Каталог упражнений, тексты техники и шаблоны программ составлены для этого приложения. Иконки — Material Symbols (Apache License 2.0). Библиотеки: AndroidX, Jetpack Compose, Room, Koin, Coil, kotlinx (Apache License 2.0).</string>
+    <string name="about_media_licenses">Лицензии анимаций</string>
+    <string name="about_media_licenses_hint">Источники, лицензии и id упражнений для своих файлов</string>
+
+    <!-- Media -->
+    <string name="media_none">Анимации пока нет — техника по кнопке «Техника»</string>
+    <string name="media_none_short">Без анимации</string>
+    <string name="media_error">Не удалось показать анимацию</string>
+    <string name="media_similar">Похожее движение</string>
+    <string name="media_user">Свой файл</string>
+    <string name="media_credit">Анимация собрана из кадров %1$s (%2$s), запись «%3$s».</string>
+    <string name="media_credit_similar">Показано похожее движение.</string>
+    <string name="media_credit_user">Анимация: твой файл.</string>
+    <string name="muscles_front">спереди</string>
+    <string name="muscles_back">сзади</string>
+    <string name="muscles_primary">Основные: %1$s</string>
+    <string name="muscles_secondary">Вторичные: %1$s</string>
+    <string name="technique">Техника</string>
+    <string name="technique_cues">Как выполнять</string>
+    <string name="technique_mistakes">Типичные ошибки</string>
+    <string name="technique_safety">Безопасность</string>
+    <string name="technique_none">Описание техники пока не добавлено.</string>
+    <string name="technique_unreviewed">Тексты написаны для приложения и ещё не проверены тобой.</string>
+
+    <!-- Licenses -->
+    <string name="licenses_title">Лицензии анимаций</string>
+    <string name="licenses_coverage">Анимации есть у %1$d из %2$d упражнений. Без анимации показываются схема мышц и текст техники.</string>
+    <string name="licenses_source">%1$s\nАвтор: %2$s\nЛицензия: %3$s (%4$s)\nВерсия набора: %5$s</string>
+    <string name="licenses_similar_note">«≈» — показано похожее движение (другой снаряд или вариация).</string>
+    <string name="licenses_own_files">Свои файлы: положи в папку файлы с именем, равным id упражнения (например, barbell_back_squat.webp или .gif), и выбери её в «Настройки → Добавить свои анимации». Свой файл перекрывает встроенный. Отвечаешь за лицензию своих файлов ты.</string>
+    <string name="licenses_no_media">нет анимации</string>
+    <string name="licenses_user_file">свой файл</string>
+
+    <!-- Settings: media -->
+    <string name="settings_section_media">Анимации</string>
+    <string name="settings_section_other">Прочее</string>
+    <string name="settings_animations">Анимации упражнений</string>
+    <string name="settings_animations_hint">Выключено — показывается первый кадр, меньше расход батареи</string>
+    <string name="settings_media_import">Добавить свои анимации</string>
+    <string name="settings_media_import_hint">Папка с файлами «id упражнения».gif или .webp; id — в «О приложении → Лицензии анимаций»</string>
+    <string name="settings_media_clear">Удалить свои анимации</string>
+    <string name="settings_media_result">Добавлено: %1$d, пропущено: %2$d</string>
+    <string name="settings_media_count">Своих анимаций: %1$d</string>
+
+    <!-- Notifications -->
+    <string name="channel_ongoing">Текущая тренировка</string>
+    <string name="channel_rest_sound_vibrate">Конец отдыха: звук и вибрация</string>
+    <string name="channel_rest_sound">Конец отдыха: только звук</string>
+    <string name="channel_rest_vibrate">Конец отдыха: только вибрация</string>
+    <string name="notif_in_progress">Идёт тренировка</string>
+    <string name="notif_resting">Отдых</string>
+    <string name="notif_rest_over_title">Отдых окончен</string>
+    <string name="notif_rest_over_text">Пора делать следующий подход</string>
+
+    <!-- Muscles -->
+    <string name="muscle_chest">грудь</string>
+    <string name="muscle_lats">широчайшие</string>
+    <string name="muscle_upper_back">верх спины</string>
+    <string name="muscle_delts_front">передние дельты</string>
+    <string name="muscle_delts_side">средние дельты</string>
+    <string name="muscle_delts_rear">задние дельты</string>
+    <string name="muscle_biceps">бицепс</string>
+    <string name="muscle_triceps">трицепс</string>
+    <string name="muscle_forearms">предплечья</string>
+    <string name="muscle_quads">квадрицепсы</string>
+    <string name="muscle_hamstrings">бицепс бедра</string>
+    <string name="muscle_glutes">ягодицы</string>
+    <string name="muscle_calves">икры</string>
+    <string name="muscle_abs">пресс</string>
+    <string name="muscle_lower_back">поясница</string>
+
+    <plurals name="exercises_count">
+        <item quantity="one">%d упражнение</item>
+        <item quantity="few">%d упражнения</item>
+        <item quantity="many">%d упражнений</item>
+        <item quantity="other">%d упражнения</item>
+    </plurals>
+    <plurals name="sets_remaining">
+        <item quantity="one">Остался %d подход</item>
+        <item quantity="few">Осталось %d подхода</item>
+        <item quantity="many">Осталось %d подходов</item>
+        <item quantity="other">Осталось %d подхода</item>
+    </plurals>
+    <plurals name="sets_count">
+        <item quantity="one">%d подход</item>
+        <item quantity="few">%d подхода</item>
+        <item quantity="many">%d подходов</item>
+        <item quantity="other">%d подхода</item>
+    </plurals>
+    <plurals name="sets_not_done">
+        <item quantity="one">Не выполнен %d подход — он не попадёт в историю.</item>
+        <item quantity="few">Не выполнено %d подхода — они не попадут в историю.</item>
+        <item quantity="many">Не выполнено %d подходов — они не попадут в историю.</item>
+        <item quantity="other">Не выполнено %d подхода — они не попадут в историю.</item>
+    </plurals>
+</resources>
