@@ -1,6 +1,7 @@
 package app.podkhod.ui.workout
 
 import androidx.compose.foundation.layout.Arrangement
+import app.podkhod.ui.theme.BrandShapes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -95,6 +96,7 @@ fun SummaryScreen(sessionId: Long, onDone: () -> Unit, viewModel: SummaryViewMod
                 )
             }
             Button(
+                shape = BrandShapes.Button,
                 onClick = { viewModel.save(feeling, note, onDone) },
                 modifier = Modifier.fillMaxWidth().height(64.dp).testTag("summary_done"),
             ) { Text(stringResource(R.string.summary_done), style = MaterialTheme.typography.titleMedium) }

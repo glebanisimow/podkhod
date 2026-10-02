@@ -1,6 +1,13 @@
 package app.podkhod.ui.components
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -18,6 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.podkhod.R
 
@@ -34,10 +43,41 @@ fun ScreenHeader(title: String, onBack: (() -> Unit)? = null) {
             IconButton(onClick = onBack) {
                 Icon(painterResource(R.drawable.ic_back), contentDescription = stringResource(R.string.back))
             }
+        } else {
+            // Top-level screens carry the badge, like a stamp on every page of the log.
+            BrandBadge(Modifier.size(36.dp))
+            Spacer(Modifier.width(12.dp))
         }
         Text(title, style = MaterialTheme.typography.headlineMedium)
     }
 }
+
+/**
+ * The round "дед и медведь" badge in its on-dark form (amber ring: the black one vanishes on ink);
+ * decorative, so screen readers skip it.
+ */
+@Composable
+fun BrandBadge(modifier: Modifier = Modifier) {
+    Image(painterResource(R.drawable.logo_krug_on_dark), contentDescription = null, modifier = modifier)
+}
+
+/** The night scene in amber, for first-run and empty screens. */
+@Composable
+fun BrandScene(modifier: Modifier = Modifier, height: Dp = 180.dp) {
+    Image(
+        painterResource(R.drawable.art_noch),
+        contentDescription = null,
+        contentScale = ContentScale.Fit,
+        modifier = modifier.fillMaxWidth().height(height),
+    )
+}
+
+/** The scene's thin horizon line, as a divider in the brand style. */
+@Composable
+fun Horizon(modifier: Modifier = Modifier) {
+    Box(modifier.fillMaxWidth().height(2.dp).background(MaterialTheme.colorScheme.primary))
+}
+
 
 @Composable
 fun SectionCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {

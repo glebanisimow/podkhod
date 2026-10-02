@@ -1,6 +1,7 @@
 package app.podkhod.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import app.podkhod.ui.theme.BrandShapes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -135,12 +136,12 @@ fun DecimalField(
 fun CountRow(label: String, count: Int, onChange: (Int) -> Unit, min: Int = 0, max: Int = 20, modifier: Modifier = Modifier) {
     Row(modifier.fillMaxWidth().heightIn(min = 52.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        OutlinedButton(onClick = { onChange((count - 1).coerceAtLeast(min)) }, enabled = count > min) { Text("−") }
+        OutlinedButton(shape = BrandShapes.Button, onClick = { onChange((count - 1).coerceAtLeast(min)) }, enabled = count > min) { Text("−") }
         Text(
             count.toString(),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.widthIn(min = 40.dp).padding(horizontal = 8.dp),
         )
-        OutlinedButton(onClick = { onChange((count + 1).coerceAtMost(max)) }, enabled = count < max) { Text("+") }
+        OutlinedButton(shape = BrandShapes.Button, onClick = { onChange((count + 1).coerceAtMost(max)) }, enabled = count < max) { Text("+") }
     }
 }

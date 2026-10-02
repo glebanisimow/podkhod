@@ -1,6 +1,7 @@
 package app.podkhod.ui.profile
 
 import androidx.compose.foundation.layout.PaddingValues
+import app.podkhod.ui.theme.BrandShapes
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,6 +57,7 @@ import app.podkhod.ui.components.ScreenHeader
 import app.podkhod.ui.components.SectionCard
 import app.podkhod.ui.components.SingleChoiceChips
 import app.podkhod.ui.components.WeekdayChips
+import app.podkhod.ui.components.BrandScene
 import app.podkhod.ui.format.Format
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -105,6 +107,7 @@ fun ProfileScreen(
                     Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(14.dp),
                 ) {
+                    if (firstRun && state.step == ProfileStep.GOAL) BrandScene(height = 150.dp)
                     Text(stringResource(state.step.title), style = MaterialTheme.typography.headlineSmall)
                     if (firstRun && state.step == ProfileStep.GOAL) Hint(stringResource(R.string.onb_skip_all_hint))
                     StepContent(state, viewModel::edit)
@@ -122,6 +125,7 @@ fun ProfileScreen(
         Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (!firstRun) {
                 Button(
+                    shape = BrandShapes.Button,
                     onClick = { viewModel.finish(onDone) },
                     enabled = !state.busy && !state.loading,
                     modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp).testTag("profile_save"),
@@ -129,6 +133,7 @@ fun ProfileScreen(
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(
+                    shape = BrandShapes.Button,
                     onClick = viewModel::previous,
                     enabled = state.step.ordinal > 0,
                     modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("onboarding_back"),
@@ -136,6 +141,7 @@ fun ProfileScreen(
                 ) { Text(stringResource(R.string.back)) }
                 if (firstRun && !last) {
                     OutlinedButton(
+                        shape = BrandShapes.Button,
                         onClick = viewModel::next,
                         modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("onboarding_skip"),
                         contentPadding = NavButtonPadding,
@@ -143,11 +149,13 @@ fun ProfileScreen(
                 }
                 when {
                     !last -> Button(
+                        shape = BrandShapes.Button,
                         onClick = viewModel::next,
                         modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("onboarding_next"),
                         contentPadding = NavButtonPadding,
                     ) { Text(stringResource(R.string.onb_next)) }
                     firstRun -> Button(
+                        shape = BrandShapes.Button,
                         onClick = { viewModel.finish(onDone) },
                         enabled = !state.busy && !state.loading,
                         modifier = Modifier.weight(2f).heightIn(min = 52.dp).testTag("onboarding_create"),
@@ -385,7 +393,7 @@ private fun WeightCounts(weights: List<Double>, count: (Double) -> Int, onCount:
         Row(verticalAlignment = Alignment.CenterVertically) {
             DecimalField(custom, { custom = it }, stringResource(R.string.inv_add_weight), Modifier.weight(1f))
             Spacer(Modifier.width(8.dp))
-            OutlinedButton(onClick = { custom?.takeIf { it > 0 }?.let { onCount(it, maxOf(count(it), 1)) } }, enabled = (custom ?: 0.0) > 0) {
+            OutlinedButton(shape = BrandShapes.Button, onClick = { custom?.takeIf { it > 0 }?.let { onCount(it, maxOf(count(it), 1)) } }, enabled = (custom ?: 0.0) > 0) {
                 Text(stringResource(R.string.inv_add))
             }
         }

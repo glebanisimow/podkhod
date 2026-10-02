@@ -1,6 +1,7 @@
 package app.podkhod.ui.today
 
 import android.Manifest
+import app.podkhod.ui.theme.BrandShapes
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,6 +44,7 @@ import app.podkhod.R
 import app.podkhod.domain.plan.Checkin
 import app.podkhod.ui.components.FieldLabel
 import app.podkhod.ui.components.Hint
+import app.podkhod.ui.components.BrandScene
 import app.podkhod.ui.components.ScreenHeader
 import app.podkhod.ui.components.SectionCard
 import app.podkhod.ui.components.SingleChoiceChips
@@ -105,10 +107,10 @@ fun TodayScreen(onOpenWorkout: (Long) -> Unit, onOpenProfile: () -> Unit, viewMo
                             Text(stringResource(R.string.today_deload_offer_title), style = MaterialTheme.typography.titleLarge)
                             Text(stringResource(R.string.today_deload_offer_body, offer), style = MaterialTheme.typography.bodyLarge)
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Button(onClick = viewModel::acceptDeload, modifier = Modifier.weight(1f).testTag("deload_accept")) {
+                                Button(shape = BrandShapes.Button, onClick = viewModel::acceptDeload, modifier = Modifier.weight(1f).testTag("deload_accept")) {
                                     Text(stringResource(R.string.today_deload_accept))
                                 }
-                                OutlinedButton(onClick = viewModel::declineDeload, modifier = Modifier.weight(1f).testTag("deload_decline")) {
+                                OutlinedButton(shape = BrandShapes.Button, onClick = viewModel::declineDeload, modifier = Modifier.weight(1f).testTag("deload_decline")) {
                                     Text(stringResource(R.string.today_deload_decline))
                                 }
                             }
@@ -121,7 +123,7 @@ fun TodayScreen(onOpenWorkout: (Long) -> Unit, onOpenProfile: () -> Unit, viewMo
                         SectionCard(Modifier.testTag("today_mesocycle_done")) {
                             Text(stringResource(R.string.today_mesocycle_done_title), style = MaterialTheme.typography.titleLarge)
                             Text(stringResource(R.string.today_mesocycle_done_body), style = MaterialTheme.typography.bodyLarge)
-                            Button(onClick = viewModel::newMesocycle, modifier = Modifier.testTag("today_new_mesocycle")) {
+                            Button(shape = BrandShapes.Button, onClick = viewModel::newMesocycle, modifier = Modifier.testTag("today_new_mesocycle")) {
                                 Text(stringResource(R.string.program_new_mesocycle))
                             }
                         }
@@ -151,6 +153,8 @@ fun TodayScreen(onOpenWorkout: (Long) -> Unit, onOpenProfile: () -> Unit, viewMo
                         )
                         next.exercises.forEach { p -> PlannedRow(p, state.exercises[p.exerciseId], compact = true) }
                     }
+                    // A workout is running: the plan lives on the workout screen, the scene fills the pause.
+                    else -> BrandScene(Modifier.padding(horizontal = 24.dp, vertical = 8.dp), height = 220.dp)
                 }
 
                 if (!notificationsEnabled) {
@@ -172,11 +176,13 @@ fun TodayScreen(onOpenWorkout: (Long) -> Unit, onOpenProfile: () -> Unit, viewMo
         ) {
             when {
                 active != null -> Button(
+                    shape = BrandShapes.Button,
                     onClick = { onOpenWorkout(active.session.id) },
                     modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp).testTag("today_continue"),
                 ) { Text(stringResource(R.string.today_continue), style = MaterialTheme.typography.titleLarge) }
                 program != null && next != null -> {
                     Button(
+                        shape = BrandShapes.Button,
                         onClick = {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !notificationsEnabled) {
                                 permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -187,6 +193,7 @@ fun TodayScreen(onOpenWorkout: (Long) -> Unit, onOpenProfile: () -> Unit, viewMo
                     ) { Text(stringResource(R.string.today_start), style = MaterialTheme.typography.titleLarge) }
                     if (program.days.size > 1) {
                         OutlinedButton(
+                            shape = BrandShapes.Button,
                             onClick = { pendingSkip = true },
                             modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("today_skip"),
                         ) { Text(stringResource(R.string.today_skip)) }

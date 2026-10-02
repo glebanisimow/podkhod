@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -86,7 +85,7 @@ fun ExerciseAnimation(
     val media = remember(exerciseId, userFiles) { repo.media(exerciseId, userFiles) }
     Box(
         modifier
-            .clip(RoundedCornerShape(12.dp))
+            .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceContainerHighest)
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .testTag("exercise_media"),
@@ -148,7 +147,7 @@ fun ExerciseAnimation(
         if (badge != null) {
             Surface(
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
-                shape = RoundedCornerShape(8.dp),
+                shape = MaterialTheme.shapes.small,
                 modifier = Modifier.align(Alignment.BottomStart).padding(6.dp),
             ) {
                 Text(

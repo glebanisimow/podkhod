@@ -1,6 +1,7 @@
 package app.podkhod.ui.program
 
 import androidx.compose.foundation.clickable
+import app.podkhod.ui.theme.BrandShapes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -61,21 +62,21 @@ fun ProgramScreen(onOpenProfile: () -> Unit, onOpenWhy: () -> Unit, viewModel: P
                 } else {
                     SectionCard {
                         Text(stringResource(R.string.program_template_hint), style = MaterialTheme.typography.bodyLarge)
-                        Button(onClick = onOpenProfile, modifier = Modifier.testTag("program_fill_profile")) { Text(stringResource(R.string.program_fill_profile)) }
+                        Button(shape = BrandShapes.Button, onClick = onOpenProfile, modifier = Modifier.testTag("program_fill_profile")) { Text(stringResource(R.string.program_fill_profile)) }
                     }
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = onOpenWhy, modifier = Modifier.weight(1f).heightIn(min = 48.dp).testTag("program_why")) {
+                    OutlinedButton(shape = BrandShapes.Button, onClick = onOpenWhy, modifier = Modifier.weight(1f).heightIn(min = 48.dp).testTag("program_why")) {
                         Text(stringResource(R.string.program_why))
                     }
-                    OutlinedButton(onClick = onOpenProfile, modifier = Modifier.weight(1f).heightIn(min = 48.dp).testTag("program_profile")) {
+                    OutlinedButton(shape = BrandShapes.Button, onClick = onOpenProfile, modifier = Modifier.weight(1f).heightIn(min = 48.dp).testTag("program_profile")) {
                         Text(stringResource(R.string.program_edit_profile))
                     }
                 }
                 if (state.generated && program.program.weekIndex >= program.program.weeks) {
                     SectionCard {
                         Hint(stringResource(R.string.program_new_mesocycle_hint))
-                        Button(onClick = viewModel::newMesocycle, modifier = Modifier.testTag("program_new_mesocycle")) {
+                        Button(shape = BrandShapes.Button, onClick = viewModel::newMesocycle, modifier = Modifier.testTag("program_new_mesocycle")) {
                             Text(stringResource(R.string.program_new_mesocycle))
                         }
                     }
@@ -126,16 +127,18 @@ fun ProgramScreen(onOpenProfile: () -> Unit, onOpenWhy: () -> Unit, viewModel: P
                         Switch(checked = selected.locked, onCheckedChange = { viewModel.setLocked(selected, it) }, modifier = Modifier.testTag("slot_lock"))
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedButton(onClick = { viewModel.changeSets(selected, -1) }, enabled = selected.sets > 1, modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("slot_minus")) {
+                        OutlinedButton(shape = BrandShapes.Button, onClick = { viewModel.changeSets(selected, -1) }, enabled = selected.sets > 1, modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("slot_minus")) {
                             Text(stringResource(R.string.slot_minus_set))
                         }
                         OutlinedButton(
+                            shape = BrandShapes.Button,
                             onClick = { viewModel.changeSets(selected, 1) },
                             enabled = selected.sets < PlanRepository.MAX_MANUAL_SETS,
                             modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("slot_plus"),
                         ) { Text(stringResource(R.string.slot_plus_set)) }
                     }
                     Button(
+                        shape = BrandShapes.Button,
                         onClick = { replacing = true; viewModel.loadSubstitutes(selected) },
                         modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("slot_replace"),
                     ) { Text(stringResource(R.string.slot_replace)) }

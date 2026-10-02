@@ -1,6 +1,7 @@
 package app.podkhod.ui.workout
 
 import androidx.activity.compose.BackHandler
+import app.podkhod.ui.theme.BrandShapes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +23,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.focus.FocusRequester
@@ -387,9 +387,9 @@ private fun SlotStrip(slots: List<SlotDetail>, selected: Int, onSelect: (Int) ->
             }
             Surface(
                 color = bg,
-                shape = RoundedCornerShape(12.dp),
+                shape = MaterialTheme.shapes.medium,
                 modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(MaterialTheme.shapes.medium)
                     .clickable { onSelect(index) }
                     .testTag("slot_chip_$index"),
             ) {
@@ -504,7 +504,7 @@ private fun ExercisePage(
             Text(stringResource(R.string.workout_exercise_done), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary)
         }
         Spacer(Modifier.height(4.dp))
-        OutlinedButton(onClick = onTechnique, modifier = Modifier.heightIn(min = 48.dp).testTag("workout_technique_$index")) {
+        OutlinedButton(shape = BrandShapes.Button, onClick = onTechnique, modifier = Modifier.heightIn(min = 48.dp).testTag("workout_technique_$index")) {
             Text(stringResource(R.string.technique))
         }
         Spacer(Modifier.height(16.dp))
@@ -517,7 +517,7 @@ private fun SetRow(label: String, set: SetLogEntity, kind: SetKind, modifier: Mo
         modifier
             .fillMaxWidth()
             .heightIn(min = 52.dp)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(MaterialTheme.shapes.medium)
             .clickable(onClick = onClick)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .padding(horizontal = 14.dp),
@@ -627,7 +627,7 @@ private fun BottomPanel(
                     color = if (exact == null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(MaterialTheme.shapes.small)
                         .clickable { platesOpen = true }
                         .heightIn(min = 40.dp)
                         .padding(horizontal = 4.dp, vertical = 10.dp)
@@ -643,6 +643,7 @@ private fun BottomPanel(
                     modifier = Modifier.heightIn(min = 48.dp).testTag("warmup_toggle"),
                 )
                 OutlinedButton(
+                    shape = BrandShapes.Button,
                     onClick = { vm.openBusy(slot) },
                     enabled = !slot.isDone,
                     modifier = Modifier.heightIn(min = 48.dp).testTag("workout_busy"),
@@ -656,6 +657,7 @@ private fun BottomPanel(
             }
 
             Button(
+                shape = BrandShapes.Button,
                 onClick = { vm.logSet(slot, input) },
                 modifier = Modifier.fillMaxWidth().height(if (oneHand) 84.dp else 72.dp).testTag("workout_log_set"),
             ) {
@@ -677,6 +679,7 @@ private fun BottomPanel(
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         alternatives.forEach { alt ->
                             OutlinedButton(
+                                shape = BrandShapes.Button,
                                 onClick = {
                                     vm.updateInput(slot.slot.id, input.copy(weightKg = alt.totalKg))
                                     platesOpen = false
@@ -743,13 +746,13 @@ private fun RestBar(restEndsAt: Long, now: Long, vm: WorkoutViewModel) {
         if (leftSec > 0) {
             val compact = androidx.compose.foundation.layout.PaddingValues(horizontal = 8.dp)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilledTonalButton(onClick = { vm.adjustRest(-15) }, contentPadding = compact, modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("rest_minus")) {
+                FilledTonalButton(shape = BrandShapes.Button, onClick = { vm.adjustRest(-15) }, contentPadding = compact, modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("rest_minus")) {
                     Text(stringResource(R.string.workout_rest_minus), maxLines = 1)
                 }
-                FilledTonalButton(onClick = { vm.adjustRest(15) }, contentPadding = compact, modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("rest_plus")) {
+                FilledTonalButton(shape = BrandShapes.Button, onClick = { vm.adjustRest(15) }, contentPadding = compact, modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("rest_plus")) {
                     Text(stringResource(R.string.workout_rest_plus), maxLines = 1)
                 }
-                FilledTonalButton(onClick = vm::skipRest, contentPadding = compact, modifier = Modifier.weight(1.5f).heightIn(min = 52.dp).testTag("rest_skip")) {
+                FilledTonalButton(shape = BrandShapes.Button, onClick = vm::skipRest, contentPadding = compact, modifier = Modifier.weight(1.5f).heightIn(min = 52.dp).testTag("rest_skip")) {
                     Text(stringResource(R.string.workout_rest_skip), maxLines = 1)
                 }
             }
@@ -778,7 +781,7 @@ private fun Stepper(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(MaterialTheme.shapes.small)
                     .clickable(onClick = onEdit)
                     .padding(vertical = 8.dp)
                     .testTag("${tag}_value"),
@@ -791,6 +794,7 @@ private fun Stepper(
 @Composable
 private fun StepButton(symbol: String, description: String, onClick: () -> Unit, modifier: Modifier) {
     FilledTonalButton(
+        shape = BrandShapes.Button,
         onClick = onClick,
         modifier = modifier.size(52.dp).semantics { contentDescription = description },
         contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),

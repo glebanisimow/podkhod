@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -104,22 +103,27 @@ fun WeekStrip(program: ProgramEntity, modifier: Modifier = Modifier) {
         )
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             (0 until weeks).forEach { w ->
+                // Two-colour code: the current week is the one bright amber block, done weeks are dimmed amber.
                 val color = when {
-                    w < current -> MaterialTheme.colorScheme.primary
-                    w == current -> MaterialTheme.colorScheme.tertiary
+                    w < current -> MaterialTheme.colorScheme.primaryContainer
+                    w == current -> MaterialTheme.colorScheme.primary
                     else -> MaterialTheme.colorScheme.surfaceContainerHighest
                 }
                 Box(
                     Modifier
                         .weight(1f)
                         .heightIn(min = 28.dp)
-                        .background(color, RoundedCornerShape(6.dp)),
+                        .background(color, MaterialTheme.shapes.small),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         if (w == weeks - 1) stringResource(R.string.program_deload_short) else "${w + 1}",
                         style = MaterialTheme.typography.labelMedium,
-                        color = if (w <= current) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = when {
+                            w < current -> MaterialTheme.colorScheme.onPrimaryContainer
+                            w == current -> MaterialTheme.colorScheme.onPrimary
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                         modifier = Modifier.padding(vertical = 4.dp),
                     )
                 }

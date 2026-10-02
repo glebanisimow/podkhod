@@ -60,6 +60,7 @@ import app.podkhod.domain.stats.ExerciseProgress
 import app.podkhod.domain.stats.ExerciseSummary
 import app.podkhod.domain.stats.ProgressMetric
 import app.podkhod.domain.stats.VolumeStatus
+import app.podkhod.ui.components.BrandScene
 import app.podkhod.ui.components.ScreenHeader
 import app.podkhod.ui.components.SectionCard
 import app.podkhod.ui.format.Format
@@ -100,6 +101,7 @@ fun ProgressScreen(onBack: () -> Unit, onOpenExercise: (String) -> Unit, viewMod
         ScreenHeader(stringResource(R.string.progress_title), onBack = onBack)
         val s = state ?: return@Column
         if (s.exercises.isEmpty() && s.mesocycle == null) {
+            BrandScene(Modifier.padding(horizontal = 32.dp, vertical = 16.dp))
             Text(stringResource(R.string.progress_empty), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(horizontal = 20.dp))
             return@Column
         }

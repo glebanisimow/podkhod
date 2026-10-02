@@ -145,5 +145,7 @@ UI Automator не видит — по ним тапать координатам
 - [ASSUMPTIONS.md](ASSUMPTIONS.md) — допущения и отклонения от ТЗ.
 - [CHANGELOG.md](CHANGELOG.md)
 - [docs/STRAVA.md](docs/STRAVA.md) — настройка API-приложения Strava (этап 5).
+- `tools/logo/build_logo.py` — пересобирает векторы знака (ярлык, знак, сцена) из SVG в
+  `~/Downloads/ded-medved-geo`; запускать после правки исходников знака.
 - [docs/MEDIA.md](docs/MEDIA.md) — источники и лицензии анимаций, конвейер сборки, свои файлы.
 - [docs/screenshots/](docs/screenshots/) — экраны этапа 3.

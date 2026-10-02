@@ -4,6 +4,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.unit.dp
+import app.podkhod.ui.components.Horizon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -88,22 +94,31 @@ private fun PodkhodNav(startRoute: Any) {
         modifier = Modifier.semantics { testTagsAsResourceId = true },
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar {
-                    TopLevelDestination.entries.forEach { top ->
-                        val selected = currentDestination?.hierarchy?.any { it.hasRoute(top.route::class) } == true
-                        NavigationBarItem(
-                            modifier = Modifier.testTag("nav_${top.name}"),
-                            selected = selected,
-                            onClick = {
-                                navController.navigate(top.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = { Icon(painterResource(top.icon), contentDescription = null) },
-                            label = { Text(stringResource(top.label)) },
-                        )
+                Column {
+                    // The badge's horizon line separates the content from the ground the tabs stand on.
+                    Horizon(Modifier.height(1.dp))
+                    NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest) {
+                        TopLevelDestination.entries.forEach { top ->
+                            val selected = currentDestination?.hierarchy?.any { it.hasRoute(top.route::class) } == true
+                            NavigationBarItem(
+                                modifier = Modifier.testTag("nav_${top.name}"),
+                                selected = selected,
+                                onClick = {
+                                    navController.navigate(top.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                icon = { Icon(painterResource(top.icon), contentDescription = null) },
+                                label = { Text(stringResource(top.label)) },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    indicatorColor = MaterialTheme.colorScheme.primary,
+                                ),
+                            )
+                        }
                     }
                 }
             }

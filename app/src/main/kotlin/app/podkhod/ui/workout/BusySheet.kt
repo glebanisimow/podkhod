@@ -1,6 +1,7 @@
 package app.podkhod.ui.workout
 
 import androidx.compose.foundation.clickable
+import app.podkhod.ui.theme.BrandShapes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -73,10 +73,11 @@ fun BusyActionsSheet(
         ) {
             Text(stringResource(R.string.busy_title, sheet.slot.exercise.nameRu), style = MaterialTheme.typography.titleLarge)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = onLater, modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("busy_later")) {
+                OutlinedButton(shape = BrandShapes.Button, onClick = onLater, modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("busy_later")) {
                     Text(stringResource(R.string.busy_later))
                 }
                 OutlinedButton(
+                    shape = BrandShapes.Button,
                     onClick = { showWait = !showWait },
                     modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("busy_wait"),
                 ) { Text(stringResource(R.string.busy_wait)) }
@@ -95,7 +96,7 @@ fun BusyActionsSheet(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(MaterialTheme.shapes.medium)
                         .clickable { forever = !forever }
                         .heightIn(min = 52.dp)
                         .testTag("busy_forever"),
@@ -132,8 +133,8 @@ private fun OptionCard(option: BusyOption, sets: Int, animate: Boolean, modifier
     }
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        shape = RoundedCornerShape(12.dp),
-        modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable(onClick = onClick),
+        shape = MaterialTheme.shapes.medium,
+        modifier = modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium).clickable(onClick = onClick),
     ) {
         Row(Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
             ExerciseAnimation(
@@ -188,8 +189,8 @@ private fun WaitSection(sheet: BusySheet, onWaitWith: (SlotDetail) -> Unit, onAd
 private fun WaitRow(text: String, modifier: Modifier, onClick: () -> Unit) {
     Surface(
         color = MaterialTheme.colorScheme.secondaryContainer,
-        shape = RoundedCornerShape(10.dp),
-        modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).clickable(onClick = onClick),
+        shape = MaterialTheme.shapes.medium,
+        modifier = modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium).clickable(onClick = onClick),
     ) {
         Text(
             text,
