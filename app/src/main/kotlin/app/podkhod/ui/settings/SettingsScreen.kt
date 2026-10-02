@@ -33,7 +33,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import app.podkhod.R
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.remember
+import app.podkhod.data.backup.BackupFile
+import app.podkhod.data.backup.BackupFormat
+import app.podkhod.data.backup.BackupPreview
+import app.podkhod.data.backup.BackupRead
+import app.podkhod.data.backup.BackupRepository
 import app.podkhod.data.catalog.CatalogRepository
+import app.podkhod.ui.format.Format
+import app.podkhod.ui.format.ruPlural
+import java.time.LocalDate
 import app.podkhod.data.media.ImportResult
 import app.podkhod.data.media.MediaRepository
 import app.podkhod.data.plan.GeneratorConfigStore
@@ -52,12 +63,88 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
+/** A parsed backup waiting for the user's confirmation. */
+data class PendingRestore(val file: BackupFile, val preview: BackupPreview, val currentSessions: Int)
+
+/** Texts of backup results; the view model has no access to resources. */
+class BackupTexts(
+    val exported: (Int) -> String,
+    val exportFailed: (String) -> String,
+    val imported: (Int) -> String,
+    val importFailed: (String) -> String,
+    val activeWorkout: String,
+    val undone: String,
+)
+
 class SettingsViewModel(
     private val repo: SettingsRepository,
     private val media: MediaRepository,
     private val catalog: CatalogRepository,
     private val configs: GeneratorConfigStore,
+    private val backups: BackupRepository,
 ) : ViewModel() {
+    private val _backupMessage = MutableStateFlow<String?>(null)
+    val backupMessage: StateFlow<String?> = _backupMessage.asStateFlow()
+
+    private val _pendingRestore = MutableStateFlow<PendingRestore?>(null)
+    val pendingRestore: StateFlow<PendingRestore?> = _pendingRestore.asStateFlow()
+
+    private val _undoAt = MutableStateFlow<Long?>(null)
+    val undoAt: StateFlow<Long?> = _undoAt.asStateFlow()
+
+    init {
+        launch { _undoAt.value = backups.undoSnapshotAt() }
+    }
+
+    fun exportBackup(resolver: ContentResolver, uri: Uri, texts: BackupTexts) = launch {
+        _backupMessage.value = runCatching {
+            val file = backups.export()
+            val text = BackupFormat.encode(file)
+            withContext(Dispatchers.IO) {
+                requireNotNull(resolver.openOutputStream(uri, "wt")) { uri.toString() }.use { it.write(text.toByteArray(Charsets.UTF_8)) }
+            }
+            texts.exported(file.tables["workout_session"].orEmpty().size)
+        }.getOrElse { texts.exportFailed(it.message.orEmpty()) }
+    }
+
+    fun readBackup(resolver: ContentResolver, uri: Uri, texts: BackupTexts) = launch {
+        val text = withContext(Dispatchers.IO) {
+            runCatching { resolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) } }.getOrNull()
+        }
+        if (text == null) {
+            _backupMessage.value = texts.importFailed(uri.lastPathSegment.orEmpty())
+            return@launch
+        }
+        when (val r = backups.read(text)) {
+            is BackupRead.Ok -> _pendingRestore.value = PendingRestore(r.file, r.preview, backups.currentSessions())
+            is BackupRead.Invalid -> _backupMessage.value = texts.importFailed(r.problems.take(MAX_SHOWN_PROBLEMS).joinToString(" "))
+        }
+    }
+
+    fun cancelRestore() {
+        _pendingRestore.value = null
+    }
+
+    fun confirmRestore(texts: BackupTexts) = launch {
+        val pending = _pendingRestore.value ?: return@launch
+        _pendingRestore.value = null
+        _backupMessage.value = runCatching { texts.imported(backups.restore(pending.file)) }.getOrElse { it.toBackupText(texts) }
+        _undoAt.value = backups.undoSnapshotAt()
+        _customConfig.value = configs.isCustom
+    }
+
+    fun undoRestore(texts: BackupTexts) = launch {
+        _backupMessage.value = runCatching {
+            backups.undoRestore()
+            texts.undone
+        }.getOrElse { it.toBackupText(texts) }
+        _undoAt.value = backups.undoSnapshotAt()
+        _customConfig.value = configs.isCustom
+    }
+
+    private fun Throwable.toBackupText(texts: BackupTexts): String =
+        if (message == BackupRepository.ACTIVE_WORKOUT) texts.activeWorkout else texts.importFailed(message.orEmpty())
+
     val settings: StateFlow<AppSettings> =
         repo.settings.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppSettings())
 
@@ -130,6 +217,10 @@ fun SettingsScreen(
     onOpenPlateCalc: () -> Unit,
     viewModel: SettingsViewModel = koinViewModel(),
 ) {
+    val backupTexts = backupTexts()
+    val backupMessage by viewModel.backupMessage.collectAsStateWithLifecycle()
+    val pendingRestore by viewModel.pendingRestore.collectAsStateWithLifecycle()
+    val undoAt by viewModel.undoAt.collectAsStateWithLifecycle()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val configMessage by viewModel.configMessage.collectAsStateWithLifecycle()
@@ -190,6 +281,8 @@ fun SettingsScreen(
             HorizontalDivider()
             LinkRow(title = stringResource(R.string.settings_config_reset), onClick = viewModel::resetConfig)
         }
+        HorizontalDivider()
+        BackupSection(viewModel, backupTexts, backupMessage, undoAt)
         HorizontalDivider()
         SectionTitle(stringResource(R.string.settings_section_workout))
         ToggleRow(stringResource(R.string.settings_keep_screen_on), settings.keepScreenOn, viewModel::setKeepScreenOn)
@@ -252,6 +345,89 @@ fun SettingsScreen(
         }
         HorizontalDivider()
         LinkRow(title = stringResource(R.string.settings_about), modifier = Modifier.testTag("settings_about"), onClick = onOpenAbout)
+    }
+    pendingRestore?.let { p ->
+        AlertDialog(
+            modifier = Modifier.testTag("restore_dialog"),
+            onDismissRequest = viewModel::cancelRestore,
+            title = { Text(stringResource(R.string.backup_import_title)) },
+            text = {
+                Text(
+                    stringResource(
+                        R.string.backup_import_body,
+                        Format.moment(p.preview.createdAt),
+                        p.preview.appVersion,
+                        ruPlural(R.plurals.sessions_count, p.preview.sessions),
+                        ruPlural(R.plurals.sets_count, p.preview.sets),
+                        stringResource(if (p.preview.hasProfile) R.string.backup_import_profile else R.string.backup_import_no_profile),
+                        ruPlural(R.plurals.sessions_count, p.currentSessions),
+                    ),
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { viewModel.confirmRestore(backupTexts) }, modifier = Modifier.testTag("restore_confirm")) {
+                    Text(stringResource(R.string.backup_import_confirm), color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = { TextButton(onClick = viewModel::cancelRestore) { Text(stringResource(R.string.cancel)) } },
+        )
+    }
+}
+
+@Composable
+private fun backupTexts(): BackupTexts {
+    val exported = stringResource(R.string.backup_exported, PLACEHOLDER_N)
+    val exportFailed = stringResource(R.string.backup_export_failed, PLACEHOLDER_S)
+    val imported = stringResource(R.string.backup_imported, PLACEHOLDER_N)
+    val importFailed = stringResource(R.string.backup_import_failed, PLACEHOLDER_S)
+    val active = stringResource(R.string.backup_active_workout)
+    val undone = stringResource(R.string.backup_undone)
+    return remember(exported, exportFailed, imported, importFailed, active, undone) {
+        BackupTexts(
+            exported = { n -> exported.replace(PLACEHOLDER_N.toString(), n.toString()) },
+            exportFailed = { m -> exportFailed.replace(PLACEHOLDER_S, m) },
+            imported = { n -> imported.replace(PLACEHOLDER_N.toString(), n.toString()) },
+            importFailed = { m -> importFailed.replace(PLACEHOLDER_S, m) },
+            activeWorkout = active,
+            undone = undone,
+        )
+    }
+}
+
+private const val PLACEHOLDER_N = 987654321
+private const val PLACEHOLDER_S = "\u0000"
+
+@Composable
+private fun BackupSection(viewModel: SettingsViewModel, texts: BackupTexts, message: String?, undoAt: Long?) {
+    val context = LocalContext.current
+    val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        if (uri != null) viewModel.exportBackup(context.contentResolver, uri, texts)
+    }
+    val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) viewModel.readBackup(context.contentResolver, uri, texts)
+    }
+    SectionTitle(stringResource(R.string.settings_section_data))
+    LinkRow(
+        title = stringResource(R.string.settings_backup_export),
+        subtitle = stringResource(R.string.settings_backup_export_hint),
+        modifier = Modifier.testTag("settings_backup_export"),
+    ) { exportLauncher.launch("podkhod-backup-${LocalDate.now()}.json") }
+    HorizontalDivider()
+    LinkRow(
+        title = stringResource(R.string.settings_backup_import),
+        subtitle = buildString {
+            append(stringResource(R.string.settings_backup_import_hint))
+            message?.let { append("\n").append(it) }
+        },
+        modifier = Modifier.testTag("settings_backup_import"),
+    ) { importLauncher.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }
+    if (undoAt != null) {
+        HorizontalDivider()
+        LinkRow(
+            title = stringResource(R.string.settings_backup_undo),
+            subtitle = stringResource(R.string.settings_backup_undo_hint, Format.moment(undoAt)),
+            modifier = Modifier.testTag("settings_backup_undo"),
+        ) { viewModel.undoRestore(texts) }
     }
 }
 

@@ -18,6 +18,8 @@ import kotlinx.serialization.Serializable
 @Serializable data object ProfileRoute
 @Serializable data object WhyRoute
 @Serializable data object PlateCalcRoute
+@Serializable data object ProgressRoute
+@Serializable data class ExerciseProgressRoute(val exerciseId: String)
 
 enum class TopLevelDestination(
     val route: Any,

@@ -17,6 +17,7 @@ object Format {
     private val timeFmt = DateTimeFormatter.ofPattern("HH:mm", ru)
     private val dateFmt = DateTimeFormatter.ofPattern("d MMMM, EE", ru)
     private val dateYearFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", ru)
+    private val shortDateFmt = DateTimeFormatter.ofPattern("d.MM", ru)
 
     /** 62.5 -> "62,5", 60.0 -> "60", 1.25 -> "1,25". */
     fun weight(kg: Double): String {
@@ -71,6 +72,9 @@ object Format {
         val dt = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault())
         return if (dt.year == LocalDate.now().year) dateFmt.format(dt) else dateYearFmt.format(dt)
     }
+
+    /** Chart axis dates: "2.10". */
+    fun shortDate(millis: Long): String = shortDateFmt.format(Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()))
 
     /** "сегодня в 18:42" / "2 октября, чт в 18:42". */
     fun moment(millis: Long): String {

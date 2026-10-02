@@ -8,6 +8,7 @@ import app.podkhod.data.db.ProgramDayWithExercises
 import app.podkhod.data.db.ProgramEntity
 import app.podkhod.data.db.ProgressionStateEntity
 import app.podkhod.data.db.SessionExerciseEntity
+import app.podkhod.data.db.SessionExerciseWithSets
 import app.podkhod.data.db.WorkoutSessionEntity
 import app.podkhod.data.profile.ProfileRepository
 import app.podkhod.data.settings.SettingsRepository
@@ -263,37 +264,19 @@ class PlanRepository(
      * last day of the rotation and refreshes the unplanned-deload offer. Runs inside the finish transaction.
      */
     suspend fun afterFinish(session: WorkoutSessionEntity) {
-        val config = configs.config()
-        val infos = catalog.exerciseInfos()
-        val inventory = profiles.current()?.inventory ?: Inventory()
-        val progression = Progression(config)
+        val ctx = progressContext()
+        val config = ctx.config
+        val infos = ctx.infos
         val slots = workoutDao.slots(session.id).sortedBy { it.slot.position }
         val ids = slots.map { it.slot.exerciseId }.distinct()
         val states = profileDao.progressionStates(ids).associateBy({ it.exerciseId }, { it.toDomain() }).toMutableMap()
         val program = session.programId?.let { programDao.program(it) }
         val activeProgram = program?.takeIf { it.status == STATUS_ACTIVE }
-        val roles = program?.let { p -> programDao.days(p.id).flatMap { it.exercises } }.orEmpty().associate { it.id to it.role }
-        val lines = mutableListOf<ProgressLine>()
-        val now = clock()
-
-        slots.forEach { s ->
-            val info = infos[s.slot.exerciseId] ?: return@forEach
-            val plannedId = s.slot.plannedExerciseId ?: return@forEach
-            val work = s.sets.filter { SetKind.fromCode(it.kind).countsAsWork }
-                .map { LoggedSet(it.weightKg ?: 0.0, it.reps, it.durationSec, it.rir) }
-            if (work.isEmpty()) return@forEach
-            val scheme = Loads.scheme(info, inventory)
-            val slot = s.slot.toSlot(info, roles[plannedId])
-            val before = states[info.id] ?: ProgressionState(s.slot.targetWeightKg)
-            val r = progression.update(info, scheme, slot, work, before, session.deload)
-            if (r.change == Change.NONE) return@forEach
-            states[info.id] = r.state
-            profileDao.upsertProgression(listOf(r.state.toEntity(info.id, now)))
-            val w = r.state.workingWeightKg
-            if (activeProgram != null && w != null && scheme !is LoadScheme.NoLoad) programDao.setTargetWeight(activeProgram.id, info.id, w)
-            lines += ProgressLine(info.id, info.name, r.change.name.lowercase(), r.message)
-        }
-        workoutDao.setProgress(session.id, if (lines.isEmpty()) null else JSON.encodeToString(ListSerializer(ProgressLine.serializer()), lines))
+        val roles = rolesOf(program)
+        val changed = mutableSetOf<String>()
+        val lines = progressSession(session, slots, states, ctx, roles, changed)
+        saveStates(changed, states, activeProgram, ctx)
+        workoutDao.setProgress(session.id, encodeProgress(lines))
 
         if (activeProgram == null || activeProgram.source != SOURCE_GENERATED) return
         val dayCount = programDao.days(activeProgram.id).size
@@ -314,6 +297,91 @@ class PlanRepository(
         val hard = workoutDao.recentFinished(activeProgram.id, config.deload.hardCheckins).reversed().map { it.checkin()?.isHard(config) == true }
         val offer = if (plannedDeloadAhead) null else DeloadAdvisor(config).advise(histories, hard, infos.mapValues { it.value.name })
         programDao.setDeloadOffer(activeProgram.id, offer)
+    }
+
+    /**
+     * Replays double progression of [exerciseIds] over every finished session, oldest first, after a past
+     * session was edited or deleted. Progression is a chain: one wrong set changes every later weight, so
+     * the state is rebuilt from scratch rather than patched. Progress lines of sessions from
+     * [fromStartedAt] on are rewritten; lines of other exercises stay as they were.
+     */
+    suspend fun recomputeProgression(exerciseIds: Set<String>, fromStartedAt: Long) {
+        if (exerciseIds.isEmpty()) return
+        val ctx = progressContext()
+        val ids = exerciseIds.toList()
+        val states = mutableMapOf<String, ProgressionState>()
+        val roleCache = mutableMapOf<Long, Map<Long, String?>>()
+        workoutDao.finishedWith(ids).forEach { session ->
+            val all = workoutDao.slots(session.id).sortedBy { it.slot.position }
+            val roles = session.programId?.let { id -> roleCache.getOrPut(id) { rolesOf(programDao.program(id)) } }.orEmpty()
+            val lines = progressSession(session, all.filter { it.slot.exerciseId in exerciseIds }, states, ctx, roles, mutableSetOf())
+            if (session.startedAt >= fromStartedAt) {
+                val order = all.mapIndexed { i, s -> s.slot.exerciseId to i }.reversed().toMap()
+                val merged = (decodeProgress(session.progressJson).filter { it.exerciseId !in exerciseIds } + lines)
+                    .sortedBy { order[it.exerciseId] ?: Int.MAX_VALUE }
+                workoutDao.setProgress(session.id, encodeProgress(merged))
+            }
+        }
+        profileDao.deleteProgression(ids.filter { it !in states })
+        saveStates(states.keys, states, programDao.active(), ctx)
+    }
+
+    private class ProgressContext(val config: GeneratorConfig, val infos: Map<String, ExerciseInfo>, val inventory: Inventory) {
+        val progression = Progression(config)
+    }
+
+    private suspend fun progressContext() =
+        ProgressContext(configs.config(), catalog.exerciseInfos(), profiles.current()?.inventory ?: Inventory())
+
+    /** Slot roles by planned exercise id; archived programs keep their days, so old sessions still resolve. */
+    private suspend fun rolesOf(program: ProgramEntity?): Map<Long, String?> =
+        program?.let { p -> programDao.days(p.id).flatMap { it.exercises } }.orEmpty().associate { it.id to it.role }
+
+    /**
+     * Applies double progression to the planned slots of one session in order, updating [states] and
+     * collecting the exercises whose state changed into [changed].
+     */
+    private fun progressSession(
+        session: WorkoutSessionEntity,
+        slots: List<SessionExerciseWithSets>,
+        states: MutableMap<String, ProgressionState>,
+        ctx: ProgressContext,
+        roles: Map<Long, String?>,
+        changed: MutableSet<String>,
+    ): List<ProgressLine> {
+        val lines = mutableListOf<ProgressLine>()
+        slots.forEach { s ->
+            val info = ctx.infos[s.slot.exerciseId] ?: return@forEach
+            val plannedId = s.slot.plannedExerciseId ?: return@forEach
+            val work = s.sets.filter { SetKind.fromCode(it.kind).countsAsWork }
+                .sortedBy { it.position }
+                .map { LoggedSet(it.weightKg ?: 0.0, it.reps, it.durationSec, it.rir) }
+            if (work.isEmpty()) return@forEach
+            val scheme = Loads.scheme(info, ctx.inventory)
+            val slot = s.slot.toSlot(info, roles[plannedId])
+            val before = states[info.id] ?: ProgressionState(s.slot.targetWeightKg)
+            val r = ctx.progression.update(info, scheme, slot, work, before, session.deload)
+            if (r.change == Change.NONE) return@forEach
+            states[info.id] = r.state
+            changed += info.id
+            lines += ProgressLine(info.id, info.name, r.change.name.lowercase(), r.message)
+        }
+        return lines
+    }
+
+    /** Persists the states of [ids] and moves the active program's target weights to them. */
+    private suspend fun saveStates(ids: Collection<String>, states: Map<String, ProgressionState>, activeProgram: ProgramEntity?, ctx: ProgressContext) {
+        val now = clock()
+        val rows = ids.mapNotNull { id -> states[id]?.toEntity(id, now) }
+        if (rows.isEmpty()) return
+        profileDao.upsertProgression(rows)
+        rows.forEach { row ->
+            val info = ctx.infos[row.exerciseId] ?: return@forEach
+            val w = row.workingWeightKg
+            if (activeProgram != null && w != null && Loads.scheme(info, ctx.inventory) !is LoadScheme.NoLoad) {
+                programDao.setTargetWeight(activeProgram.id, info.id, w)
+            }
+        }
     }
 
     suspend fun acceptDeload() {
@@ -421,6 +489,9 @@ class PlanRepository(
 
         fun decodeExplanation(json: String?): ProgramExplanation? =
             json?.let { runCatching { JSON.decodeFromString(ProgramExplanation.serializer(), it) }.getOrNull() }
+
+        fun encodeProgress(lines: List<ProgressLine>): String? =
+            if (lines.isEmpty()) null else JSON.encodeToString(ListSerializer(ProgressLine.serializer()), lines)
 
         fun decodeProgress(json: String?): List<ProgressLine> =
             json?.let { runCatching { JSON.decodeFromString(ListSerializer(ProgressLine.serializer()), it) }.getOrNull() }.orEmpty()

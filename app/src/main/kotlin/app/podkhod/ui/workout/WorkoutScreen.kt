@@ -827,15 +827,16 @@ private fun NumberInputDialog(title: String, initial: String, decimal: Boolean, 
     )
 }
 
+/** Edits a logged set; with [onDelete] null it creates a new one (the title says so). */
 @Composable
-private fun EditSetDialog(
+internal fun EditSetDialog(
     set: SetLogEntity,
     index: Int,
     measure: Measure,
     load: LoadType,
     onDismiss: () -> Unit,
     onSave: (SetLogEntity) -> Unit,
-    onDelete: () -> Unit,
+    onDelete: (() -> Unit)?,
 ) {
     var weight by remember { mutableStateOf(set.weightKg?.let(Format::weight) ?: "") }
     var amount by remember { mutableStateOf(((if (measure == Measure.SECONDS) set.durationSec else set.reps) ?: 0).toString()) }
@@ -843,7 +844,7 @@ private fun EditSetDialog(
     AlertDialog(
         modifier = Modifier.testTag("edit_set_dialog"),
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.set_edit_title, index)) },
+        title = { Text(if (onDelete == null) stringResource(R.string.set_add_title) else stringResource(R.string.set_edit_title, index)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (load != LoadType.NONE) {
@@ -867,13 +868,15 @@ private fun EditSetDialog(
                         FilterChip(selected = kind == k, onClick = { kind = k }, label = { Text(stringResource(Format.setKind(k))) })
                     }
                 }
-                TextButton(onClick = onDelete, modifier = Modifier.testTag("set_delete")) {
-                    Text(stringResource(R.string.set_delete), color = MaterialTheme.colorScheme.error)
+                if (onDelete != null) {
+                    TextButton(onClick = onDelete, modifier = Modifier.testTag("set_delete")) {
+                        Text(stringResource(R.string.set_delete), color = MaterialTheme.colorScheme.error)
+                    }
                 }
             }
         },
         confirmButton = {
-            TextButton(onClick = {
+            TextButton(modifier = Modifier.testTag("set_save"), onClick = {
                 val n = amount.toIntOrNull()
                 onSave(
                     set.copy(

@@ -1,5 +1,6 @@
 package app.podkhod.domain.plan
 
+import app.podkhod.domain.busy.ExerciseInfo
 import app.podkhod.domain.model.ExerciseKind
 import app.podkhod.domain.model.MovementPattern
 import app.podkhod.domain.model.Muscle
@@ -67,6 +68,13 @@ data class GeneratorConfig(
 
     fun classOf(equipment: Set<String>): Int =
         equipment.mapNotNull { equipmentClass[it] }.minOrNull() ?: defaultEquipmentClass
+
+    /** Share of one set of [info] counted towards the weekly volume of [group]. */
+    fun credit(info: ExerciseInfo, group: MuscleGroup): Double = when {
+        info.primary.any { it in group.muscles } -> 1.0
+        info.secondary.any { it in group.muscles } -> secondaryWeightByGroup[group.code] ?: secondaryWeight
+        else -> 0.0
+    }
 
     /** Human-readable problems; empty means the config is usable. */
     fun validate(): List<String> = buildList {

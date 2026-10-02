@@ -22,7 +22,7 @@ fun secret(propKey: String, envKey: String): String? =
 // Read at configuration time on purpose; do not enable the configuration cache without moving this to a ValueSource.
 val appVersionCode: Int = providers.gradleProperty("versionCode").orNull?.toInt()
     ?: ((System.currentTimeMillis() / 1000L - 1_767_225_600L) / 60L).toInt()
-val appVersionName = "0.3.0"
+val appVersionName = "0.4.0"
 
 val releaseStoreFile = secret("release.storeFile", "PODKHOD_KEYSTORE_FILE")
 val hasReleaseSigning = releaseStoreFile != null && file(releaseStoreFile).exists()

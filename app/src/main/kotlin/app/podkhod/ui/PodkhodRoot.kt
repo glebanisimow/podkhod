@@ -40,6 +40,10 @@ import app.podkhod.ui.navigation.OnboardingRoute
 import app.podkhod.ui.navigation.PlateCalcRoute
 import app.podkhod.ui.navigation.ProfileRoute
 import app.podkhod.ui.navigation.WhyRoute
+import app.podkhod.ui.navigation.ProgressRoute
+import app.podkhod.ui.navigation.ExerciseProgressRoute
+import app.podkhod.ui.progress.ExerciseProgressScreen
+import app.podkhod.ui.progress.ProgressScreen
 import app.podkhod.ui.profile.ProfileScreen
 import app.podkhod.ui.program.ProgramScreen
 import app.podkhod.ui.program.WhyScreen
@@ -134,7 +138,22 @@ private fun PodkhodNav(startRoute: Any) {
             }
             composable<WhyRoute> { WhyScreen(onBack = { navController.popBackStack() }) }
             composable<HistoryRoute> {
-                HistoryScreen(onOpen = { id -> navController.navigate(HistoryDetailRoute(id)) })
+                HistoryScreen(
+                    onOpen = { id -> navController.navigate(HistoryDetailRoute(id)) },
+                    onOpenProgress = { navController.navigate(ProgressRoute) },
+                )
+            }
+            composable<ProgressRoute> {
+                ProgressScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenExercise = { id -> navController.navigate(ExerciseProgressRoute(id)) },
+                )
+            }
+            composable<ExerciseProgressRoute> { entry ->
+                ExerciseProgressScreen(
+                    exerciseId = entry.toRoute<ExerciseProgressRoute>().exerciseId,
+                    onBack = { navController.popBackStack() },
+                )
             }
             composable<SettingsRoute> {
                 SettingsScreen(
@@ -171,6 +190,7 @@ private fun PodkhodNav(startRoute: Any) {
                 HistoryDetailScreen(
                     sessionId = entry.toRoute<HistoryDetailRoute>().sessionId,
                     onBack = { navController.popBackStack() },
+                    onOpenProgress = { id -> navController.navigate(ExerciseProgressRoute(id)) },
                 )
             }
         }

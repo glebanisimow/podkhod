@@ -124,7 +124,7 @@ class CatalogRepository(
         fatigue = fatigue,
         techniqueJson = techniqueJson,
         mediaPath = null,
-        stravaCategory = null,
+        stravaCategory = strava,
         reviewed = false,
         catalogVersion = version,
     )

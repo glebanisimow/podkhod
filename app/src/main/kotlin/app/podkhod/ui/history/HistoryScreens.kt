@@ -37,6 +37,16 @@ import androidx.lifecycle.viewModelScope
 import app.podkhod.R
 import app.podkhod.data.catalog.CatalogRepository
 import app.podkhod.data.db.HistoryRow
+import app.podkhod.data.db.SetLogEntity
+import app.podkhod.data.workout.SlotDetail
+import app.podkhod.domain.model.LoadType
+import app.podkhod.domain.model.Measure
+import app.podkhod.ui.workout.EditSetDialog
+import app.podkhod.ui.workout.ProgressCard
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import app.podkhod.data.workout.WorkoutRepository
 import app.podkhod.domain.model.SetKind
 import app.podkhod.ui.components.ScreenHeader
@@ -73,14 +83,32 @@ class HistoryDetailViewModel(private val sessionId: Long, private val workouts: 
 
     fun delete(onDone: () -> Unit) {
         viewModelScope.launch {
-            workouts.discard(sessionId)
+            workouts.deleteFinished(sessionId)
             onDone()
         }
+    }
+
+    fun updateSet(set: SetLogEntity) {
+        viewModelScope.launch { workouts.updateFinishedSet(set) }
+    }
+
+    fun deleteSet(set: SetLogEntity) {
+        viewModelScope.launch { workouts.deleteFinishedSet(set) }
+    }
+
+    fun addSet(set: SetLogEntity) {
+        viewModelScope.launch {
+            workouts.addFinishedSet(set.sessionExerciseId, SetKind.fromCode(set.kind), set.weightKg, set.reps, set.durationSec)
+        }
+    }
+
+    fun saveFeedback(feeling: Int?, note: String) {
+        viewModelScope.launch { workouts.setFeedback(sessionId, feeling, note) }
     }
 }
 
 @Composable
-fun HistoryScreen(onOpen: (Long) -> Unit, viewModel: HistoryViewModel = koinViewModel()) {
+fun HistoryScreen(onOpen: (Long) -> Unit, onOpenProgress: () -> Unit, viewModel: HistoryViewModel = koinViewModel()) {
     val rows by viewModel.rows.collectAsStateWithLifecycle()
     val busiest by viewModel.busiest.collectAsStateWithLifecycle()
     Column(Modifier.fillMaxSize().testTag("screen_history")) {
@@ -95,6 +123,24 @@ fun HistoryScreen(onOpen: (Long) -> Unit, viewModel: HistoryViewModel = koinView
             return@Column
         }
         LazyColumn(contentPadding = PaddingValues(bottom = 16.dp)) {
+            item(key = "progress") {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onOpenProgress)
+                        .heightIn(min = 64.dp)
+                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                        .testTag("history_progress"),
+                ) {
+                    Text(stringResource(R.string.progress_open) + " →", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                    Text(
+                        stringResource(R.string.progress_open_hint),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                HorizontalDivider()
+            }
             if (busiest.isNotEmpty()) {
                 item(key = "busiest") {
                     SectionCard(Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("history_busiest")) {
@@ -140,34 +186,107 @@ fun HistoryScreen(onOpen: (Long) -> Unit, viewModel: HistoryViewModel = koinView
 fun HistoryDetailScreen(
     sessionId: Long,
     onBack: () -> Unit,
+    onOpenProgress: (String) -> Unit,
     viewModel: HistoryDetailViewModel = koinViewModel(key = "history_$sessionId") { parametersOf(sessionId) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var confirmDelete by remember { mutableStateOf(false) }
+    var editMode by rememberSaveable { mutableStateOf(false) }
+    var editing by remember { mutableStateOf<Pair<SetLogEntity, SlotDetail>?>(null) }
+    var adding by remember { mutableStateOf<Pair<SetLogEntity, SlotDetail>?>(null) }
+    var feeling by rememberSaveable { mutableStateOf<Int?>(null) }
+    var note by rememberSaveable { mutableStateOf("") }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).testTag("screen_history_detail")) {
         ScreenHeader(stringResource(R.string.history_title), onBack = onBack)
         val s = state ?: return@Column
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             SessionTotals(s.detail, s.result)
-            s.detail.session.feeling?.let {
-                Text(stringResource(R.string.history_feeling, stringResource(Format.feeling(it))), style = MaterialTheme.typography.bodyLarge)
-            }
-            s.detail.session.note?.let { Text(stringResource(R.string.history_note, it), style = MaterialTheme.typography.bodyLarge) }
-            RecordsCard(s.detail, s.result)
-            s.detail.slots.filter { it.sets.isNotEmpty() }.forEach { slot ->
+            OutlinedButton(
+                onClick = {
+                    if (editMode) {
+                        viewModel.saveFeedback(feeling, note)
+                    } else {
+                        feeling = s.detail.session.feeling
+                        note = s.detail.session.note.orEmpty()
+                    }
+                    editMode = !editMode
+                },
+                modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("history_edit"),
+            ) { Text(stringResource(if (editMode) R.string.history_edit_done else R.string.history_edit)) }
+            if (editMode) {
+                Text(stringResource(R.string.history_edit_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 SectionCard {
-                    Text(slot.exercise.nameRu, style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.history_feedback_edit), style = MaterialTheme.typography.titleMedium)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        listOf(1, 2, 3).forEach { v ->
+                            FilterChip(
+                                selected = feeling == v,
+                                onClick = { feeling = if (feeling == v) null else v },
+                                label = { Text(stringResource(Format.feeling(v))) },
+                                modifier = Modifier.heightIn(min = 48.dp),
+                            )
+                        }
+                    }
+                    OutlinedTextField(
+                        value = note,
+                        onValueChange = { note = it.take(500) },
+                        label = { Text(stringResource(R.string.summary_note)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 2,
+                    )
+                }
+            } else {
+                s.detail.session.feeling?.let {
+                    Text(stringResource(R.string.history_feeling, stringResource(Format.feeling(it))), style = MaterialTheme.typography.bodyLarge)
+                }
+                s.detail.session.note?.let { Text(stringResource(R.string.history_note, it), style = MaterialTheme.typography.bodyLarge) }
+                ProgressCard(s.detail)
+                RecordsCard(s.detail, s.result)
+            }
+            s.detail.slots.filter { editMode || it.sets.isNotEmpty() }.forEach { slot ->
+                SectionCard(Modifier.testTag("history_slot_${slot.slot.id}")) {
+                    Text(
+                        slot.exercise.nameRu,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.clickable(enabled = !editMode) { onOpenProgress(slot.exercise.id) },
+                    )
                     var n = 0
                     slot.sets.forEach { set ->
                         val kind = SetKind.fromCode(set.kind)
                         if (kind.countsAsWork) n++
-                        Row {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .then(if (editMode) Modifier.clickable { editing = set to slot }.heightIn(min = 48.dp) else Modifier)
+                                .testTag("history_set_${set.id}"),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
                             Text(if (kind.countsAsWork) "$n" else "Р", color = MaterialTheme.colorScheme.primary, modifier = Modifier.width(28.dp))
                             Text(Format.setResult(set.weightKg, set.reps, set.durationSec), modifier = Modifier.weight(1f))
                             if (kind != SetKind.WORK) {
                                 Text(stringResource(Format.setKind(kind)), color = MaterialTheme.colorScheme.secondary)
                             }
                         }
+                    }
+                    if (editMode) {
+                        TextButton(
+                            onClick = {
+                                val last = slot.sets.lastOrNull { SetKind.fromCode(it.kind).countsAsWork } ?: slot.sets.lastOrNull()
+                                adding = SetLogEntity(
+                                    sessionExerciseId = slot.slot.id,
+                                    position = 0,
+                                    kind = SetKind.WORK.code,
+                                    weightKg = last?.weightKg ?: slot.slot.targetWeightKg,
+                                    reps = last?.reps ?: slot.slot.repMax,
+                                    durationSec = last?.durationSec,
+                                    rir = null,
+                                    completedAt = 0,
+                                ) to slot
+                            },
+                            modifier = Modifier.testTag("history_add_${slot.slot.id}"),
+                        ) { Text(stringResource(R.string.history_add_set)) }
+                    } else {
+                        TextButton(onClick = { onOpenProgress(slot.exercise.id) }) { Text(stringResource(R.string.progress_open_exercise) + " →") }
                     }
                 }
             }
@@ -177,11 +296,42 @@ fun HistoryDetailScreen(
             Spacer(Modifier.height(16.dp))
         }
     }
+    editing?.let { (set, slot) ->
+        EditSetDialog(
+            set = set,
+            index = slot.sets.indexOfFirst { it.id == set.id } + 1,
+            measure = Measure.fromCode(slot.exercise.measure),
+            load = LoadType.fromCode(slot.exercise.load),
+            onDismiss = { editing = null },
+            onSave = {
+                viewModel.updateSet(it)
+                editing = null
+            },
+            onDelete = {
+                viewModel.deleteSet(set)
+                editing = null
+            },
+        )
+    }
+    adding?.let { (set, slot) ->
+        EditSetDialog(
+            set = set,
+            index = slot.sets.size + 1,
+            measure = Measure.fromCode(slot.exercise.measure),
+            load = LoadType.fromCode(slot.exercise.load),
+            onDismiss = { adding = null },
+            onSave = {
+                viewModel.addSet(it)
+                adding = null
+            },
+            onDelete = null,
+        )
+    }
     if (confirmDelete) {
         AlertDialog(
             onDismissRequest = { confirmDelete = false },
             title = { Text(stringResource(R.string.history_delete_title)) },
-            text = { Text(stringResource(R.string.workout_discard_body)) },
+            text = { Text(stringResource(R.string.history_delete_body)) },
             confirmButton = {
                 TextButton(onClick = {
                     confirmDelete = false

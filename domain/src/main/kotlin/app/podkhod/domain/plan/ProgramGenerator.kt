@@ -343,11 +343,7 @@ class ProgramGenerator(private val config: GeneratorConfig) {
 
     // ---- volume ----
 
-    private fun credit(info: ExerciseInfo, g: MuscleGroup): Double = when {
-        info.primary.any { it in g.muscles } -> 1.0
-        info.secondary.any { it in g.muscles } -> config.secondaryWeightByGroup[g.code] ?: config.secondaryWeight
-        else -> 0.0
-    }
+    private fun credit(info: ExerciseInfo, g: MuscleGroup): Double = config.credit(info, g)
 
     /** Removing [sets] of [p] keeps every group it trains at or above its low target. */
     private fun keepsLows(run: Run, p: Pick, sets: Int, volume: Map<MuscleGroup, Double>): Boolean =

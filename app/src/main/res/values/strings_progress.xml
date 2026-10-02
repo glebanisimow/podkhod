@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Progress -->
+    <string name="progress_title">Прогресс</string>
+    <string name="progress_open">Прогресс</string>
+    <string name="progress_open_hint">Графики по упражнениям и объём недели против плана</string>
+    <string name="progress_empty">Пока нечего показать: заверши хотя бы одну тренировку.</string>
+    <string name="progress_volume_title">Объём: неделя %1$d из %2$d</string>
+    <string name="progress_volume_hint">Рабочие подходы по группам мышц, как их считает генератор. Неделя — полный круг дней программы.</string>
+    <string name="progress_volume_none">В этой неделе тренировок ещё не было.</string>
+    <string name="progress_volume_row">%1$s: %2$s · цель %3$s</string>
+    <string name="progress_volume_deload">разгрузка</string>
+    <string name="progress_volume_sessions">Тренировок: %1$d</string>
+    <string name="progress_week_prev">Предыдущая неделя</string>
+    <string name="progress_week_next">Следующая неделя</string>
+    <string name="progress_exercises">Упражнения</string>
+    <string name="progress_exercise_row">%1$s · последний раз %2$s</string>
+    <string name="progress_metric_e1rm">Расчётный 1ПМ, кг</string>
+    <string name="progress_metric_reps">Лучший подход, повторы</string>
+    <string name="progress_metric_seconds">Лучший подход, секунды</string>
+    <string name="progress_chart_one">Нужна ещё хотя бы одна тренировка, чтобы появился график.</string>
+    <string name="progress_chart_desc">График: %1$s, от %2$s до %3$s</string>
+    <string name="progress_change">За всё время: %1$s</string>
+    <string name="progress_best_e1rm">Лучший расчётный 1ПМ</string>
+    <string name="progress_best_weight">Максимальный рабочий вес</string>
+    <string name="progress_best_reps">Больше всего повторов</string>
+    <string name="progress_best_seconds">Дольше всего</string>
+    <string name="progress_sessions">Тренировок</string>
+    <string name="progress_table">По тренировкам</string>
+    <string name="progress_table_row">%1$s · %2$s</string>
+    <string name="progress_open_exercise">График упражнения</string>
+
+    <!-- History editing -->
+    <string name="history_edit">Править</string>
+    <string name="history_edit_done">Готово</string>
+    <string name="history_edit_hint">Тапни подход, чтобы исправить или удалить. Прогрессия по этим упражнениям пересчитается.</string>
+    <string name="history_add_set">+ подход</string>
+    <string name="history_feedback_edit">Самочувствие и заметка</string>
+    <string name="history_delete_body">Тренировка и её подходы будут удалены, прогрессия упражнений пересчитается без неё. Неделя программы не изменится.</string>
+    <string name="set_add_title">Новый подход</string>
+
+    <!-- Backup -->
+    <string name="settings_section_data">Данные</string>
+    <string name="settings_backup_export">Сохранить копию данных</string>
+    <string name="settings_backup_export_hint">Профиль, программа, история, прогрессия и настройки в одном файле JSON</string>
+    <string name="settings_backup_import">Восстановить из копии</string>
+    <string name="settings_backup_import_hint">Заменяет все данные на данные из файла</string>
+    <string name="backup_exported">Копия сохранена, тренировок в ней: %1$d.</string>
+    <string name="backup_export_failed">Не удалось сохранить: %1$s</string>
+    <string name="backup_import_title">Восстановить из копии?</string>
+    <string name="backup_import_body">Копия от %1$s (версия %2$s).\nВ файле: %3$s, %4$s, %5$s.\nСейчас в приложении: %6$s.\n\nВсе текущие данные будут заменены. Вернуть их можно будет в настройках: «Вернуть данные до восстановления».</string>
+    <string name="backup_import_profile">профиль есть</string>
+    <string name="backup_import_no_profile">профиля нет</string>
+    <string name="backup_import_confirm">Заменить</string>
+    <string name="backup_imported">Данные восстановлены, тренировок: %1$d.</string>
+    <string name="backup_import_failed">Не удалось восстановить: %1$s</string>
+    <string name="settings_backup_undo">Вернуть данные до восстановления</string>
+    <string name="settings_backup_undo_hint">Снимок от %1$s, сделан перед последним восстановлением</string>
+    <string name="backup_undone">Данные до восстановления возвращены.</string>
+    <string name="backup_active_workout">Сначала заверши или отмени текущую тренировку.</string>
+
+    <plurals name="sessions_count">
+        <item quantity="one">%d тренировка</item>
+        <item quantity="few">%d тренировки</item>
+        <item quantity="many">%d тренировок</item>
+        <item quantity="other">%d тренировки</item>
+    </plurals>
+</resources>

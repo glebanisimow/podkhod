@@ -1,4 +1,4 @@
-# Strava (этап 5, ещё не реализовано)
+# Strava (этап 5, отправка ещё не реализована)
 
 Интеграция необязательная и односторонняя: приложение только отправляет тренировки и ничего не читает
 из Strava. Пока это план. Перед реализацией каждый пункт заново сверяется по документации Strava, и в
@@ -14,6 +14,32 @@
      возврата кода на телефоне).
 3. Client ID и Client Secret. **В репозиторий не кладутся:** либо `local.properties`
    (`strava.clientId`, `strava.clientSecret`), либо ввод в настройках приложения.
+
+## Сверено на этапе 4 (2 октября 2026)
+
+Источники: developers.strava.com/docs/uploads, /docs/changelog, /docs/reference; FIT SDK profile 21.217.
+
+- `POST /uploads`, `multipart/form-data`, scope `activity:write`; `data_type`: `fit`, `tcx`, `gpx`, `json`
+  (и `.gz`); поля `name`, `description`, `sport_type`, `external_id`. Статус — `GET /uploads/{id}`.
+- **JSON для силовых** (changelog 21 мая 2026; только WeightTraining, HighIntensityIntervalTraining,
+  Workout, Crossfit): `version` = "1.0", `start_time` (ISO 8601 с зоной), `utc_offset` (с), `elapsed_time`,
+  `sets[]`; необязательно `active_time`, `total_calories`, `creator`, `streams`. Подход: `exercise_type`
+  (обязательно, например `BARBELL_BENCH_PRESS`, у каждой категории есть `*_GENERIC`), `repetitions`,
+  `weight` (всегда кг), `duration` (с), `start_time`. Признака разминки или отдыха в подходе нет.
+- **FIT**: сообщение `set` (225) — `timestamp` (конец), `duration` (мс), `repetitions`, `weight` (uint16,
+  1/16 кг), `set_type` (0 отдых, 1 активный), `start_time`, `category`, `category_subtype`. Strava
+  читает из FIT упражнение, повторы, вес, длительность и начало подхода.
+- Дубликаты отклоняются; `external_id` — `podkhod-<id тренировки>`.
+- Новый базовый URL `https://api-v3.strava.com` **доступен** с 4 января 2027; о выключении старого
+  в changelog не сказано.
+- Не проверено: как Strava показывает подходы отдыха из FIT, лимиты числа подходов и размера файла,
+  условия API Agreement о кэше и ИИ (сверить перед этапом 5).
+
+Что уже есть в приложении (`StrengthExport`): категория у каждого из 90 упражнений (`strava` в
+`catalog.json`), сборка активности (только рабочие подходы, оценка начала подхода) и тело JSON.
+Хранимых данных достаточно для обоих форматов: вес в кг, повторы или секунды, время окончания подхода.
+Время начала подхода не хранится и оценивается — если Strava будет показывать его криво, на этапе 5
+начнём записывать начало подхода при старте отсчёта.
 
 ## Что планируется (по ТЗ, перепроверить)
 

@@ -66,7 +66,7 @@ class CatalogAssetsTest {
         val broken = CatalogFile(
             catalogVersion = 1,
             exercises = listOf(
-                first.copy(subs = listOf("missing_exercise"), primary = listOf("wings")),
+                first.copy(subs = listOf("missing_exercise"), primary = listOf("wings"), strava = "wings"),
                 first,
             ),
         )
@@ -74,6 +74,7 @@ class CatalogAssetsTest {
         assertTrue(problems.any { it.startsWith("duplicate id") })
         assertTrue(problems.any { it.contains("missing_exercise") })
         assertTrue(problems.any { it.contains("bad muscle wings") })
+        assertTrue(problems.any { it.contains("unknown export category wings") })
     }
 
     private val substitution = CatalogJsonFormat.decodeFromString(SubstitutionFile.serializer(), asset("substitution.json"))

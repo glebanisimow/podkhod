@@ -65,6 +65,27 @@ class SettingsRepository(context: Context) {
         store.edit { it[ACCESSORY_WARMUP_SETS] = value.coerceIn(0, MAX_ACCESSORY_WARMUP) }
     }
 
+    /** Writes every setting at once, for restoring a backup. */
+    suspend fun restore(
+        keepScreenOn: Boolean,
+        oneHandMode: Boolean,
+        restSound: Boolean,
+        restVibration: Boolean,
+        supersetRestAfterEach: Boolean,
+        animations: Boolean,
+        accessoryWarmupSets: Int,
+    ) {
+        store.edit {
+            it[KEEP_SCREEN_ON] = keepScreenOn
+            it[ONE_HAND_MODE] = oneHandMode
+            it[REST_SOUND] = restSound
+            it[REST_VIBRATION] = restVibration
+            it[SUPERSET_REST_AFTER_EACH] = supersetRestAfterEach
+            it[ANIMATIONS] = animations
+            it[ACCESSORY_WARMUP_SETS] = accessoryWarmupSets.coerceIn(0, MAX_ACCESSORY_WARMUP)
+        }
+    }
+
     private suspend fun set(key: Preferences.Key<Boolean>, value: Boolean) {
         store.edit { it[key] = value }
     }

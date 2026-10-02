@@ -153,3 +153,24 @@ data class ExerciseSetRow(
     val reps: Int?,
     @ColumnInfo(name = "duration_sec") val durationSec: Int?,
 )
+
+data class HistorySetRow(
+    @ColumnInfo(name = "session_id") val sessionId: Long,
+    @ColumnInfo(name = "started_at") val startedAt: Long,
+    @ColumnInfo(name = "exercise_id") val exerciseId: String,
+    val kind: String,
+    @ColumnInfo(name = "weight_kg") val weightKg: Double?,
+    val reps: Int?,
+    @ColumnInfo(name = "duration_sec") val durationSec: Int?,
+)
+
+data class WeekSetRow(
+    @ColumnInfo(name = "week_index") val weekIndex: Int,
+    @ColumnInfo(name = "exercise_id") val exerciseId: String,
+    val kind: String,
+)
+
+data class WeekCountRow(
+    @ColumnInfo(name = "week_index") val weekIndex: Int,
+    val count: Int,
+)

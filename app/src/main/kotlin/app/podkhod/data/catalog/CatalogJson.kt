@@ -1,6 +1,7 @@
 package app.podkhod.data.catalog
 
 import app.podkhod.domain.busy.ExerciseInfo
+import app.podkhod.domain.export.ExerciseCategory
 import app.podkhod.domain.busy.Occupancy
 import app.podkhod.domain.busy.StrengthRatio
 import app.podkhod.domain.busy.SubstitutionConfig
@@ -38,6 +39,8 @@ data class CatalogExercise(
     val subs: List<String> = emptyList(),
     /** Kettlebells or dumbbells held at once when they must be the same weight. */
     val implements: Int = 1,
+    /** Export category (Strava JSON and FIT), an [ExerciseCategory] code. */
+    val strava: String? = null,
 ) {
     fun toInfo(order: Int) = ExerciseInfo(
         id = id,
@@ -165,6 +168,7 @@ object CatalogValidator {
             check(e.difficulty in 1..3 && e.fatigue in 1..3, "difficulty/fatigue must be 1..3")
             check(e.implements in 1..2, "implements must be 1 or 2")
             check(e.implements == 1 || "kettlebell" in e.equipment || "dumbbells" in e.equipment, "implements without kettlebells or dumbbells")
+            check(ExerciseCategory.fromCode(e.strava) != null, "unknown export category ${e.strava}")
             e.subs.forEach { s ->
                 check(s in idSet, "substitute $s does not exist")
                 check(s != e.id, "substitutes itself")

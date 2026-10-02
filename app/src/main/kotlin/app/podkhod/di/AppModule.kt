@@ -1,7 +1,12 @@
 package app.podkhod.di
 
 import androidx.room.Room
+import app.podkhod.BuildConfig
+import app.podkhod.data.backup.BackupRepository
 import app.podkhod.data.catalog.AssetReader
+import app.podkhod.data.stats.ProgressRepository
+import app.podkhod.ui.progress.ExerciseProgressViewModel
+import app.podkhod.ui.progress.ProgressViewModel
 import app.podkhod.data.catalog.CatalogRepository
 import app.podkhod.data.db.AppDatabase
 import app.podkhod.data.db.AppMetaRepository
@@ -43,8 +48,10 @@ val appModule = module {
     single { GeneratorConfigStore(androidContext().filesDir, get()) }
     single { PlanRepository(get(), get(), get(), get(), get()) }
     single { WorkoutRepository(get(), get(), get(), get()) }
+    single { ProgressRepository(get(), get(), get()) }
+    single { BackupRepository(get(), get(), get(), get(), androidContext().filesDir, BuildConfig.VERSION_NAME) }
 
-    viewModel { SettingsViewModel(get(), get(), get(), get()) }
+    viewModel { SettingsViewModel(get(), get(), get(), get(), get()) }
     viewModel { TodayViewModel(get(), get(), get(), get()) }
     viewModel { ProgramViewModel(get(), get(), get(), get()) }
     viewModel { (firstRun: Boolean) -> ProfileViewModel(get(), get(), firstRun) }
@@ -53,4 +60,6 @@ val appModule = module {
     viewModel { (sessionId: Long) -> SummaryViewModel(sessionId, get()) }
     viewModel { HistoryViewModel(get(), get()) }
     viewModel { (sessionId: Long) -> HistoryDetailViewModel(sessionId, get()) }
+    viewModel { ProgressViewModel(get(), get()) }
+    viewModel { (exerciseId: String) -> ExerciseProgressViewModel(exerciseId, get(), get()) }
 }

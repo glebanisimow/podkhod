@@ -353,6 +353,45 @@ class WorkoutRepository(
 
     suspend fun discard(sessionId: Long) = dao.deleteSession(sessionId)
 
+    // --- editing finished sessions ------------------------------------------------------------------
+    // A finished session fed double progression, so every edit replays progression of the touched exercises.
+
+    suspend fun updateFinishedSet(set: SetLogEntity) = editFinished(set.sessionExerciseId) { dao.updateSet(set) }
+
+    suspend fun deleteFinishedSet(set: SetLogEntity) = editFinished(set.sessionExerciseId) { dao.deleteSet(set.id) }
+
+    suspend fun addFinishedSet(slotId: Long, kind: SetKind, weightKg: Double?, reps: Int?, durationSec: Int?) =
+        editFinished(slotId) { session ->
+            val sets = dao.slots(session.id).firstOrNull { it.slot.id == slotId }?.sets.orEmpty()
+            dao.insertSet(
+                SetLogEntity(
+                    sessionExerciseId = slotId,
+                    position = (sets.maxOfOrNull { it.position } ?: -1) + 1,
+                    kind = kind.code,
+                    weightKg = weightKg,
+                    reps = reps,
+                    durationSec = durationSec,
+                    rir = null,
+                    completedAt = sets.maxOfOrNull { it.completedAt } ?: session.finishedAt ?: session.startedAt,
+                ),
+            )
+        }
+
+    /** Deletes a finished session and replays progression without it. Week and day of the program stay. */
+    suspend fun deleteFinished(sessionId: Long) = db.withTransaction {
+        val session = dao.session(sessionId) ?: return@withTransaction
+        val exercises = dao.slots(sessionId).map { it.slot.exerciseId }.toSet()
+        dao.deleteSession(sessionId)
+        if (session.status == WorkoutSessionEntity.FINISHED) plans.recomputeProgression(exercises, session.startedAt)
+    }
+
+    private suspend fun editFinished(slotId: Long, block: suspend (WorkoutSessionEntity) -> Unit) = db.withTransaction {
+        val slot = dao.slot(slotId) ?: return@withTransaction
+        val session = dao.session(slot.sessionId) ?: return@withTransaction
+        block(session)
+        if (session.status == WorkoutSessionEntity.FINISHED) plans.recomputeProgression(setOf(slot.exerciseId), session.startedAt)
+    }
+
     suspend fun setFeedback(sessionId: Long, feeling: Int?, note: String?) =
         dao.setFeedback(sessionId, feeling, note?.trim()?.takeIf { it.isNotEmpty() })
 

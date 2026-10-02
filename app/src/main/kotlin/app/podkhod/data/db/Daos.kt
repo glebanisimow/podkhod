@@ -247,6 +247,9 @@ abstract class ProfileDao {
 
     @Upsert
     abstract suspend fun upsertProgression(items: List<ProgressionStateEntity>)
+
+    @Query("DELETE FROM progression_state WHERE exercise_id IN (:ids)")
+    abstract suspend fun deleteProgression(ids: List<String>)
 }
 
 @Dao
@@ -268,6 +271,62 @@ abstract class WorkoutDao {
 
     @Query("SELECT * FROM set_log WHERE id = :setId")
     abstract suspend fun set(setId: Long): SetLogEntity?
+
+    @Query("SELECT COUNT(*) FROM workout_session WHERE status = 'finished'")
+    abstract suspend fun finishedCount(): Int
+
+    @Query("SELECT * FROM session_exercise WHERE id = :slotId")
+    abstract suspend fun slot(slotId: Long): SessionExerciseEntity?
+
+    /** Finished sessions that contain any of [exerciseIds], oldest first: the order progression ran in. */
+    @Query(
+        """
+        SELECT * FROM workout_session WHERE status = 'finished' AND id IN (
+            SELECT session_id FROM session_exercise WHERE exercise_id IN (:exerciseIds)
+        )
+        ORDER BY started_at, id
+        """,
+    )
+    abstract suspend fun finishedWith(exerciseIds: List<String>): List<WorkoutSessionEntity>
+
+    /** Every logged set of finished sessions, for the progress screens. */
+    @Query(
+        """
+        SELECT w.id AS session_id, w.started_at AS started_at, se.exercise_id AS exercise_id, s.kind AS kind,
+            s.weight_kg AS weight_kg, s.reps AS reps, s.duration_sec AS duration_sec
+        FROM set_log s
+        JOIN session_exercise se ON s.session_exercise_id = se.id
+        JOIN workout_session w ON se.session_id = w.id
+        WHERE w.status = 'finished'
+        ORDER BY w.started_at, se.position, s.position
+        """,
+    )
+    abstract fun observeHistorySets(): Flow<List<HistorySetRow>>
+
+    /** Sets of finished sessions in generated programs of one mesocycle, with the program week. */
+    @Query(
+        """
+        SELECT w.week_index AS week_index, se.exercise_id AS exercise_id, s.kind AS kind
+        FROM set_log s
+        JOIN session_exercise se ON s.session_exercise_id = se.id
+        JOIN workout_session w ON se.session_id = w.id
+        JOIN program p ON w.program_id = p.id
+        WHERE w.status = 'finished' AND w.week_index IS NOT NULL AND p.source = 'generated'
+            AND p.mesocycle_index = :mesocycleIndex
+        """,
+    )
+    abstract fun observeWeekSets(mesocycleIndex: Int): Flow<List<WeekSetRow>>
+
+    @Query(
+        """
+        SELECT w.week_index AS week_index, COUNT(*) AS count FROM workout_session w
+        JOIN program p ON w.program_id = p.id
+        WHERE w.status = 'finished' AND w.week_index IS NOT NULL AND p.source = 'generated'
+            AND p.mesocycle_index = :mesocycleIndex
+        GROUP BY w.week_index
+        """,
+    )
+    abstract fun observeWeekSessions(mesocycleIndex: Int): Flow<List<WeekCountRow>>
 
     @Query("SELECT * FROM workout_session WHERE status = 'active' ORDER BY started_at DESC LIMIT 1")
     abstract fun observeActive(): Flow<WorkoutSessionEntity?>
