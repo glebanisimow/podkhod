@@ -41,6 +41,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.podkhod.R
+import app.podkhod.data.catalog.MuscleSet
 import app.podkhod.domain.plan.Checkin
 import app.podkhod.ui.components.FieldLabel
 import app.podkhod.ui.components.Hint
@@ -50,6 +51,7 @@ import app.podkhod.ui.components.SectionCard
 import app.podkhod.ui.components.SingleChoiceChips
 import app.podkhod.ui.format.Format
 import app.podkhod.ui.format.ruPlural
+import app.podkhod.ui.media.TechniqueSheet
 import app.podkhod.ui.program.PlannedRow
 import app.podkhod.ui.program.WeekStrip
 import org.koin.compose.viewmodel.koinViewModel
@@ -67,6 +69,7 @@ fun TodayScreen(onOpenWorkout: (Long) -> Unit, onOpenProfile: () -> Unit, viewMo
     }
     var pendingSkip by remember { mutableStateOf(false) }
     var checkinFor by remember { mutableStateOf<Long?>(null) }
+    var techniqueFor by remember { mutableStateOf<String?>(null) }
 
     val active = state.active
     var resumeDialog by remember { mutableStateOf(false) }
@@ -151,7 +154,15 @@ fun TodayScreen(onOpenWorkout: (Long) -> Unit, onOpenProfile: () -> Unit, viewMo
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
-                        next.exercises.forEach { p -> PlannedRow(p, state.exercises[p.exerciseId], compact = true) }
+                        next.exercises.forEach { p ->
+                            PlannedRow(
+                                p,
+                                state.exercises[p.exerciseId],
+                                compact = true,
+                                onClick = { techniqueFor = p.exerciseId },
+                                modifier = Modifier.testTag("today_exercise_${p.exerciseId}"),
+                            )
+                        }
                     }
                     // A workout is running: the plan lives on the workout screen, the scene fills the pause.
                     else -> BrandScene(Modifier.padding(horizontal = 24.dp, vertical = 8.dp), height = 220.dp)
@@ -238,6 +249,17 @@ fun TodayScreen(onOpenWorkout: (Long) -> Unit, onOpenProfile: () -> Unit, viewMo
                 ) { Text(stringResource(R.string.today_resume_continue)) }
             },
             dismissButton = { TextButton(onClick = { resumeDialog = false }) { Text(stringResource(R.string.today_resume_later)) } },
+        )
+    }
+
+    techniqueFor?.let { state.exercises[it] }?.let { exercise ->
+        val muscles by viewModel.muscles.collectAsStateWithLifecycle()
+        val settings by viewModel.settings.collectAsStateWithLifecycle()
+        TechniqueSheet(
+            exercise = exercise,
+            muscles = muscles[exercise.id] ?: MuscleSet.EMPTY,
+            animate = settings.animations,
+            onDismiss = { techniqueFor = null },
         )
     }
 

@@ -33,12 +33,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.podkhod.R
+import app.podkhod.data.catalog.MuscleSet
 import app.podkhod.data.plan.PlanRepository
 import app.podkhod.domain.plan.Fmt
 import app.podkhod.domain.plan.MuscleGroup
 import app.podkhod.ui.components.Hint
 import app.podkhod.ui.components.ScreenHeader
 import app.podkhod.ui.components.SectionCard
+import app.podkhod.ui.media.TechniqueSheet
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +49,7 @@ fun ProgramScreen(onOpenProfile: () -> Unit, onOpenWhy: () -> Unit, viewModel: P
     val state by viewModel.state.collectAsStateWithLifecycle()
     var selectedId by remember { mutableStateOf<Long?>(null) }
     var replacing by remember { mutableStateOf(false) }
+    var techniqueFor by remember { mutableStateOf<String?>(null) }
     val program = state.program
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).testTag("screen_program")) {
@@ -137,6 +140,11 @@ fun ProgramScreen(onOpenProfile: () -> Unit, onOpenWhy: () -> Unit, viewModel: P
                             modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("slot_plus"),
                         ) { Text(stringResource(R.string.slot_plus_set)) }
                     }
+                    OutlinedButton(
+                        shape = BrandShapes.Button,
+                        onClick = { techniqueFor = selected.exerciseId; selectedId = null },
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("slot_technique"),
+                    ) { Text(stringResource(R.string.technique)) }
                     Button(
                         shape = BrandShapes.Button,
                         onClick = { replacing = true; viewModel.loadSubstitutes(selected) },
@@ -171,6 +179,17 @@ fun ProgramScreen(onOpenProfile: () -> Unit, onOpenWhy: () -> Unit, viewModel: P
                 Spacer(Modifier.heightIn(min = 24.dp))
             }
         }
+    }
+
+    techniqueFor?.let { state.exercises[it] }?.let { exercise ->
+        val muscles by viewModel.muscles.collectAsStateWithLifecycle()
+        val settings by viewModel.settings.collectAsStateWithLifecycle()
+        TechniqueSheet(
+            exercise = exercise,
+            muscles = muscles[exercise.id] ?: MuscleSet.EMPTY,
+            animate = settings.animations,
+            onDismiss = { techniqueFor = null },
+        )
     }
 }
 

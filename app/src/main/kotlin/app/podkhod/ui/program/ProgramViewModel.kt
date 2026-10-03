@@ -3,6 +3,7 @@ package app.podkhod.ui.program
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.podkhod.data.catalog.CatalogRepository
+import app.podkhod.data.catalog.MuscleSet
 import app.podkhod.data.db.ExerciseEntity
 import app.podkhod.data.db.PlannedExerciseEntity
 import app.podkhod.data.plan.PlanRepository
@@ -10,6 +11,8 @@ import app.podkhod.data.plan.ProgramExplanation
 import app.podkhod.data.profile.ProfileRepository
 import app.podkhod.data.program.ActiveProgram
 import app.podkhod.data.program.ProgramRepository
+import app.podkhod.data.settings.AppSettings
+import app.podkhod.data.settings.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -32,6 +35,7 @@ class ProgramViewModel(
     private val catalog: CatalogRepository,
     private val plans: PlanRepository,
     private val profiles: ProfileRepository,
+    settingsRepo: SettingsRepository,
 ) : ViewModel() {
 
     val state: StateFlow<ProgramUiState> =
@@ -43,6 +47,13 @@ class ProgramViewModel(
                 explanation = PlanRepository.decodeExplanation(program?.program?.explanationJson),
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ProgramUiState())
+
+    /** For the technique sheet opened from a slot. */
+    val muscles: StateFlow<Map<String, MuscleSet>> =
+        catalog.musclesByExercise.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+
+    val settings: StateFlow<AppSettings> =
+        settingsRepo.settings.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppSettings())
 
     private val _substitutes = MutableStateFlow<List<ExerciseEntity>>(emptyList())
     val substitutes: StateFlow<List<ExerciseEntity>> = _substitutes.asStateFlow()

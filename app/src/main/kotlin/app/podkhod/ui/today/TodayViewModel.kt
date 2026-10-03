@@ -3,10 +3,13 @@ package app.podkhod.ui.today
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.podkhod.data.catalog.CatalogRepository
+import app.podkhod.data.catalog.MuscleSet
 import app.podkhod.data.db.ExerciseEntity
 import app.podkhod.data.plan.PlanRepository
 import app.podkhod.data.program.ActiveProgram
 import app.podkhod.data.program.ProgramRepository
+import app.podkhod.data.settings.AppSettings
+import app.podkhod.data.settings.SettingsRepository
 import app.podkhod.data.workout.SessionDetail
 import app.podkhod.data.workout.WorkoutRepository
 import app.podkhod.domain.plan.Checkin
@@ -39,6 +42,7 @@ class TodayViewModel(
     private val workouts: WorkoutRepository,
     private val plans: PlanRepository,
     catalog: CatalogRepository,
+    settingsRepo: SettingsRepository,
 ) : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -50,6 +54,13 @@ class TodayViewModel(
         combine(programs.activeProgram, activeDetail, catalog.exercisesById) { program, active, exercises ->
             TodayState(loading = program == null && active == null, program = program, active = active, exercises = exercises)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TodayState())
+
+    /** For the technique sheet opened from the plan list. */
+    val muscles: StateFlow<Map<String, MuscleSet>> =
+        catalog.musclesByExercise.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+
+    val settings: StateFlow<AppSettings> =
+        settingsRepo.settings.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppSettings())
 
     private var starting = false
 

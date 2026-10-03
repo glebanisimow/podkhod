@@ -1,6 +1,7 @@
 package app.podkhod.ui.program
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,13 +55,26 @@ fun schemeText(
 }
 
 @Composable
-fun PlannedRow(p: PlannedExerciseEntity, exercise: ExerciseEntity?, compact: Boolean = false, modifier: Modifier = Modifier) {
+fun PlannedRow(
+    p: PlannedExerciseEntity,
+    exercise: ExerciseEntity?,
+    compact: Boolean = false,
+    /** Makes the whole row a tap target with a trailing chevron. */
+    onClick: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+) {
     val scheme = schemeText(p.sets, p.repMin, p.repMax, p.rirMin, p.rirMax, p.targetWeightKg, exercise, withRir = !compact)
     val details = buildList {
         add(scheme)
         if (!compact) add(stringResource(R.string.plan_rest, Format.rest(p.restSec)))
     }.joinToString(" · ")
-    Row(modifier.fillMaxWidth().heightIn(min = if (compact) 0.dp else 48.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .heightIn(min = if (compact && onClick == null) 0.dp else 48.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Text(
             text = p.supersetGroup ?: "",
             style = MaterialTheme.typography.labelLarge,
@@ -83,6 +97,9 @@ fun PlannedRow(p: PlannedExerciseEntity, exercise: ExerciseEntity?, compact: Boo
                 )
                 if (flags.isNotEmpty()) Text(flags.joinToString(" · "), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary)
             }
+        }
+        if (onClick != null) {
+            Text("›", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 8.dp))
         }
     }
 }

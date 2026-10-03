@@ -52,8 +52,8 @@ val appModule = module {
     single { BackupRepository(get(), get(), get(), get(), androidContext().filesDir, BuildConfig.VERSION_NAME) }
 
     viewModel { SettingsViewModel(get(), get(), get(), get(), get()) }
-    viewModel { TodayViewModel(get(), get(), get(), get()) }
-    viewModel { ProgramViewModel(get(), get(), get(), get()) }
+    viewModel { TodayViewModel(get(), get(), get(), get(), get()) }
+    viewModel { ProgramViewModel(get(), get(), get(), get(), get()) }
     viewModel { (firstRun: Boolean) -> ProfileViewModel(get(), get(), firstRun) }
     viewModel { PlateCalculatorViewModel(get()) }
     viewModel { (sessionId: Long) -> WorkoutViewModel(sessionId, get(), get(), get(), get(), get()) }
