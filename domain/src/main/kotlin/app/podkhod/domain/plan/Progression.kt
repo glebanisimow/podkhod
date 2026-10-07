@@ -79,7 +79,7 @@ class Progression(private val config: GeneratorConfig) {
         }
         return ProgressionResult(
             ProgressionState(weight, 0, history, null), Change.HOLD,
-            "Держим ${Fmt.kg(weight)}: добирай повторы до ${slot.repMax} во всех подходах.",
+            "Держим ${Fmt.kg(weight)}: добирай ${if (timed) "секунды" else "повторы"} до ${slot.repMax} во всех подходах.",
         )
     }
 
@@ -87,7 +87,7 @@ class Progression(private val config: GeneratorConfig) {
     fun hint(info: ExerciseInfo, scheme: LoadScheme, slot: PlannedSlot, weightKg: Double?): String {
         val unit = if (info.measure == Measure.SECONDS) "с" else ""
         val all = "если все подходы по ${slot.repMax}${if (unit.isEmpty()) "" else " $unit"}"
-        if (scheme is LoadScheme.NoLoad || weightKg == null) return "Добавляй повторы до ${slot.repMax}, потом — вариант сложнее."
+        if (scheme is LoadScheme.NoLoad || weightKg == null) return "Добавляй ${if (unit.isEmpty()) "повторы до ${slot.repMax}" else "время до ${slot.repMax} с"}, потом — вариант сложнее."
         val next = Loads.nextUp(scheme, weightKg, minStep(info, scheme, weightKg))
             ?: return "${stuckNote(info, scheme)}."
         return when (scheme) {

@@ -36,6 +36,10 @@ import app.podkhod.domain.busy.Substitution
 import app.podkhod.domain.model.LoadType
 import app.podkhod.domain.model.Measure
 import app.podkhod.domain.model.SetKind
+import app.podkhod.domain.workout.HoldTimer
+import app.podkhod.service.HoldSignals
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -84,6 +88,7 @@ class WorkoutViewModel(
     settingsRepo: SettingsRepository,
     private val profiles: ProfileRepository,
     private val plans: PlanRepository,
+    private val signals: HoldSignals,
 ) : ViewModel() {
 
     val load: StateFlow<WorkoutLoad> = workouts.observeDetail(sessionId)
@@ -109,6 +114,12 @@ class WorkoutViewModel(
     val busy: StateFlow<BusySheet?> = _busy.asStateFlow()
 
     private var lastLogAt = 0L
+
+    private val _hold = MutableStateFlow<HoldTimer?>(null)
+    /** The running countdown of a timed set, or null. */
+    val hold: StateFlow<HoldTimer?> = _hold.asStateFlow()
+    private var holdJob: Job? = null
+    private var holdSet: Pair<SlotDetail, SetInput>? = null
 
     private val aidContext = MutableStateFlow<AidContext?>(null)
 
@@ -220,6 +231,57 @@ class WorkoutViewModel(
                 restMode = settings.value.supersetRestMode,
             )
         }
+    }
+
+    /**
+     * Starts the countdown of a timed set at the planned seconds. When it runs out the set is logged by
+     * itself, as if «Подход выполнен» was tapped: rest starts and the screen stays put.
+     */
+    fun startHold(slot: SlotDetail, input: SetInput) {
+        if (_hold.value != null) return
+        val timer = HoldTimer(slot.slot.id, input.seconds.coerceAtLeast(1), System.currentTimeMillis())
+        _hold.value = timer
+        holdSet = slot to input
+        // A new set ends the rest that was still running.
+        if ((load.value as? WorkoutLoad.Ready)?.detail?.session?.restEndsAt != null) skipRest()
+        holdJob = viewModelScope.launch {
+            val s = settings.value
+            sleepUntil(timer.holdStartsAt)
+            signals.tick(s.restSound, s.restVibration)
+            for (left in HoldTimer.FINAL_TICKS downTo 1) {
+                val at = timer.endsAt - left * 1000L
+                if (at <= timer.holdStartsAt) continue
+                sleepUntil(at)
+                signals.tick(s.restSound, false)
+            }
+            sleepUntil(timer.endsAt)
+            signals.finish(s.restSound, s.restVibration)
+            endHold(timer.targetSec)
+        }
+    }
+
+    /** Stops early and logs what was held; during the get-ready countdown it only cancels. */
+    fun stopHold() {
+        val timer = _hold.value ?: return
+        holdJob?.cancel()
+        endHold(timer.heldSec(System.currentTimeMillis())?.takeIf { it > 0 })
+    }
+
+    fun cancelHold() {
+        holdJob?.cancel()
+        endHold(null)
+    }
+
+    private fun endHold(seconds: Int?) {
+        val (slot, input) = holdSet ?: return
+        _hold.value = null
+        holdSet = null
+        holdJob = null
+        if (seconds != null) logSet(slot, input.copy(seconds = seconds))
+    }
+
+    private suspend fun sleepUntil(at: Long) {
+        delay((at - System.currentTimeMillis()).coerceAtLeast(0))
     }
 
     fun setRir(set: SetLogEntity, rir: Int) {

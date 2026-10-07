@@ -86,6 +86,8 @@ import app.podkhod.domain.model.LoadType
 import app.podkhod.domain.model.Measure
 import app.podkhod.domain.model.SetKind
 import app.podkhod.domain.OneRepMax
+import app.podkhod.domain.workout.HoldTimer
+import androidx.compose.material3.LinearProgressIndicator
 import app.podkhod.domain.weights.WarmupStep
 import app.podkhod.service.WorkoutService
 import app.podkhod.ui.program.schemeText
@@ -145,6 +147,7 @@ private fun WorkoutContent(
     val last by vm.lastResults.collectAsStateWithLifecycle()
     val warmup by vm.warmup.collectAsStateWithLifecycle()
     val busy by vm.busy.collectAsStateWithLifecycle()
+    val hold by vm.hold.collectAsStateWithLifecycle()
     val muscles by vm.muscles.collectAsStateWithLifecycle()
     val aids by vm.aids.collectAsStateWithLifecycle()
     var techniqueFor by remember { mutableStateOf<ExerciseEntity?>(null) }
@@ -227,7 +230,8 @@ private fun WorkoutContent(
             }
         }
 
-        SlotStrip(slots, page) { index -> scope.launch { pagerState.animateScrollToPage(index) } }
+        // A running timed set pins the screen to its exercise.
+        SlotStrip(slots, page) { index -> if (hold == null) scope.launch { pagerState.animateScrollToPage(index) } }
         session.planNote?.let { note ->
             var expanded by remember { mutableStateOf(false) }
             Text(
@@ -248,6 +252,7 @@ private fun WorkoutContent(
             state = pagerState,
             modifier = Modifier.weight(1f).fillMaxWidth(),
             beyondViewportPageCount = 1,
+            userScrollEnabled = hold == null,
         ) { index ->
             ExercisePage(
                 slot = slots[index],
@@ -273,6 +278,7 @@ private fun WorkoutContent(
             aids = aids[slot.slot.id],
             warmup = warmup,
             restEndsAt = restEndsAt,
+            hold = hold,
             now = now,
             oneHand = settings.oneHandMode,
             vm = vm,
@@ -583,6 +589,7 @@ private fun BottomPanel(
     aids: SlotAids?,
     warmup: Boolean,
     restEndsAt: Long?,
+    hold: HoldTimer?,
     now: Long,
     oneHand: Boolean,
     vm: WorkoutViewModel,
@@ -597,7 +604,15 @@ private fun BottomPanel(
 
     Surface(color = MaterialTheme.colorScheme.surfaceContainer, tonalElevation = 2.dp) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            if (hold != null) {
+                HoldPanel(hold, now, oneHand, vm)
+                return@Column
+            }
             if (restEndsAt != null) RestBar(restEndsAt, now, vm)
+            // Timed sets (plank, hang) run on the built-in countdown; the set logs itself when it ends.
+            val timed = measure == Measure.SECONDS
+            val logAction = { if (timed) vm.startHold(slot, input) else vm.logSet(slot, input) }
+            val clock = Format.clock(input.seconds.toLong())
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (load != LoadType.NONE) {
@@ -682,11 +697,15 @@ private fun BottomPanel(
                 // The plan for this exercise is done: moving on is the lifter's call, an extra set stays one tap away.
                 OutlinedButton(
                     shape = BrandShapes.Button,
-                    onClick = { vm.logSet(slot, input) },
+                    onClick = logAction,
                     modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("workout_log_set"),
                 ) {
                     Text(
-                        stringResource(if (warmup) R.string.workout_log_warmup else R.string.workout_log_extra),
+                        when {
+                            timed -> stringResource(R.string.hold_start_extra, clock)
+                            warmup -> stringResource(R.string.workout_log_warmup)
+                            else -> stringResource(R.string.workout_log_extra)
+                        },
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
@@ -706,13 +725,23 @@ private fun BottomPanel(
             } else {
                 Button(
                     shape = BrandShapes.Button,
-                    onClick = { vm.logSet(slot, input) },
+                    onClick = logAction,
                     modifier = bigButton.testTag("workout_log_set"),
                 ) {
                     Text(
-                        stringResource(if (warmup) R.string.workout_log_warmup else R.string.workout_log_set),
+                        when {
+                            timed -> stringResource(R.string.hold_start, clock)
+                            warmup -> stringResource(R.string.workout_log_warmup)
+                            else -> stringResource(R.string.workout_log_set)
+                        },
                         style = MaterialTheme.typography.titleLarge,
                     )
+                }
+                if (timed) {
+                    TextButton(
+                        onClick = { vm.logSet(slot, input) },
+                        modifier = Modifier.align(Alignment.CenterHorizontally).heightIn(min = 44.dp).testTag("hold_manual"),
+                    ) { Text(stringResource(R.string.hold_manual)) }
                 }
             }
         }
@@ -771,6 +800,60 @@ private fun BottomPanel(
 }
 
 private enum class Field { WEIGHT, REPS, SECONDS }
+
+/** The countdown of a timed set, in place of the inputs: big digits readable from the floor. */
+@Composable
+private fun HoldPanel(hold: HoldTimer, now: Long, oneHand: Boolean, vm: WorkoutViewModel) {
+    val phase = hold.phase(now)
+    Column(Modifier.fillMaxWidth().testTag("hold_panel"), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        val prep = phase is HoldTimer.Phase.Prep
+        val left = when (phase) {
+            is HoldTimer.Phase.Prep -> phase.leftSec
+            is HoldTimer.Phase.Hold -> phase.leftSec
+            HoldTimer.Phase.Done -> 0
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(if (prep) R.string.hold_get_ready else R.string.hold_holding), style = MaterialTheme.typography.titleLarge)
+                Text(
+                    stringResource(R.string.hold_target, Format.clock(hold.targetSec.toLong())),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Text(
+                if (prep) left.toString() else Format.clock(left.toLong()),
+                fontSize = 72.sp,
+                fontWeight = FontWeight.Black,
+                color = if (prep) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.primary,
+                modifier = Modifier.testTag("hold_left"),
+            )
+        }
+        LinearProgressIndicator(
+            progress = { (phase as? HoldTimer.Phase.Hold)?.progress ?: if (phase == HoldTimer.Phase.Done) 1f else 0f },
+            modifier = Modifier.fillMaxWidth().height(10.dp),
+            drawStopIndicator = {},
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            OutlinedButton(
+                shape = BrandShapes.Button,
+                onClick = vm::cancelHold,
+                modifier = Modifier.weight(1f).height(if (oneHand) 84.dp else 72.dp).testTag("hold_cancel"),
+            ) { Text(stringResource(R.string.cancel), style = MaterialTheme.typography.titleMedium, maxLines = 1) }
+            Button(
+                shape = BrandShapes.Button,
+                onClick = vm::stopHold,
+                modifier = Modifier.weight(2f).height(if (oneHand) 84.dp else 72.dp).testTag("hold_stop"),
+            ) {
+                Text(
+                    stringResource(if (prep) R.string.hold_stop_prep else R.string.hold_stop),
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
+                )
+            }
+        }
+    }
+}
 
 @Composable
 private fun RestBar(restEndsAt: Long, now: Long, vm: WorkoutViewModel) {

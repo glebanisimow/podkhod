@@ -5,6 +5,7 @@ import app.podkhod.BuildConfig
 import app.podkhod.data.backup.BackupRepository
 import app.podkhod.data.catalog.AssetReader
 import app.podkhod.data.stats.ProgressRepository
+import app.podkhod.service.HoldSignals
 import app.podkhod.ui.progress.ExerciseProgressViewModel
 import app.podkhod.ui.progress.ProgressViewModel
 import app.podkhod.data.catalog.CatalogRepository
@@ -40,6 +41,7 @@ val appModule = module {
     single { get<AppDatabase>().catalogDao() }
     single { AppMetaRepository(get()) }
     single { SettingsRepository(androidContext()) }
+    single { HoldSignals(androidContext()) }
     single { AssetReader(androidContext()) }
     single { CatalogRepository(get(), get(), get()) }
     single { MediaRepository(androidContext(), get()) }
@@ -56,7 +58,7 @@ val appModule = module {
     viewModel { ProgramViewModel(get(), get(), get(), get(), get()) }
     viewModel { (firstRun: Boolean) -> ProfileViewModel(get(), get(), firstRun) }
     viewModel { PlateCalculatorViewModel(get()) }
-    viewModel { (sessionId: Long) -> WorkoutViewModel(sessionId, get(), get(), get(), get(), get()) }
+    viewModel { (sessionId: Long) -> WorkoutViewModel(sessionId, get(), get(), get(), get(), get(), get()) }
     viewModel { (sessionId: Long) -> SummaryViewModel(sessionId, get()) }
     viewModel { HistoryViewModel(get(), get()) }
     viewModel { (sessionId: Long) -> HistoryDetailViewModel(sessionId, get()) }
