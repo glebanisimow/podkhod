@@ -28,10 +28,14 @@ data class AppSettings(
     val animations: Boolean = true,
     /** Light warm-up sets before accessories, 0..2. */
     val accessoryWarmupSets: Int = 1,
+    /** No exercise in the program gets fewer work sets than this; [MIN_SETS_RANGE]. */
+    val minSets: Int = 3,
 ) {
     val supersetRestMode: SupersetRestMode
         get() = if (supersetRestAfterEach) SupersetRestMode.AFTER_EACH_EXERCISE else SupersetRestMode.AFTER_ROUND
 }
+
+val MIN_SETS_RANGE = 2..4
 
 class SettingsRepository(context: Context) {
 
@@ -49,6 +53,7 @@ class SettingsRepository(context: Context) {
                 supersetRestAfterEach = prefs[SUPERSET_REST_AFTER_EACH] ?: d.supersetRestAfterEach,
                 animations = prefs[ANIMATIONS] ?: d.animations,
                 accessoryWarmupSets = (prefs[ACCESSORY_WARMUP_SETS] ?: d.accessoryWarmupSets).coerceIn(0, MAX_ACCESSORY_WARMUP),
+                minSets = (prefs[MIN_SETS] ?: d.minSets).coerceIn(MIN_SETS_RANGE),
             )
         }
 
@@ -65,6 +70,17 @@ class SettingsRepository(context: Context) {
         store.edit { it[ACCESSORY_WARMUP_SETS] = value.coerceIn(0, MAX_ACCESSORY_WARMUP) }
     }
 
+    suspend fun setMinSets(value: Int) {
+        store.edit { it[MIN_SETS] = value.coerceIn(MIN_SETS_RANGE) }
+    }
+
+    /** The minimum the active program was last raised to; differs from [AppSettings.minSets] until it is applied. */
+    suspend fun appliedMinSets(): Int? = store.data.first()[APPLIED_MIN_SETS]
+
+    suspend fun setAppliedMinSets(value: Int) {
+        store.edit { it[APPLIED_MIN_SETS] = value }
+    }
+
     /** Writes every setting at once, for restoring a backup. */
     suspend fun restore(
         keepScreenOn: Boolean,
@@ -74,6 +90,7 @@ class SettingsRepository(context: Context) {
         supersetRestAfterEach: Boolean,
         animations: Boolean,
         accessoryWarmupSets: Int,
+        minSets: Int,
     ) {
         store.edit {
             it[KEEP_SCREEN_ON] = keepScreenOn
@@ -83,6 +100,9 @@ class SettingsRepository(context: Context) {
             it[SUPERSET_REST_AFTER_EACH] = supersetRestAfterEach
             it[ANIMATIONS] = animations
             it[ACCESSORY_WARMUP_SETS] = accessoryWarmupSets.coerceIn(0, MAX_ACCESSORY_WARMUP)
+            it[MIN_SETS] = minSets.coerceIn(MIN_SETS_RANGE)
+            // The restored program is raised to the restored minimum on the next start.
+            it.remove(APPLIED_MIN_SETS)
         }
     }
 
@@ -98,6 +118,8 @@ class SettingsRepository(context: Context) {
         val SUPERSET_REST_AFTER_EACH = booleanPreferencesKey("superset_rest_after_each")
         val ANIMATIONS = booleanPreferencesKey("animations")
         val ACCESSORY_WARMUP_SETS = intPreferencesKey("accessory_warmup_sets")
+        val MIN_SETS = intPreferencesKey("min_sets")
+        val APPLIED_MIN_SETS = intPreferencesKey("applied_min_sets")
         const val MAX_ACCESSORY_WARMUP = 2
     }
 }

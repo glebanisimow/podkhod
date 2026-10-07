@@ -56,6 +56,7 @@ class BackupRepository(
                 supersetRestAfterEach = s.supersetRestAfterEach,
                 animations = s.animations,
                 accessoryWarmupSets = s.accessoryWarmupSets,
+                minSets = s.minSets,
             ),
             generatorConfig = if (configs.isCustom) configs.export() else null,
         )
@@ -118,6 +119,7 @@ class BackupRepository(
                 supersetRestAfterEach = s.supersetRestAfterEach,
                 animations = s.animations,
                 accessoryWarmupSets = s.accessoryWarmupSets,
+                minSets = s.minSets,
             )
         }
         // A config the installed version rejects falls back to the bundled one rather than failing the restore.

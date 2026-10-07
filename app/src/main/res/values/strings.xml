@@ -53,6 +53,9 @@
     <string name="workout_reps">Повторы</string>
     <string name="workout_seconds">Секунды</string>
     <string name="workout_log_set">Подход выполнен</string>
+    <string name="workout_log_extra">Ещё подход</string>
+    <string name="workout_next">Дальше: %1$s</string>
+    <string name="workout_sets_of">Подходов сделано: %1$d из %2$d</string>
     <string name="workout_log_warmup">Разминка выполнена</string>
     <string name="workout_warmup_toggle">Разминочный</string>
     <string name="workout_rir">Запас</string>
@@ -65,6 +68,7 @@
     <string name="history_busiest">Чаще всего занято</string>
     <string name="history_busiest_row">%1$s — %2$d</string>
     <string name="busy">Занято</string>
+    <string name="busy_next">Следующее занято</string>
     <string name="busy_title">Занято: %1$s</string>
     <string name="busy_later">Сделать позже</string>
     <string name="busy_wait">Что сделать, пока жду?</string>

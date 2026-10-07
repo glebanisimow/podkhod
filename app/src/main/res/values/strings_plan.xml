@@ -158,6 +158,8 @@
     <string name="settings_plate_calc_hint">Как собрать вес на грифе из твоих блинов</string>
     <string name="settings_accessory_warmup">Разминка перед вспомогательными: %1$d подх.</string>
     <string name="settings_accessory_warmup_hint">Лёгкие подходы перед изоляцией и подсобными; у базовых со штангой — своя лесенка</string>
+    <string name="settings_min_sets">Минимум подходов в упражнении: %1$d</string>
+    <string name="settings_min_sets_hint">Упражнения программы, где подходов меньше, поднимутся до этого числа; поштучно можно убавить на экране «Программа». В разгрузку подходов всё равно меньше</string>
     <string name="settings_config_export">Экспорт параметров генератора</string>
     <string name="settings_config_export_hint">JSON: объёмы, схемы, отдых, шаги прогрессии</string>
     <string name="settings_config_import">Импорт параметров генератора</string>

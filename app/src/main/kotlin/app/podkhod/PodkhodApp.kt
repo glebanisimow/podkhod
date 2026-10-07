@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import app.podkhod.data.catalog.CatalogRepository
 import app.podkhod.data.db.AppMetaRepository
+import app.podkhod.data.plan.PlanRepository
 import app.podkhod.data.program.ProgramRepository
 import app.podkhod.di.appModule
 import app.podkhod.service.WorkoutService
@@ -27,6 +28,7 @@ class PodkhodApp : Application(), SingletonImageLoader.Factory {
     private val appMeta: AppMetaRepository by inject()
     private val catalog: CatalogRepository by inject()
     private val programs: ProgramRepository by inject()
+    private val plans: PlanRepository by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -40,6 +42,7 @@ class PodkhodApp : Application(), SingletonImageLoader.Factory {
                 appMeta.recordFirstLaunchIfMissing()
                 catalog.seedIfNeeded()
                 programs.ensureDefaultProgram()
+                plans.applyMinSets()
             }.onFailure { Log.e("PodkhodApp", "bootstrap failed", it) }
         }
     }

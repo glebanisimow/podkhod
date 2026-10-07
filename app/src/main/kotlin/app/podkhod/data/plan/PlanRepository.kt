@@ -122,7 +122,7 @@ class PlanRepository(
             historyE1rm = states.mapNotNull { (id, s) -> decodeHistory(s.e1rmHistoryJson).lastOrNull()?.let { id to it } }.toMap(),
             workingWeights = states.mapNotNull { (id, s) -> s.workingWeightKg?.let { id to it } }.toMap(),
         )
-        val program = ProgramGenerator(config).generate(
+        val program = ProgramGenerator(config.withMinSets(settings.current().minSets)).generate(
             ProgramGenerator.Input(
                 profile = profile,
                 catalog = infos.values.toList(),
@@ -191,6 +191,23 @@ class PlanRepository(
     suspend fun setLocked(plannedId: Long, locked: Boolean) {
         val row = programDao.planned(plannedId) ?: return
         programDao.updatePlanned(row.copy(locked = locked))
+    }
+
+    /**
+     * Raises every exercise of the active program to the lifter's minimum of sets, once per change of the
+     * setting (and once after an update that introduced it). Lowering the minimum leaves the program alone,
+     * and a later manual «−» on one exercise is respected.
+     */
+    suspend fun applyMinSets() {
+        val min = settings.current().minSets
+        if (settings.appliedMinSets() == min) return
+        db.withTransaction {
+            val program = programDao.active() ?: return@withTransaction
+            programDao.days(program.id).flatMap { it.exercises }.filter { it.sets < min }.forEach { row ->
+                programDao.updatePlanned(row.copy(sets = min, explanationJson = addReason(row.explanationJson, "Минимум подходов из настроек: ${row.sets} → $min.")))
+            }
+        }
+        settings.setAppliedMinSets(min)
     }
 
     suspend fun changeSets(plannedId: Long, delta: Int) {

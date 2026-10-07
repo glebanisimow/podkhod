@@ -51,7 +51,7 @@ val appModule = module {
     single { ProgressRepository(get(), get(), get()) }
     single { BackupRepository(get(), get(), get(), get(), androidContext().filesDir, BuildConfig.VERSION_NAME) }
 
-    viewModel { SettingsViewModel(get(), get(), get(), get(), get()) }
+    viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { TodayViewModel(get(), get(), get(), get(), get()) }
     viewModel { ProgramViewModel(get(), get(), get(), get(), get()) }
     viewModel { (firstRun: Boolean) -> ProfileViewModel(get(), get(), firstRun) }

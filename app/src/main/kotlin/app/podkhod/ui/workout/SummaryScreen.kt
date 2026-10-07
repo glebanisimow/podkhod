@@ -1,6 +1,10 @@
 package app.podkhod.ui.workout
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import app.podkhod.ui.theme.BrandShapes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +26,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -35,6 +41,8 @@ import app.podkhod.data.workout.SessionDetail
 import app.podkhod.data.workout.SessionResult
 import app.podkhod.data.workout.WorkoutRepository
 import app.podkhod.domain.workout.RecordKind
+import app.podkhod.ui.components.ClawPattern
+import app.podkhod.ui.components.PawMark
 import app.podkhod.ui.components.ScreenHeader
 import app.podkhod.ui.components.SectionCard
 import app.podkhod.ui.format.Format
@@ -69,6 +77,11 @@ fun SummaryScreen(sessionId: Long, onDone: () -> Unit, viewModel: SummaryViewMod
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).testTag("screen_summary")) {
         ScreenHeader(stringResource(R.string.summary_title))
+        // The claw badge over a field of scratches: the session is done, the bear left its mark.
+        Box(Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
+            ClawPattern(Modifier.matchParentSize())
+            Image(painterResource(R.drawable.badge_kogti), contentDescription = null, modifier = Modifier.size(176.dp).testTag("summary_badge"))
+        }
         val s = state ?: return@Column
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             SessionTotals(s.detail, s.result)
@@ -160,7 +173,11 @@ fun RecordsCard(detail: SessionDetail, result: SessionResult) {
                 RecordKind.ESTIMATED_1RM -> stringResource(R.string.record_1rm, name, Format.weight(r.value), prev?.let(Format::weight) ?: "—")
                 RecordKind.BODYWEIGHT_REPS -> stringResource(R.string.record_reps, name, r.value.toInt().toString(), prev?.toInt()?.toString() ?: "—")
             }
-            Text(text, style = MaterialTheme.typography.bodyLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                PawMark()
+                Spacer(Modifier.width(10.dp))
+                Text(text, style = MaterialTheme.typography.bodyLarge)
+            }
         }
     }
 }

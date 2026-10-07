@@ -56,6 +56,10 @@ data class GeneratorConfig(
 ) {
     fun rangeFor(group: MuscleGroup): IntRange = volume[group.code]?.toRange() ?: 0..0
 
+    /** The lifter's own floor of sets per exercise; it never goes above the generator's per-exercise maximum. */
+    fun withMinSets(minSets: Int): GeneratorConfig =
+        copy(sets = sets.copy(min = minSets.coerceIn(sets.min, sets.max)))
+
     fun perSession(style: Style, minutes: Int): Int {
         val table = exercisesPerSession[style.code] ?: exercisesPerSession.values.first()
         val key = table.keys.mapNotNull { it.toIntOrNull() }.filter { it <= minutes }.maxOrNull()

@@ -48,7 +48,9 @@ import java.time.LocalDate
 import app.podkhod.data.media.ImportResult
 import app.podkhod.data.media.MediaRepository
 import app.podkhod.data.plan.GeneratorConfigStore
+import app.podkhod.data.plan.PlanRepository
 import app.podkhod.data.settings.AppSettings
+import app.podkhod.data.settings.MIN_SETS_RANGE
 import app.podkhod.data.settings.SettingsRepository
 import app.podkhod.ui.components.ScreenHeader
 import app.podkhod.ui.components.SingleChoiceChips
@@ -82,6 +84,7 @@ class SettingsViewModel(
     private val catalog: CatalogRepository,
     private val configs: GeneratorConfigStore,
     private val backups: BackupRepository,
+    private val plans: PlanRepository,
 ) : ViewModel() {
     private val _backupMessage = MutableStateFlow<String?>(null)
     val backupMessage: StateFlow<String?> = _backupMessage.asStateFlow()
@@ -155,6 +158,11 @@ class SettingsViewModel(
     val customConfig: StateFlow<Boolean> = _customConfig.asStateFlow()
 
     fun setAccessoryWarmupSets(value: Int) = launch { repo.setAccessoryWarmupSets(value) }
+
+    fun setMinSets(value: Int) = launch {
+        repo.setMinSets(value)
+        plans.applyMinSets()
+    }
 
     fun exportConfig(resolver: ContentResolver, uri: Uri, done: String) = launch {
         val text = configs.export()
@@ -260,6 +268,12 @@ fun SettingsScreen(
             Text(stringResource(R.string.settings_accessory_warmup, settings.accessoryWarmupSets), style = MaterialTheme.typography.bodyLarge)
             Text(stringResource(R.string.settings_accessory_warmup_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             SingleChoiceChips(listOf(0, 1, 2), settings.accessoryWarmupSets, { it.toString() }, viewModel::setAccessoryWarmupSets, tag = "accessory_warmup")
+        }
+        HorizontalDivider()
+        Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 10.dp)) {
+            Text(stringResource(R.string.settings_min_sets, settings.minSets), style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.settings_min_sets_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            SingleChoiceChips(MIN_SETS_RANGE.toList(), settings.minSets, { it.toString() }, viewModel::setMinSets, tag = "min_sets")
         }
         HorizontalDivider()
         LinkRow(

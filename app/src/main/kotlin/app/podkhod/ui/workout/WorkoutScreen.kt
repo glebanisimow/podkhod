@@ -89,6 +89,7 @@ import app.podkhod.domain.OneRepMax
 import app.podkhod.domain.weights.WarmupStep
 import app.podkhod.service.WorkoutService
 import app.podkhod.ui.program.schemeText
+import app.podkhod.ui.components.ClawMarks
 import app.podkhod.ui.weights.PlateSolutionView
 import app.podkhod.ui.weights.perSideText
 import app.podkhod.ui.format.Format
@@ -263,8 +264,11 @@ private fun WorkoutContent(
             )
         }
 
+        val nextSlot = detail.nextIndexAfter(page)?.let { slots[it] }
         BottomPanel(
             slot = slot,
+            nextSlot = nextSlot,
+            onNext = { nextSlot?.let { n -> scope.launch { pagerState.animateScrollToPage(slots.indexOf(n)) } } },
             input = input,
             aids = aids[slot.slot.id],
             warmup = warmup,
@@ -287,22 +291,29 @@ private fun WorkoutContent(
                     else stringResource(R.string.workout_finish_done),
                 )
             },
+            // Three actions never fit one row on a phone: stacked full width, the main one first.
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        finishDialog = false
-                        vm.finish(onFinished)
-                    },
-                    modifier = Modifier.testTag("finish_confirm"),
-                ) { Text(stringResource(R.string.workout_finish)) }
-            },
-            dismissButton = {
-                Row {
-                    TextButton(onClick = {
-                        finishDialog = false
-                        discardDialog = true
-                    }) { Text(stringResource(R.string.workout_finish_discard), color = MaterialTheme.colorScheme.error) }
-                    TextButton(onClick = { finishDialog = false }) { Text(stringResource(R.string.cancel)) }
+                Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(
+                        shape = BrandShapes.Button,
+                        onClick = {
+                            finishDialog = false
+                            vm.finish(onFinished)
+                        },
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("finish_confirm"),
+                    ) { Text(stringResource(R.string.workout_finish), style = MaterialTheme.typography.titleMedium) }
+                    OutlinedButton(
+                        shape = BrandShapes.Button,
+                        onClick = { finishDialog = false },
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("finish_cancel"),
+                    ) { Text(stringResource(R.string.cancel), style = MaterialTheme.typography.titleMedium) }
+                    TextButton(
+                        onClick = {
+                            finishDialog = false
+                            discardDialog = true
+                        },
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("finish_discard"),
+                    ) { Text(stringResource(R.string.workout_finish_discard), color = MaterialTheme.colorScheme.error) }
                 }
             },
         )
@@ -448,6 +459,12 @@ private fun ExercisePage(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.testTag("workout_scheme_$index"),
         )
+        ClawMarks(
+            planned = s.sets,
+            done = slot.workSetCount,
+            description = stringResource(R.string.workout_sets_of, slot.workSetCount, s.sets),
+            modifier = Modifier.testTag("workout_claws_$index"),
+        )
         aids?.hint?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.testTag("workout_hint_$index")) }
         s.note?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary) }
         val warmupSteps = aids?.warmup.orEmpty()
@@ -560,6 +577,8 @@ private fun RirChips(set: SetLogEntity, onRir: (SetLogEntity, Int) -> Unit) {
 @Composable
 private fun BottomPanel(
     slot: SlotDetail,
+    nextSlot: SlotDetail?,
+    onNext: () -> Unit,
     input: SetInput,
     aids: SlotAids?,
     warmup: Boolean,
@@ -642,12 +661,14 @@ private fun BottomPanel(
                     label = { Text(stringResource(R.string.workout_warmup_toggle)) },
                     modifier = Modifier.heightIn(min = 48.dp).testTag("warmup_toggle"),
                 )
+                // On a finished exercise the question is whether the next machine is free.
+                val busyTarget = if (slot.isDone) nextSlot else slot
                 OutlinedButton(
                     shape = BrandShapes.Button,
-                    onClick = { vm.openBusy(slot) },
-                    enabled = !slot.isDone,
+                    onClick = { busyTarget?.let(vm::openBusy) },
+                    enabled = busyTarget != null,
                     modifier = Modifier.heightIn(min = 48.dp).testTag("workout_busy"),
-                ) { Text(stringResource(R.string.busy)) }
+                ) { Text(stringResource(if (slot.isDone) R.string.busy_next else R.string.busy)) }
                 Spacer(Modifier.weight(1f))
                 if (oneHand) {
                     TextButton(onClick = onFinish, modifier = Modifier.heightIn(min = 48.dp).testTag("workout_finish")) {
@@ -656,15 +677,43 @@ private fun BottomPanel(
                 }
             }
 
-            Button(
-                shape = BrandShapes.Button,
-                onClick = { vm.logSet(slot, input) },
-                modifier = Modifier.fillMaxWidth().height(if (oneHand) 84.dp else 72.dp).testTag("workout_log_set"),
-            ) {
-                Text(
-                    stringResource(if (warmup) R.string.workout_log_warmup else R.string.workout_log_set),
-                    style = MaterialTheme.typography.titleLarge,
-                )
+            val bigButton = Modifier.fillMaxWidth().height(if (oneHand) 84.dp else 72.dp)
+            if (slot.isDone) {
+                // The plan for this exercise is done: moving on is the lifter's call, an extra set stays one tap away.
+                OutlinedButton(
+                    shape = BrandShapes.Button,
+                    onClick = { vm.logSet(slot, input) },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("workout_log_set"),
+                ) {
+                    Text(
+                        stringResource(if (warmup) R.string.workout_log_warmup else R.string.workout_log_extra),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+                Button(
+                    shape = BrandShapes.Button,
+                    onClick = if (nextSlot != null) onNext else onFinish,
+                    modifier = bigButton.testTag("workout_next"),
+                ) {
+                    Text(
+                        if (nextSlot != null) stringResource(R.string.workout_next, nextSlot.exercise.nameRu)
+                        else stringResource(R.string.workout_finish),
+                        style = MaterialTheme.typography.titleLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            } else {
+                Button(
+                    shape = BrandShapes.Button,
+                    onClick = { vm.logSet(slot, input) },
+                    modifier = bigButton.testTag("workout_log_set"),
+                ) {
+                    Text(
+                        stringResource(if (warmup) R.string.workout_log_warmup else R.string.workout_log_set),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
             }
         }
     }

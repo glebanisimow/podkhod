@@ -44,6 +44,13 @@ data class SessionDetail(
     val doneWorkSets: Int get() = slots.sumOf { minOf(it.workSetCount, it.slot.sets) }
     val remainingWorkSets: Int get() = (plannedWorkSets - doneWorkSets).coerceAtLeast(0)
 
+    /** Index of the slot «Дальше» leads to from [index], or null when everything else is done. */
+    fun nextIndexAfter(index: Int): Int? {
+        val states = slots.map { SlotState(it.slot.position, it.slot.supersetGroup, it.slot.sets, it.workSetCount, it.slot.restSec) }
+        val position = WorkoutFlow.nextUnfinished(states, slots.getOrNull(index)?.slot?.position ?: return null) ?: return null
+        return slots.indexOfFirst { it.slot.position == position }.takeIf { it >= 0 }
+    }
+
     fun loggedSets(): List<LoggedSet> = slots.flatMap { s ->
         s.sets.map { LoggedSet(s.exercise.id, SetKind.fromCode(it.kind), it.weightKg, it.reps, it.durationSec) }
     }

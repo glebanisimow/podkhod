@@ -3,6 +3,7 @@ package app.podkhod.ui.history
 import androidx.compose.foundation.clickable
 import app.podkhod.ui.theme.BrandShapes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -51,6 +52,7 @@ import androidx.compose.ui.Alignment
 import app.podkhod.data.workout.WorkoutRepository
 import app.podkhod.domain.model.SetKind
 import app.podkhod.ui.components.BrandScene
+import app.podkhod.ui.components.PawTrail
 import app.podkhod.ui.components.ScreenHeader
 import app.podkhod.ui.components.SectionCard
 import app.podkhod.ui.format.Format
@@ -117,7 +119,10 @@ fun HistoryScreen(onOpen: (Long) -> Unit, onOpenProgress: () -> Unit, viewModel:
         ScreenHeader(stringResource(R.string.history_title))
         val list = rows ?: return@Column
         if (list.isEmpty()) {
-            BrandScene(Modifier.padding(horizontal = 32.dp, vertical = 16.dp))
+            Box {
+                PawTrail(Modifier.matchParentSize())
+                BrandScene(Modifier.padding(horizontal = 32.dp, vertical = 16.dp))
+            }
             Text(
                 stringResource(R.string.history_empty),
                 style = MaterialTheme.typography.bodyLarge,

@@ -37,6 +37,7 @@ data class SettingsBackup(
     val supersetRestAfterEach: Boolean = false,
     val animations: Boolean = true,
     val accessoryWarmupSets: Int = 1,
+    val minSets: Int = 3,
 )
 
 data class BackupPreview(

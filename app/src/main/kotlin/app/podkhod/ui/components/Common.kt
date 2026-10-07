@@ -32,6 +32,15 @@ import app.podkhod.R
 
 @Composable
 fun ScreenHeader(title: String, onBack: (() -> Unit)? = null) {
+    Column {
+        HeaderRow(title, onBack)
+        // Top-level screens get the "зубы" line under the title; inner screens stay plain.
+        if (onBack == null) ZigzagLine(Modifier.padding(horizontal = 20.dp), MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+    }
+}
+
+@Composable
+private fun HeaderRow(title: String, onBack: (() -> Unit)?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

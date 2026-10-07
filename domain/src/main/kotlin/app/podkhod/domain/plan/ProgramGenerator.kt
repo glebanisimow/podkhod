@@ -308,6 +308,7 @@ class ProgramGenerator(private val config: GeneratorConfig) {
             SlotRole.ACCESSORY -> adj?.accessorySets?.let { sets = it }
             SlotRole.ISOLATION, SlotRole.CORE -> adj?.isolationSets?.let { sets = it }
         }
+        sets = sets.coerceAtLeast(config.sets.min)
         val (repMin, repMax) = if (info.measure == Measure.SECONDS) {
             info.repMin to info.repMax
         } else {

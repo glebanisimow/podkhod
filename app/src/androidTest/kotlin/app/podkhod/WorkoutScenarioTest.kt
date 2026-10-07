@@ -10,6 +10,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import org.junit.Assert.assertNotEquals
@@ -70,8 +71,8 @@ class WorkoutScenarioTest {
         compose.onNodeWithTag("finish_confirm").performClick()
         waitFor("screen_summary")
         compose.onNodeWithTag("summary_totals").assertIsDisplayed()
-        compose.onNodeWithTag("feeling_2").performClick()
-        compose.onNodeWithTag("summary_done").performClick()
+        compose.onNodeWithTag("feeling_2").performScrollTo().performClick()
+        compose.onNodeWithTag("summary_done").performScrollTo().performClick()
         waitFor("screen_today")
         waitFor("today_start")
     }
@@ -94,7 +95,7 @@ class WorkoutScenarioTest {
         compose.onNodeWithTag("workout_finish").performClick()
         compose.onNodeWithTag("finish_confirm").performClick()
         waitFor("screen_summary")
-        compose.onNodeWithTag("summary_done").performClick()
+        compose.onNodeWithTag("summary_done").performScrollTo().performClick()
         waitFor("screen_today")
     }
 

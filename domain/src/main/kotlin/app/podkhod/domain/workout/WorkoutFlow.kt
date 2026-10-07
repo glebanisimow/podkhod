@@ -25,9 +25,10 @@ data class AfterSetDecision(
  * Decides where the workout goes after a set is logged.
  *
  * Superset members alternate (A1 → A2 → rest → A1 …). Rest starts after the last member of a round,
- * or after every member in [SupersetRestMode.AFTER_EACH_EXERCISE]. A plain exercise stays in place until
- * its planned sets are done, then moves to the next unfinished slot; rest always starts after a work set.
- * Warm-up sets get a short fixed rest and never move the screen.
+ * or after every member in [SupersetRestMode.AFTER_EACH_EXERCISE]. A finished exercise (or a finished
+ * superset) never moves the screen on by itself: the lifter may add a set or check that the next machine is
+ * free first, and goes on with [nextUnfinished]. Rest always starts after a work set. Warm-up sets get a
+ * short fixed rest and never move the screen.
  */
 object WorkoutFlow {
     const val WARMUP_REST_SEC = 60
@@ -48,11 +49,7 @@ object WorkoutFlow {
             ?.let { g -> ordered.filter { it.supersetGroup == g } }
             ?.takeIf { it.size > 1 }
 
-        if (group == null) {
-            if (!current.isDone) return AfterSetDecision(current.position, current.restSec)
-            val next = nextUnfinishedAfter(ordered, current.position) ?: current.position
-            return AfterSetDecision(next, current.restSec)
-        }
+        if (group == null) return AfterSetDecision(current.position, current.restSec)
 
         val after = group.filter { it.position > current.position && !it.isDone }
         if (after.isNotEmpty()) {
@@ -65,14 +62,14 @@ object WorkoutFlow {
             return AfterSetDecision(nextRound.first().position, nextRound.maxOf { it.restSec })
         }
 
-        val lastInGroup = group.maxOf { it.position }
-        val next = nextUnfinishedAfter(ordered, lastInGroup) ?: current.position
-        return AfterSetDecision(next, group.maxOf { it.restSec })
+        return AfterSetDecision(current.position, group.maxOf { it.restSec })
     }
 
-    private fun nextUnfinishedAfter(ordered: List<SlotState>, position: Int): Int? =
-        ordered.firstOrNull { it.position > position && !it.isDone }?.position
-            ?: ordered.firstOrNull { !it.isDone }?.position
+    /** Where «Дальше» leads from [position]: the next unfinished slot, wrapping to a skipped earlier one. */
+    fun nextUnfinished(slots: List<SlotState>, position: Int): Int? {
+        val ordered = slots.sortedBy { it.position }.filter { !it.isDone && it.position != position }
+        return (ordered.firstOrNull { it.position > position } ?: ordered.firstOrNull())?.position
+    }
 
     /** New end of rest after a ±delta tap; never earlier than now. */
     fun adjustRestEnd(endsAtMillis: Long, deltaSec: Int, nowMillis: Long): Long =

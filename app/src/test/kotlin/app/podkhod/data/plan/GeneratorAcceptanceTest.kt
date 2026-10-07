@@ -83,6 +83,17 @@ class GeneratorAcceptanceTest {
     )
 
     @Test
+    fun minSetsFromSettingsLiftsEveryExercise() {
+        for (p in listOf(twoDays, threeDays, fourDays)) {
+            val program = ProgramGenerator(config.withMinSets(3)).generate(
+                ProgramGenerator.Input(profile = p, catalog = catalog, strength = StrengthData(ratios = ratios)),
+            )
+            val sets = program.days.flatMap { d -> d.slots.map { it.sets } }
+            assertTrue("${p.daysPerWeek} дня: $sets", sets.all { it >= 3 })
+        }
+    }
+
+    @Test
     fun configIsValid() {
         assertEquals(emptyList<String>(), CatalogValidator.validateGeneratorConfig(config, byId.keys))
     }

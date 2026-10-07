@@ -15,9 +15,15 @@ class WorkoutFlowTest {
     }
 
     @Test
-    fun plainExerciseMovesOnAfterLastSetAndStillRests() {
+    fun plainExerciseWaitsForTheLifterAfterLastSetAndStillRests() {
         val slots = listOf(slot(0, logged = 3, rest = 120), slot(1))
-        assertEquals(AfterSetDecision(1, 120), WorkoutFlow.afterSet(slots, 0, isWarmup = false))
+        assertEquals(AfterSetDecision(0, 120), WorkoutFlow.afterSet(slots, 0, isWarmup = false))
+    }
+
+    @Test
+    fun extraSetOverThePlanStaysInPlace() {
+        val slots = listOf(slot(0, planned = 2, logged = 3, rest = 60), slot(1))
+        assertEquals(AfterSetDecision(0, 60), WorkoutFlow.afterSet(slots, 0, isWarmup = false))
     }
 
     @Test
@@ -39,9 +45,10 @@ class WorkoutFlowTest {
     }
 
     @Test
-    fun finishedSupersetMovesToNextUnfinishedSlot() {
+    fun finishedSupersetWaitsOnItsLastMember() {
         val slots = listOf(slot(0, logged = 3), slot(1, "A", logged = 3), slot(2, "A", logged = 3, rest = 75), slot(3))
-        assertEquals(AfterSetDecision(3, 90), WorkoutFlow.afterSet(slots, 2, isWarmup = false))
+        assertEquals(AfterSetDecision(2, 90), WorkoutFlow.afterSet(slots, 2, isWarmup = false))
+        assertEquals(3, WorkoutFlow.nextUnfinished(slots, 2))
     }
 
     @Test
@@ -53,7 +60,13 @@ class WorkoutFlowTest {
     @Test
     fun skippedEarlierExerciseIsPickedUpAtTheEnd() {
         val slots = listOf(slot(0, logged = 0), slot(1, logged = 3), slot(2, logged = 3))
-        assertEquals(0, WorkoutFlow.afterSet(slots, 2, isWarmup = false).nextPosition)
+        assertEquals(0, WorkoutFlow.nextUnfinished(slots, 2))
+    }
+
+    @Test
+    fun nothingNextWhenEverythingElseIsDone() {
+        val slots = listOf(slot(0, logged = 3), slot(1, logged = 1))
+        assertEquals(null, WorkoutFlow.nextUnfinished(slots, 1))
     }
 
     @Test
