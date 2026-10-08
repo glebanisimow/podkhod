@@ -108,7 +108,9 @@ JSON-файлы ниже (`assets/...`) лежат в `shared/src/commonMain/com
 
 Все веса хранятся в килограммах (`Double`), время — epoch millis UTC, длительности — секунды.
 Каждое изменение схемы: новая версия, `Migration`, JSON схемы в `app/schemas`, тест миграции.
-Деструктивная миграция запрещена. 3 → 4 — `AutoMigration`: только новые таблицы и колонки с `DEFAULT`.
+Деструктивная миграция запрещена. Миграции 1 → 2 → 3 → 4 — ручные `Migration` в `Migrations.kt` (SQL, который
+сгенерировал Room для бывших `AutoMigration`: Kotlin/Native не линкует `AutoMigration` в аннотации). 3 → 4 —
+только новые таблицы и колонки с `DEFAULT`.
 
 Каталог (заливается из `assets/catalog.json` при смене `catalog_version`):
 

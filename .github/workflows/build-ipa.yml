@@ -51,15 +51,16 @@ jobs:
 
       - name: Build unsigned app
         run: |
+          set -o pipefail
           xcodebuild -project iosApp/Podkhod.xcodeproj -scheme Podkhod -configuration Release \
             -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath "$RUNNER_TEMP/dd" \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-            build | tail -n 200   # default shell has pipefail, so a failed build still fails the step
+            build | tail -n 400
 
       - name: Package IPA
         run: |
           APP="$RUNNER_TEMP/dd/Build/Products/Release-iphoneos/Podkhod.app"
-          test -d "$APP"
+          test -x "$APP/Podkhod" || { echo "::error::Podkhod.app has no executable"; exit 1; }
           mkdir -p Payload && cp -R "$APP" Payload/
           zip -qry Podkhod.ipa Payload
           ls -lh Podkhod.ipa

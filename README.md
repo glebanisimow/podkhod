@@ -106,7 +106,14 @@ keytool -genkeypair -v -keystore "$env:USERPROFILE\.podkhod-keys\podkhod-release
 .\gradlew.bat :shared:compileKotlinIosArm64
 ```
 
-Собрать и поставить приложение можно только на Mac с Xcode 26 (macOS 15.6+), бесплатного Apple ID хватает:
+**Поставить без сборки (Mac + Sideloadly).** `.github/workflows/build-ipa.yml` собирает неподписанный
+`Podkhod.ipa` на каждый push с изменениями в iOS-части и выкладывает его в пре-релиз `ios`:
+<https://github.com/glebanisimow/podkhod/releases/download/ios/Podkhod.ipa>. Его ставят на iPhone
+программой [Sideloadly](https://sideloadly.io) со своим бесплатным Apple ID: перетащить файл, вписать
+Apple ID, Start. Затем на iPhone включить «Режим разработчика» и в «Основные → VPN и управление
+устройством» доверять своему Apple ID. Подпись живёт 7 дней — переустановить поверх, данные сохраняются.
+
+**Собрать самому** можно только на Mac с Xcode 26 (macOS 15.6+), бесплатного Apple ID хватает:
 
 ```sh
 brew install xcodegen

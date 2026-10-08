@@ -22,7 +22,7 @@ class MigrationTest {
             db.execSQL("INSERT INTO app_meta (meta_key, meta_value) VALUES ('first_launch_at', '123')")
         }
 
-        val migrated = helper.runMigrationsAndValidate(DB, 2, true)
+        val migrated = helper.runMigrationsAndValidate(DB, 2, true, *AppDatabase.MIGRATIONS)
 
         migrated.query("SELECT meta_value FROM app_meta WHERE meta_key = 'first_launch_at'").use { c ->
             assertTrue(c.moveToFirst())
@@ -47,7 +47,7 @@ class MigrationTest {
             )
         }
 
-        val migrated = helper.runMigrationsAndValidate(DB_V2, 3, true)
+        val migrated = helper.runMigrationsAndValidate(DB_V2, 3, true, *AppDatabase.MIGRATIONS)
 
         migrated.query("SELECT title, feeling FROM workout_session WHERE id = 7").use { c ->
             assertTrue(c.moveToFirst())
@@ -79,7 +79,7 @@ class MigrationTest {
             )
         }
 
-        val migrated = helper.runMigrationsAndValidate(DB_V3, 4, true)
+        val migrated = helper.runMigrationsAndValidate(DB_V3, 4, true, *AppDatabase.MIGRATIONS)
 
         migrated.query("SELECT next_day_index, weeks, week_index, mesocycle_index, deload_sessions_left, deload_offer FROM program WHERE id = 3").use { c ->
             assertTrue(c.moveToFirst())
