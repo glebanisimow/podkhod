@@ -45,10 +45,13 @@ class IosWorkoutTracker(
 
     private var started = false
 
+    // The notification center keeps its delegate weakly.
+    private val foregroundAlerts = ForegroundAlerts()
+
     override fun start() {
         if (started) return
         started = true
-        center.delegate = ForegroundAlerts
+        center.delegate = foregroundAlerts
         scope.launch {
             combine(workouts.activeSession, settingsRepo.settings) { session, settings -> plan(session, settings) }
                 .distinctUntilChanged()
@@ -81,7 +84,7 @@ class IosWorkoutTracker(
     private data class RestAlert(val endsAt: Long, val sound: Boolean, val vibration: Boolean)
 
     /** iOS hides notifications of the app in the foreground unless asked; the rest alert should still ring. */
-    private object ForegroundAlerts : NSObject(), UNUserNotificationCenterDelegateProtocol {
+    private class ForegroundAlerts : NSObject(), UNUserNotificationCenterDelegateProtocol {
         override fun userNotificationCenter(
             center: UNUserNotificationCenter,
             willPresentNotification: UNNotification,
