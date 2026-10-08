@@ -1,0 +1,89 @@
+name: build-ipa
+
+# Unsigned iPhone build. The user signs it with their own Apple ID while installing (Sideloadly),
+# so no Apple certificates live in CI. Every build replaces Podkhod.ipa on the rolling "ios" release:
+# https://github.com/glebanisimow/podkhod/releases/download/ios/Podkhod.ipa
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "shared/**"
+      - "domain/**"
+      - "iosApp/**"
+      - "gradle/**"
+      - "*.gradle.kts"
+      - ".github/workflows/build-ipa.yml"
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-ipa
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Kotlin/Native cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
+
+      - name: Generate Xcode project
+        run: |
+          brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
+          cd iosApp && xcodegen
+
+      - name: Build unsigned app
+        run: |
+          xcodebuild -project iosApp/Podkhod.xcodeproj -scheme Podkhod -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath "$RUNNER_TEMP/dd" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build | tail -n 200   # default shell has pipefail, so a failed build still fails the step
+
+      - name: Package IPA
+        run: |
+          APP="$RUNNER_TEMP/dd/Build/Products/Release-iphoneos/Podkhod.app"
+          test -d "$APP"
+          mkdir -p Payload && cp -R "$APP" Payload/
+          zip -qry Podkhod.ipa Payload
+          ls -lh Podkhod.ipa
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: podkhod-ipa
+          path: Podkhod.ipa
+          retention-days: 30
+
+      - name: Publish to the rolling "ios" release
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ios
+          name: iPhone — последняя сборка
+          prerelease: true
+          body: |
+            Неподписанная сборка для iPhone (коммит ${{ github.sha }}).
+            Ставится через Sideloadly с вашим Apple ID — инструкция в README, раздел «iPhone».
+          files: Podkhod.ipa
+
+      - name: Attach to version release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v3
+        with:
+          files: Podkhod.ipa
