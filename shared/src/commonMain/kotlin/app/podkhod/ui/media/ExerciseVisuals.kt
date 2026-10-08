@@ -54,7 +54,7 @@ import app.podkhod.data.db.ExerciseEntity
 import app.podkhod.data.media.MediaRepository
 import app.podkhod.domain.model.Muscle
 import app.podkhod.ui.format.Format
-import app.podkhod.platform.AnimationControl
+import app.podkhod.platform.animateExercise
 import app.podkhod.platform.exerciseImageRequest
 import app.podkhod.platform.systemAnimationsEnabled
 import coil3.compose.AsyncImagePainter
@@ -116,9 +116,9 @@ fun ExerciseAnimation(
         val state by painter.state.collectAsState()
         val lifecycle by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
         val run = playable && active && lifecycle.isAtLeast(Lifecycle.State.STARTED)
-        AnimationControl(state, run)
+        val shown = animateExercise(media.model, painter, state, playable, run)
         // Own layer: each animation frame re-records only the image, not the whole page.
-        Image(painter, contentDescription = null, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize().graphicsLayer())
+        Image(shown, contentDescription = null, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize().graphicsLayer())
         if (state is AsyncImagePainter.State.Error) {
             Text(stringResource(Res.string.media_error), style = MaterialTheme.typography.bodyMedium)
         }

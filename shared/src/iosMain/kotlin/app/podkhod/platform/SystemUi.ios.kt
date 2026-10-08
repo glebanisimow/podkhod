@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import coil3.compose.AsyncImagePainter
@@ -86,7 +87,7 @@ actual fun rememberNotificationAccess(): NotificationAccess {
 @Composable
 actual fun systemAnimationsEnabled(): Boolean = !UIAccessibilityIsReduceMotionEnabled()
 
-// Coil decodes WebP/GIF on iOS through Skia as a still first frame; playing them needs a frame decoder.
+// Coil decodes WebP/GIF on iOS through Skia as a still first frame; animateExercise plays the frames.
 @Composable
 actual fun exerciseImageRequest(model: String, playable: Boolean): ImageRequest {
     val context = LocalPlatformContext.current
@@ -94,7 +95,13 @@ actual fun exerciseImageRequest(model: String, playable: Boolean): ImageRequest 
 }
 
 @Composable
-actual fun AnimationControl(state: AsyncImagePainter.State, run: Boolean) = Unit
+actual fun animateExercise(
+    model: String,
+    painter: AsyncImagePainter,
+    state: AsyncImagePainter.State,
+    playable: Boolean,
+    run: Boolean,
+): Painter = rememberFramesPainter(model, painter, playable, run)
 
 actual fun Modifier.exposeTestTags(): Modifier = this
 

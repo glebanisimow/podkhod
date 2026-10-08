@@ -75,7 +75,7 @@ private fun iosModule(files: Path) = module {
         )
     }
     single<HoldSignals> { IosHoldSignals() }
-    single<WorkoutTracker> { WorkoutTracker { } }
+    single<WorkoutTracker> { IosWorkoutTracker(get(), get(), appScope) }
 }
 
 @OptIn(ExperimentalForeignApi::class)

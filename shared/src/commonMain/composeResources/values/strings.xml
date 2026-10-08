@@ -229,4 +229,7 @@
     <string name="muscle_abs">пресс</string>
     <string name="muscle_lower_back">поясница</string>
 
+    <!-- iPhone end-of-rest notification (Android keeps its own in app/src/main/res). -->
+    <string name="notif_rest_over_title">Отдых окончен</string>
+    <string name="notif_rest_over_text">Пора делать следующий подход</string>
 </resources>

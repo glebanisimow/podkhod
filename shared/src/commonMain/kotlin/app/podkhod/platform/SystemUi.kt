@@ -1,6 +1,7 @@
 package app.podkhod.platform
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.painter.Painter
 import coil3.compose.AsyncImagePainter
 import coil3.request.ImageRequest
 
@@ -22,9 +23,18 @@ expect fun systemAnimationsEnabled(): Boolean
 @Composable
 expect fun exerciseImageRequest(model: String, playable: Boolean): ImageRequest
 
-/** Starts or stops the loaded animated image. */
+/**
+ * Plays the loaded exercise animation while [run] and returns the painter to draw: [painter] itself where
+ * the platform animates the decoded image in place (Android), or a frame-by-frame painter (iOS).
+ */
 @Composable
-expect fun AnimationControl(state: AsyncImagePainter.State, run: Boolean)
+expect fun animateExercise(
+    model: String,
+    painter: AsyncImagePainter,
+    state: AsyncImagePainter.State,
+    playable: Boolean,
+    run: Boolean,
+): Painter
 
 /** A text file the user is saving through the system dialog. */
 fun interface DocumentWriter {

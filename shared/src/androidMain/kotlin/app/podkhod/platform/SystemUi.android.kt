@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.semantics.semantics
@@ -87,12 +88,19 @@ actual fun exerciseImageRequest(model: String, playable: Boolean): ImageRequest 
 }
 
 @Composable
-actual fun AnimationControl(state: AsyncImagePainter.State, run: Boolean) {
+actual fun animateExercise(
+    model: String,
+    painter: AsyncImagePainter,
+    state: AsyncImagePainter.State,
+    playable: Boolean,
+    run: Boolean,
+): Painter {
     val context = LocalContext.current
     LaunchedEffect(state, run) {
         val drawable = (state as? AsyncImagePainter.State.Success)?.result?.image?.asDrawable(context.resources)
         (drawable as? Animatable)?.let { if (run) it.start() else it.stop() }
     }
+    return painter
 }
 
 @Composable
