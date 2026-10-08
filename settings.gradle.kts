@@ -24,3 +24,4 @@ rootProject.name = "podkhod"
 
 include(":app")
 include(":domain")
+include(":shared")

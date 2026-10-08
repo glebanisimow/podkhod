@@ -38,7 +38,7 @@ jobs:
           echo "PODKHOD_KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
 
       - name: Unit tests
-        run: ./gradlew :domain:test :app:testDebugUnitTest
+        run: ./gradlew :domain:jvmTest :app:testDebugUnitTest
 
       - name: Assemble signed release APK
         env:

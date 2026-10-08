@@ -32,6 +32,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.mp.KoinPlatform
+import app.podkhod.platform.AppDirs
+import kotlinx.io.files.Path
 
 /**
  * Process death is modelled at the storage level: everything written before the database is closed must be
@@ -63,13 +66,13 @@ class WorkoutPersistenceTest {
 
     private fun repos(): Repos {
         val db = Room.databaseBuilder(context, AppDatabase::class.java, DB).addMigrations(*AppDatabase.MIGRATIONS).build()
-        val assets = AssetReader(context)
+        val assets = AssetReader()
         val catalog = CatalogRepository(db.catalogDao(), db.appMetaDao(), assets)
         val programs = ProgramRepository(db, assets) { clock }
         val profiles = ProfileRepository(db) { clock }
-        val configs = GeneratorConfigStore(File(context.cacheDir, "generator-test").apply { mkdirs() }, catalog)
+        val configs = GeneratorConfigStore(AppDirs(Path(File(context.cacheDir, "generator-test").apply { mkdirs() }.path)), catalog)
         // Monday: tomorrow is not a long-effort day in the test profile.
-        val plans = PlanRepository(db, catalog, profiles, configs, SettingsRepository(context), { clock }, { 1 })
+        val plans = PlanRepository(db, catalog, profiles, configs, KoinPlatform.getKoin().get<SettingsRepository>(), { clock }, { 1 })
         val workouts = WorkoutRepository(db, catalog, programs, plans) { clock }
         runBlocking {
             catalog.seedIfNeeded()
@@ -180,7 +183,7 @@ class WorkoutPersistenceTest {
         val sessionId = workouts.startFromProgramDay(day.day.id)
         val slots = workouts.observeDetail(sessionId).first()!!.slots
         val target = slots.last()
-        val catalog = CatalogRepository(db.catalogDao(), db.appMetaDao(), AssetReader(context))
+        val catalog = CatalogRepository(db.catalogDao(), db.appMetaDao(), AssetReader())
         val substitute = catalog.substitutes(target.exercise.id).first()
 
         assertTrue(workouts.replaceExercise(sessionId, target.slot.id, substitute.id, 8, 12, 24.0, forever = false))
@@ -201,7 +204,7 @@ class WorkoutPersistenceTest {
         val sessionId = workouts.startFromProgramDay(day.day.id)
         val first = workouts.observeDetail(sessionId).first()!!.slots.first()
         workouts.logSet(sessionId, first.slot.id, SetKind.WORK, 80.0, 6, null, SupersetRestMode.AFTER_ROUND)
-        val catalog = CatalogRepository(db.catalogDao(), db.appMetaDao(), AssetReader(context))
+        val catalog = CatalogRepository(db.catalogDao(), db.appMetaDao(), AssetReader())
         val substitute = catalog.substitutes(first.exercise.id).first()
 
         assertTrue(workouts.replaceExercise(sessionId, first.slot.id, substitute.id, 6, 10, null, forever = true))
@@ -249,7 +252,7 @@ class WorkoutPersistenceTest {
         val day = programs.activeProgram.first()!!.days[0]
         val sessionId = workouts.startFromProgramDay(day.day.id)
         val first = workouts.observeDetail(sessionId).first()!!.slots.first()
-        val catalog = CatalogRepository(db.catalogDao(), db.appMetaDao(), AssetReader(context))
+        val catalog = CatalogRepository(db.catalogDao(), db.appMetaDao(), AssetReader())
         val plank = catalog.exercises(listOf("plank")).getValue("plank")
 
         workouts.addFiller(sessionId, first.slot.id, plank)

@@ -13,3 +13,8 @@ captures/
 .cxx/
 /dist/
 tools/build_media/.cache/
+
+# iOS: the Xcode project is generated from iosApp/project.yml; signing stays local.
+iosApp/*.xcodeproj/
+iosApp/Local.xcconfig
+xcuserdata/

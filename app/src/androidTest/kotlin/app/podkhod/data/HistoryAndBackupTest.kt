@@ -35,6 +35,9 @@ import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.mp.KoinPlatform
+import app.podkhod.platform.AppDirs
+import kotlinx.io.files.Path
 import java.io.File
 
 @RunWith(AndroidJUnit4::class)
@@ -58,15 +61,16 @@ class HistoryAndBackupTest {
         files.deleteRecursively()
         files.mkdirs()
         db = Room.databaseBuilder(context, AppDatabase::class.java, DB).build()
-        val assets = AssetReader(context)
+        val assets = AssetReader()
         val catalog = CatalogRepository(db.catalogDao(), db.appMetaDao(), assets)
-        val settings = SettingsRepository(context)
-        val configs = GeneratorConfigStore(File(files, "config").apply { mkdirs() }, catalog)
+        // The app's own settings store: a second DataStore on the same file is not allowed.
+        val settings = KoinPlatform.getKoin().get<SettingsRepository>()
+        val configs = GeneratorConfigStore(AppDirs(Path(File(files, "config").apply { mkdirs() }.path)), catalog)
         programs = ProgramRepository(db, assets) { clock }
         profiles = ProfileRepository(db) { clock }
         plans = PlanRepository(db, catalog, profiles, configs, settings, { clock }, { 1 })
         workouts = WorkoutRepository(db, catalog, programs, plans) { clock }
-        backups = BackupRepository(db, settings, configs, catalog, files, "test") { clock }
+        backups = BackupRepository(db, settings, configs, catalog, AppDirs(Path(files.path)), "test") { clock }
         progress = ProgressRepository(db, catalog, configs)
         runBlocking {
             catalog.seedIfNeeded()

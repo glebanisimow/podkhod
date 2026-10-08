@@ -8,13 +8,10 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.util.Log
+import app.podkhod.platform.HoldSignals
 
-/**
- * Beeps and buzzes of the timed-set countdown, played directly while the workout screen is up: the hold
- * is short and the phone is usually on the floor next to the lifter, so a notification would be late.
- * Sound and vibration follow the rest-signal settings.
- */
-class HoldSignals(context: Context) {
+/** [HoldSignals] through the alarm stream and the vibrator. */
+class AndroidHoldSignals(context: Context) : HoldSignals {
 
     private val vibrator: Vibrator? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -32,14 +29,12 @@ class HoldSignals(context: Context) {
         null
     }
 
-    /** Hold starts, or one of the last seconds ticks. */
-    fun tick(sound: Boolean, vibration: Boolean) {
+    override fun tick(sound: Boolean, vibration: Boolean) {
         if (sound) tones?.startTone(ToneGenerator.TONE_PROP_BEEP, SHORT_MS)
         if (vibration) vibrate(SHORT_MS.toLong())
     }
 
-    /** The planned time is up. */
-    fun finish(sound: Boolean, vibration: Boolean) {
+    override fun finish(sound: Boolean, vibration: Boolean) {
         if (sound) tones?.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, LONG_MS)
         if (vibration) vibrator?.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 400, 150, 400), -1))
     }

@@ -4,8 +4,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.room)
 }
 
 val localProps = Properties().apply {
@@ -90,14 +88,9 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
-}
 
-room {
-    schemaDirectory("$projectDir/schemas")
-}
-
-ksp {
-    arg("room.generateKotlin", "true")
+    // Room schemas exported by :shared, for MigrationTestHelper in instrumented tests.
+    sourceSets.getByName("androidTest").assets.directories.add("$rootDir/shared/schemas")
 }
 
 if (!hasReleaseSigning) {
@@ -106,6 +99,7 @@ if (!hasReleaseSigning) {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":shared"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
@@ -122,8 +116,6 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
 
     implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
 
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.android)

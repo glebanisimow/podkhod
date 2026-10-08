@@ -13,9 +13,12 @@
 | Kotlin | 2.4.20 (встроенный Kotlin AGP 9, без плагина `kotlin-android`) | Maven Central; developer.android.com/build/migrate-to-built-in-kotlin |
 | KSP | 2.3.12 (нужен вместо kapt: kapt несовместим со встроенным Kotlin) | GitHub releases google/ksp |
 | Compose BOM / Material 3 | 2026.09.00 | Google Maven |
-| Room | 2.8.5 + Room Gradle plugin (экспорт схем в `app/schemas`) | Google Maven |
-| Navigation Compose | 2.10.2 (типобезопасные маршруты на kotlinx.serialization) | Google Maven |
+| Compose Multiplatform | 1.12.1 (Material 3 — 1.9.0; на Android сводятся к androidx-артефактам BOM) | Maven Central, 8 октября 2026 |
+| Room | 2.8.5 KMP + Room Gradle plugin (экспорт схем в `shared/schemas`); `sqlite-bundled` 2.6.2 на iOS | Google Maven |
+| Navigation Compose | 2.10.2 на Android; в `:shared` — JetBrains 2.9.2 (типобезопасные маршруты на kotlinx.serialization) | Google Maven, Maven Central |
+| Lifecycle (ViewModel) | JetBrains 2.11.0 в `:shared` | Maven Central |
 | DataStore Preferences | 1.2.1 | Google Maven |
+| kotlinx-datetime / kotlinx-io | 0.8.0 / 0.9.1 | Maven Central, 8 октября 2026 |
 | Koin (DI) | BOM 4.2.2 | Maven Central |
 | kotlinx.serialization / coroutines | 1.11.0 / 1.11.0 | Maven Central |
 | compileSdk / targetSdk / minSdk | 37 (Android 17) / 37 / 29 (Android 10) | `repository2-3.xml`: `platforms;android-37.0` стабильная |
@@ -29,20 +32,39 @@
   задают плагины `kotlin.plugin.compose`/`serialization`, которые кладут KGP 2.4.20 в classpath.
 - **Coil 3.6.3 (`coil-compose`, `coil-gif`)** показывает анимированный WebP/GIF через системный
   `AnimatedImageDecoder` (API 28+). Статичный кадр — тот же файл через `BitmapFactoryDecoder`.
+  `coil-gif` есть только для Android: на iOS Coil декодирует через Skia и показывает первый кадр.
 - **WorkManager** (2.12.x) подключается на этапе 5 для очереди Strava, **Ktor/OkHttp** там же.
 
 ## Модули
 
-Модулей ровно два. Это не дань моде: отдельный модуль даёт быстрые JVM-тесты и запрещает тащить
-Android в логику на уровне компилятора.
+Три модуля: логика, общее приложение и Android-оболочка. Отдельный `:domain` даёт быстрые JVM-тесты и
+запрещает тащить платформу в логику на уровне компилятора; `:shared` — всё приложение один раз для
+Android и iPhone.
 
-- `:domain` — чистый Kotlin/JVM без Android: генератор программы, прогрессия, округление весов,
-  калькулятор блинов, расчёт 1ПМ, логика замен. Покрыт JUnit-тестами (`./gradlew :domain:test`).
-- `:app` — Android: Compose-интерфейс, Room, DataStore, таймер (foreground service), бэкап, Strava.
+- `:domain` — Kotlin Multiplatform без Android и без JVM-only API (таргеты `jvm`, `iosArm64`,
+  `iosSimulatorArm64`; даты — `kotlinx-datetime`): генератор программы, прогрессия, округление весов,
+  калькулятор блинов, расчёт 1ПМ, логика замен. Код лежит в `commonMain`, JUnit-тесты — в `jvmTest`
+  (`./gradlew :domain:jvmTest`). `./gradlew :domain:compileKotlinIosArm64` проверяет, что общий код
+  собирается под iPhone; работает и на Windows, Mac нужен только для сборки самого приложения.
+- `:shared` — Kotlin Multiplatform (`android`, `iosArm64`, `iosSimulatorArm64`): Compose Multiplatform
+  интерфейс, Room KMP, DataStore, Koin, Coil, бэкап. Строки, векторные картинки и JSON-ассеты лежат в
+  `shared/src/commonMain/composeResources` (`values/`, `drawable/`, `files/`), доступ через `Res`.
+  Платформенные места — пакет `platform`: интерфейсы `HoldSignals`, `WorkoutTracker`, `AppInfo`, `AppDirs`
+  и `expect`-функции для системных диалогов, «не гасить экран», уведомлений и анимаций; реализации в
+  `androidMain` и `iosMain`. Транзакции и сырой SQL бэкапа — тоже `expect`: на Android остались прежние
+  `withTransaction` и `SupportSQLiteDatabase`, на iOS — соединения Room с `BundledSQLiteDriver`.
+  Множественные формы — `ui/format/RuPlurals.kt`, а не ресурсы: форма всегда по русским правилам.
+- `:app` — Android-оболочка: `PodkhodApp` (Koin, загрузчик Coil), `MainActivity`, `AndroidModule`
+  (база через `Room.databaseBuilder` с системным SQLite, DataStore `settings`, `filesDir`), таймер
+  отдыха (`WorkoutService`, foreground service) и звуки удержания (`AndroidHoldSignals`). Ресурсы
+  `app/src/main/res` — только иконка, тема окна и строки уведомлений.
+- `iosApp/` — Xcode-проект (генерируется XcodeGen из `project.yml`): SwiftUI-обёртка вокруг
+  `MainViewController()` из `:shared`. Сборка и установка — на Mac.
 
-Пакеты в `:app`: `data/db` (Room), `data/catalog` (JSON каталога и шаблонов, валидатор, загрузка в БД),
-`data/program`, `data/workout`, `data/profile`, `data/plan` (репозитории), `data/settings` (DataStore), `service` (таймер отдыха),
-`di`, `ui/theme`, `ui/navigation`, `ui/components`, `ui/format`, `ui/<feature>` (экран + ViewModel рядом).
+Пакеты в `:shared`: `data/db` (Room), `data/catalog` (JSON каталога и шаблонов, валидатор, загрузка в БД),
+`data/program`, `data/workout`, `data/profile`, `data/plan` (репозитории), `data/settings` (DataStore),
+`di`, `platform`, `ui/theme`, `ui/navigation`, `ui/components`, `ui/format`, `ui/<feature>` (экран + ViewModel рядом).
+JSON-файлы ниже (`assets/...`) лежат в `shared/src/commonMain/composeResources/files/`.
 
 ## Тренировка и таймер отдыха (этап 1)
 

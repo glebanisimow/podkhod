@@ -48,7 +48,7 @@ $env:JAVA_HOME = $jdk; $env:ANDROID_HOME = $sdk
 ## Сборка
 
 ```powershell
-.\gradlew.bat :domain:test :app:testDebugUnitTest   # юнит-тесты
+.\gradlew.bat :domain:jvmTest :app:testDebugUnitTest   # юнит-тесты
 .\gradlew.bat :app:connectedDebugAndroidTest        # миграции, сохранность, UI-сценарий (нужен эмулятор или телефон)
 .\gradlew.bat assembleDebug                         # app\build\outputs\apk\debug\app-debug.apk
 .\gradlew.bat assembleRelease                       # app\build\outputs\apk\release\app-release.apk (подписан)
@@ -97,6 +97,27 @@ keytool -genkeypair -v -keystore "$env:USERPROFILE\.podkhod-keys\podkhod-release
 При первом «Начать тренировку» Android спросит разрешение на уведомления — разреши. Без него таймер в
 приложении работает, но сигнал конца отдыха при погашенном экране не придёт. Звук и вибрацию сигнала
 можно настроить в «Настройки» → «Уведомления».
+
+## iPhone (в работе)
+
+Экраны, данные и логика общие с Android (модуль `:shared`). С Windows проверяется компиляция под iPhone:
+
+```powershell
+.\gradlew.bat :shared:compileKotlinIosArm64
+```
+
+Собрать и поставить приложение можно только на Mac с Xcode 26 (macOS 15.6+), бесплатного Apple ID хватает:
+
+```sh
+brew install xcodegen
+cd iosApp && xcodegen          # создаёт Podkhod.xcodeproj из project.yml
+echo "PODKHOD_TEAM_ID = <Team ID>" > Local.xcconfig
+open Podkhod.xcodeproj         # выбрать iPhone, Run
+```
+
+Подпись бесплатного аккаунта живёт 7 дней, потом приложение нужно поставить заново (данные сохраняются).
+Пока не сделано: сигнал конца отдыха при свёрнутом приложении и анимации упражнений (на iPhone видна
+первая картинка).
 
 ## Бэкап данных
 

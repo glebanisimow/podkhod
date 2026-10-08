@@ -37,7 +37,7 @@ python tools/build_media/build_media.py --source <путь к локальной
 - `mapping.json` — соответствие `id упражнения → папка free-exercise-db` и тип совпадения `exact/similar`.
 - Анимированный WebP: ≤ 360 px по большей стороне, кадр 84 мс (≤ 12 fps), удержание позы 900 мс,
   плавный переход 5 кадров, качество подбирается под цель ≤ 150 КБ.
-- Выход: `app/src/main/assets/media/*.webp` и `assets/media_manifest.json` (файл, источник, `sourceId`,
+- Выход: `shared/src/commonMain/composeResources/files/media/*.webp` и `files/media_manifest.json` (файл, источник, `sourceId`,
   тип совпадения, лицензия, автор, sha256). Из манифеста заполняется «О приложении → Лицензии анимаций».
 
 ## Воспроизведение

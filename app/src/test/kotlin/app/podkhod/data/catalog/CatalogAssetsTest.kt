@@ -129,7 +129,7 @@ class CatalogAssetsTest {
     }
 
     private fun asset(name: String): String {
-        val candidates = listOf(File("src/main/assets/$name"), File("app/src/main/assets/$name"))
+        val candidates = listOf(File("../shared/src/commonMain/composeResources/files/$name"), File("shared/src/commonMain/composeResources/files/$name"))
         return candidates.first { it.exists() }.readText(Charsets.UTF_8)
     }
 }

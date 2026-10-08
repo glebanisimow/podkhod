@@ -14,7 +14,7 @@ import java.security.MessageDigest
 /** Stage 3 acceptance on the bundled assets: coverage, size budget, licenses and technique texts. */
 class MediaAssetsTest {
 
-    private val assets = listOf(File("src/main/assets"), File("app/src/main/assets")).first { it.exists() }
+    private val assets = listOf(File("../shared/src/commonMain/composeResources/files"), File("shared/src/commonMain/composeResources/files")).first { it.exists() }
     private val catalog = CatalogJsonFormat.decodeFromString(CatalogFile.serializer(), File(assets, "catalog.json").readText())
     private val manifest = CatalogJsonFormat.decodeFromString(MediaManifest.serializer(), File(assets, "media_manifest.json").readText())
     private val technique = CatalogJsonFormat.decodeFromString(TechniqueFile.serializer(), File(assets, "technique.json").readText())

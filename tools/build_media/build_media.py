@@ -18,7 +18,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[2]
-ASSETS = ROOT / "app" / "src" / "main" / "assets"
+ASSETS = ROOT / "shared" / "src" / "commonMain" / "composeResources" / "files"
 CATALOG = ASSETS / "catalog.json"
 MAPPING = Path(__file__).with_name("mapping.json")
 CACHE = Path(__file__).with_name(".cache")

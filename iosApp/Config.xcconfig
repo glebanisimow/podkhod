@@ -1,0 +1,7 @@
+// Signing for a free Apple ID ("Personal Team"): put PODKHOD_TEAM_ID (and your own bundle id if this one is
+// taken) into iosApp/Local.xcconfig, which git ignores.
+// Team ID: Xcode → Settings → Accounts → your Apple ID → Team. The bundle id must be unique across Apple.
+PODKHOD_TEAM_ID =
+PODKHOD_BUNDLE_ID = app.podkhod.ios
+
+#include? "Local.xcconfig"
