@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -48,6 +46,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.currentStateAsState
 import app.podkhod.resources.*
+import app.podkhod.ui.components.sheetScroll
 import app.podkhod.data.catalog.MuscleSet
 import app.podkhod.data.catalog.Technique
 import app.podkhod.data.db.ExerciseEntity
@@ -248,7 +247,7 @@ fun TechniqueSheet(exercise: ExerciseEntity, muscles: MuscleSet, animate: Boolea
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState, modifier = Modifier.testTag("technique_sheet")) {
         Column(
             Modifier
-                .verticalScroll(rememberScrollState())
+                .sheetScroll()
                 .padding(horizontal = 20.dp)
                 .padding(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),

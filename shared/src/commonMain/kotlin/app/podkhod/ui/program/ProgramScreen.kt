@@ -2,6 +2,7 @@ package app.podkhod.ui.program
 
 import androidx.compose.foundation.clickable
 import app.podkhod.ui.theme.BrandShapes
+import app.podkhod.ui.components.sheetScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -116,7 +117,7 @@ fun ProgramScreen(onOpenProfile: () -> Unit, onOpenWhy: () -> Unit, viewModel: P
         val substitutes by viewModel.substitutes.collectAsStateWithLifecycle()
         ModalBottomSheet(onDismissRequest = { selectedId = null }, modifier = Modifier.testTag("slot_sheet")) {
             Column(
-                Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 8.dp),
+                Modifier.fillMaxWidth().sheetScroll().padding(horizontal = 20.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 val ex = state.exercises[selected.exerciseId]
