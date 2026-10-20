@@ -9,6 +9,11 @@ on:
 permissions:
   contents: write
 
+# Do not let an older main build replace a newer update while both are publishing.
+concurrency:
+  group: podkhod-android-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -52,6 +57,37 @@ jobs:
           APK=$(ls app/build/outputs/apk/release/*.apk | head -n 1)
           "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --print-certs "$APK"
           cp "$APK" "podkhod-${GITHUB_REF_NAME//\//-}-${GITHUB_RUN_NUMBER}.apk"
+
+      - name: Publish Android update
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)" != "$GITHUB_SHA" ]; then
+            echo "A newer commit is on main; leave publication to its build."
+            exit 0
+          fi
+          SOURCE=app/build/outputs/apk/release/app-release.apk
+          VERSION=$(python3 -c 'import json; print(json.load(open("app/build/outputs/apk/release/output-metadata.json"))["elements"][0]["versionCode"])')
+          APK="podkhod-${VERSION}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.apk"
+          cp "$SOURCE" "$APK"
+          python3 tools/build_update_manifest.py \
+            --apk "$APK" \
+            --aapt2 "$ANDROID_HOME/build-tools/37.0.0/aapt2" \
+            --url "https://github.com/${GITHUB_REPOSITORY}/releases/download/android/$APK" \
+            --output update.json
+          if ! gh release view android >/dev/null 2>&1; then
+            gh release create android --target "$GITHUB_SHA" --prerelease --latest=false \
+              --title "Android · последняя сборка" \
+              --notes "Подписанное обновление для Android. Для первой установки скачайте podkhod-latest.apk. Дальше: Настройки → Обновление приложения. Данные сохраняются."
+          fi
+          # Keep versioned APKs: an app that already read the previous manifest must still be able to download it.
+          gh release upload android "$APK" --clobber
+          cp "$SOURCE" podkhod-latest.apk
+          gh release upload android podkhod-latest.apk --clobber
+          # Publish metadata last so it can never point at an APK that has not been uploaded.
+          gh release upload android update.json --clobber
 
       - uses: actions/upload-artifact@v7
         with:

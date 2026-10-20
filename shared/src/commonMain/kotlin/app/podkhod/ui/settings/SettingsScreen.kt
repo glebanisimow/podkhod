@@ -217,6 +217,7 @@ fun SettingsScreen(
     onOpenProfile: () -> Unit,
     onOpenPlateCalc: () -> Unit,
     viewModel: SettingsViewModel = koinViewModel(),
+    updateSection: @Composable () -> Unit = {},
 ) {
     val backupTexts = backupTexts()
     val backupMessage by viewModel.backupMessage.collectAsStateWithLifecycle()
@@ -340,6 +341,7 @@ fun SettingsScreen(
         }
         HorizontalDivider()
         SectionTitle(stringResource(Res.string.settings_section_other))
+        updateSection()
         LinkRow(
             title = stringResource(Res.string.settings_notifications),
             subtitle = stringResource(Res.string.settings_notifications_hint),

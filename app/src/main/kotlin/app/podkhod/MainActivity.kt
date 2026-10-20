@@ -9,6 +9,7 @@ import app.podkhod.data.workout.WorkoutRepository
 import app.podkhod.service.WorkoutService
 import app.podkhod.ui.PodkhodRoot
 import app.podkhod.ui.theme.PodkhodTheme
+import app.podkhod.update.AppUpdateSection
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PodkhodTheme {
-                PodkhodRoot()
+                PodkhodRoot(updateSection = { AppUpdateSection() })
             }
         }
     }

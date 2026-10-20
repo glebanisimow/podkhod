@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_title">Обновление приложения</string>
+    <string name="update_installed">Установлена %1$s · сборка %2$d</string>
+    <string name="update_hint">Новые версии из GitHub. После загрузки Android попросит подтвердить установку. Тренировки и настройки сохранятся.</string>
+    <string name="update_debug">Обновления доступны в основной версии приложения. Debug устанавливается отдельно.</string>
+    <string name="update_current">У вас последняя доступная сборка.</string>
+    <string name="update_checking">Проверяем обновления…</string>
+    <string name="update_downloading">Загружаем обновление: %1$d%%</string>
+    <string name="update_available">Доступна %1$s · сборка %2$d · %3$d МБ</string>
+    <string name="update_ready">Обновление загружено. Подтвердите установку в окне Android. Если отменили — нажмите «Установить обновление» ещё раз.</string>
+    <string name="update_check">Проверить обновления</string>
+    <string name="update_download">Обновить</string>
+    <string name="update_install">Установить обновление</string>
+    <string name="update_check_again">Проверить ещё раз</string>
+    <string name="update_error_network">Не удалось связаться с GitHub. Проверьте интернет и попробуйте ещё раз.</string>
+    <string name="update_error_not_published">Сборка пока недоступна. Возможно, она ещё собирается или публикуется. Попробуйте через несколько минут.</string>
+    <string name="update_error_rate_limit">GitHub временно ограничил загрузки. Попробуйте позже.</string>
+    <string name="update_error_invalid">Не удалось проверить обновление. Скачайте его заново через «Проверить ещё раз».</string>
+    <string name="update_error_incompatible">Для этой версии нужен более новый Android.</string>
+    <string name="update_error_storage">Недостаточно места для обновления. Освободите память и повторите загрузку.</string>
+    <string name="update_error_workout">Сначала завершите текущую тренировку — обновление перезапустит приложение.</string>
+    <string name="update_error_permission">Разрешите установку из «Подхода» в настройках Android. Нажмите «Установить обновление», чтобы открыть разрешение снова.</string>
+    <string name="update_error_install">Не удалось открыть установку. Попробуйте ещё раз.</string>
+</resources>

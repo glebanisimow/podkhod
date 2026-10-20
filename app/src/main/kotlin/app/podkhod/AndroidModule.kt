@@ -15,9 +15,18 @@ import app.podkhod.service.WorkoutService
 import kotlinx.io.files.Path
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
+import org.koin.core.module.dsl.viewModel
+import app.podkhod.update.UpdateRepository
+import app.podkhod.update.UpdateViewModel
+import app.podkhod.data.workout.WorkoutRepository
 
 /** What the shared module needs from Android; see app.podkhod.di.appModule. */
 val androidModule = module {
+    single { UpdateRepository(androidContext()) }
+    viewModel {
+        val workouts = get<WorkoutRepository>()
+        UpdateViewModel(get<UpdateRepository>(), { workouts.activeSessionNow() != null })
+    }
     // Framework SQLite through Room's Android builder, the same file and driver as before the shared module.
     single<AppDatabase> {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, AppDatabase.NAME)

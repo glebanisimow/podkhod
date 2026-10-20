@@ -69,7 +69,7 @@ import app.podkhod.ui.workout.SummaryScreen
 import app.podkhod.ui.workout.WorkoutScreen
 
 @Composable
-fun PodkhodRoot() {
+fun PodkhodRoot(updateSection: @Composable () -> Unit = {}) {
     // The start screen is decided once: onboarding when there is no profile yet, Today otherwise.
     val profiles = koinInject<ProfileRepository>()
     var start by remember { mutableStateOf<Any?>(null) }
@@ -77,11 +77,11 @@ fun PodkhodRoot() {
         start = if (profiles.hasProfile.first()) TodayRoute else OnboardingRoute
     }
     val startRoute = start
-    if (startRoute == null) Box(Modifier.fillMaxSize()) else PodkhodNav(startRoute)
+    if (startRoute == null) Box(Modifier.fillMaxSize()) else PodkhodNav(startRoute, updateSection)
 }
 
 @Composable
-private fun PodkhodNav(startRoute: Any) {
+private fun PodkhodNav(startRoute: Any, updateSection: @Composable () -> Unit) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
@@ -175,6 +175,7 @@ private fun PodkhodNav(startRoute: Any) {
                     onOpenAbout = { navController.navigate(AboutRoute) },
                     onOpenProfile = { navController.navigate(ProfileRoute) },
                     onOpenPlateCalc = { navController.navigate(PlateCalcRoute) },
+                    updateSection = updateSection,
                 )
             }
             composable<PlateCalcRoute> { PlateCalculatorScreen(onBack = { navController.popBackStack() }) }
