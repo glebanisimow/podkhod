@@ -242,6 +242,7 @@ class WorkoutRepository(
                         repMin = if (keep || replacement == null) planned.repMin else replacement.repMin,
                         repMax = if (keep || replacement == null) planned.repMax else replacement.repMax,
                     )
+                    programDao.planned(plannedId)?.let { plans.rememberManualSlot(it) }
                 }
             }
         }
@@ -348,18 +349,22 @@ class WorkoutRepository(
     }
 
     suspend fun finish(sessionId: Long) {
-        val session = dao.session(sessionId) ?: return
-        if (session.status == WorkoutSessionEntity.FINISHED) return
         db.withTransaction {
+            val session = dao.session(sessionId) ?: return@withTransaction
+            if (session.status == WorkoutSessionEntity.FINISHED) return@withTransaction
             dao.markFinished(sessionId, clock())
             plans.afterFinish(session)
             val programId = session.programId
             val dayIndex = session.dayIndex
             if (programId != null && dayIndex != null) programs.advanceAfterFinish(programId, dayIndex)
+            plans.refreshAdaptivePlan()
         }
     }
 
-    suspend fun discard(sessionId: Long) = dao.deleteSession(sessionId)
+    suspend fun discard(sessionId: Long) = db.withTransaction {
+        dao.deleteSession(sessionId)
+        plans.applyMinSets()
+    }
 
     // --- editing finished sessions ------------------------------------------------------------------
     // A finished session fed double progression, so every edit replays progression of the touched exercises.
@@ -391,6 +396,7 @@ class WorkoutRepository(
         val exercises = dao.slots(sessionId).map { it.slot.exerciseId }.toSet()
         dao.deleteSession(sessionId)
         if (session.status == WorkoutSessionEntity.FINISHED) plans.recomputeProgression(exercises, session.startedAt)
+        plans.refreshAdaptivePlan()
     }
 
     private suspend fun editFinished(slotId: Long, block: suspend (WorkoutSessionEntity) -> Unit) = db.withTransaction {
@@ -398,10 +404,13 @@ class WorkoutRepository(
         val session = dao.session(slot.sessionId) ?: return@withTransaction
         block(session)
         if (session.status == WorkoutSessionEntity.FINISHED) plans.recomputeProgression(setOf(slot.exerciseId), session.startedAt)
+        plans.refreshAdaptivePlan()
     }
 
-    suspend fun setFeedback(sessionId: Long, feeling: Int?, note: String?) =
+    suspend fun setFeedback(sessionId: Long, feeling: Int?, note: String?) = db.withTransaction {
         dao.setFeedback(sessionId, feeling, note?.trim()?.takeIf { it.isNotEmpty() })
+        plans.refreshAdaptivePlan()
+    }
 
     suspend fun lastResults(exerciseIds: Collection<String>, excludeSessionId: Long): Map<String, List<SetLogEntity>> =
         exerciseIds.distinct().associateWith { dao.lastResult(it, excludeSessionId) }

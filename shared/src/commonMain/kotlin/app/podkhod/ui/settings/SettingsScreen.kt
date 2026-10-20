@@ -153,7 +153,10 @@ class SettingsViewModel(
     private val _customConfig = MutableStateFlow(configs.isCustom)
     val customConfig: StateFlow<Boolean> = _customConfig.asStateFlow()
 
-    fun setAccessoryWarmupSets(value: Int) = launch { repo.setAccessoryWarmupSets(value) }
+    fun setAccessoryWarmupSets(value: Int) = launch {
+        repo.setAccessoryWarmupSets(value)
+        plans.refreshAdaptivePlan()
+    }
 
     fun setMinSets(value: Int) = launch {
         repo.setMinSets(value)
@@ -170,10 +173,12 @@ class SettingsViewModel(
         val problems = if (text == null) listOf(document.name) else configs.import(text)
         _configMessage.value = if (problems.isEmpty()) ok else errors(problems.take(MAX_SHOWN_PROBLEMS).joinToString("; "))
         _customConfig.value = configs.isCustom
+        if (problems.isEmpty()) plans.refreshAdaptivePlan()
     }
 
     fun resetConfig() = launch {
         configs.reset()
+        plans.refreshAdaptivePlan()
         _customConfig.value = false
         _configMessage.value = null
     }
@@ -200,7 +205,10 @@ class SettingsViewModel(
     fun setOneHandMode(value: Boolean) = launch { repo.setOneHandMode(value) }
     fun setRestSound(value: Boolean) = launch { repo.setRestSound(value) }
     fun setRestVibration(value: Boolean) = launch { repo.setRestVibration(value) }
-    fun setSupersetRestAfterEach(value: Boolean) = launch { repo.setSupersetRestAfterEach(value) }
+    fun setSupersetRestAfterEach(value: Boolean) = launch {
+        repo.setSupersetRestAfterEach(value)
+        plans.refreshAdaptivePlan()
+    }
 
     private fun launch(block: suspend () -> Unit) {
         viewModelScope.launch { block() }

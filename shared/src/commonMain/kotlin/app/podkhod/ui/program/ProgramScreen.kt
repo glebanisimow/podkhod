@@ -62,6 +62,9 @@ fun ProgramScreen(onOpenProfile: () -> Unit, onOpenWhy: () -> Unit, viewModel: P
                 if (state.generated) {
                     Hint(stringResource(Res.string.program_source_generated, program.program.mesocycleIndex + 1))
                     WeekStrip(program.program)
+                    state.explanation?.takeIf { it.plannerVersion > 0 }?.let {
+                        Hint(stringResource(Res.string.program_adaptive, it.historyCount))
+                    }
                 } else {
                     SectionCard {
                         Text(stringResource(Res.string.program_template_hint), style = MaterialTheme.typography.bodyLarge)
@@ -93,6 +96,7 @@ fun ProgramScreen(onOpenProfile: () -> Unit, onOpenWhy: () -> Unit, viewModel: P
                             }
                         }
                         state.explanation?.minutes?.getOrNull(index)?.let { Hint(stringResource(Res.string.program_minutes, it)) }
+                        Hint(stringResource(Res.string.program_day_work, day.exercises.size, day.exercises.sumOf { it.sets }))
                         day.exercises.forEach { p ->
                             PlannedRow(
                                 p,
@@ -204,6 +208,26 @@ fun WhyScreen(onBack: () -> Unit, viewModel: ProgramViewModel = koinViewModel())
             if (e == null || program == null) {
                 Text(stringResource(Res.string.why_template), style = MaterialTheme.typography.bodyLarge)
                 return@Column
+            }
+            if (e.adaptationNotes.isNotEmpty()) {
+                SectionCard(Modifier.testTag("why_adaptation")) {
+                    Text(stringResource(Res.string.why_adaptation), style = MaterialTheme.typography.titleMedium)
+                    e.adaptationNotes.forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
+                }
+            }
+            if (e.forecast.isNotEmpty() && (e.forecastWeek ?: 0) < program.program.weeks) {
+                SectionCard(Modifier.testTag("why_forecast")) {
+                    Text(stringResource(Res.string.why_forecast, (e.forecastWeek ?: 0) + 1), style = MaterialTheme.typography.titleMedium)
+                    Hint(stringResource(Res.string.why_forecast_hint))
+                    e.forecast.forEach { v ->
+                        val group = MuscleGroup.fromCode(v.group)?.let(Fmt::group) ?: v.group
+                        Text(
+                            (if (v.withinTarget) "✓ " else "! ") + stringResource(Res.string.why_volume_row, group, Fmt.num(v.sets), Fmt.range(v.targetLow, v.max)),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (v.withinTarget) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
             }
             SectionCard(Modifier.testTag("why_volume")) {
                 Text(stringResource(Res.string.why_volume), style = MaterialTheme.typography.titleMedium)

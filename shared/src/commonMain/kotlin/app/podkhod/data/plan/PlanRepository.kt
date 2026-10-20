@@ -13,10 +13,14 @@ import app.podkhod.data.db.SessionExerciseWithSets
 import app.podkhod.data.db.WorkoutSessionEntity
 import app.podkhod.data.profile.ProfileRepository
 import app.podkhod.data.settings.SettingsRepository
+import app.podkhod.data.settings.AppSettings
 import app.podkhod.domain.busy.ExerciseInfo
 import app.podkhod.domain.model.ExerciseKind
 import app.podkhod.domain.model.SetKind
 import app.podkhod.domain.plan.Change
+import app.podkhod.domain.plan.AdaptivePlanner
+import app.podkhod.domain.plan.CompletedWork
+import app.podkhod.domain.plan.CompletedWorkout
 import app.podkhod.domain.plan.Checkin
 import app.podkhod.domain.plan.DeloadAdvisor
 import app.podkhod.domain.plan.GeneratedProgram
@@ -24,6 +28,7 @@ import app.podkhod.domain.plan.GeneratorConfig
 import app.podkhod.domain.plan.LockedSlot
 import app.podkhod.domain.plan.LoggedSet
 import app.podkhod.domain.plan.PlannedSlot
+import app.podkhod.domain.plan.PlannedDay
 import app.podkhod.domain.plan.Profile
 import app.podkhod.domain.plan.ProgramDiff
 import app.podkhod.domain.plan.ProgramGenerator
@@ -34,6 +39,8 @@ import app.podkhod.domain.plan.SessionPlanner
 import app.podkhod.domain.plan.SlotRole
 import app.podkhod.domain.plan.StartingWeights
 import app.podkhod.domain.plan.StrengthData
+import app.podkhod.domain.plan.VolumeLine
+import app.podkhod.domain.plan.Workload
 import app.podkhod.domain.weights.Inventory
 import app.podkhod.domain.weights.LoadScheme
 import app.podkhod.domain.weights.Loads
@@ -66,6 +73,14 @@ data class ProgramExplanation(
     val shortfalls: List<String> = emptyList(),
     val volume: List<VolumeDto> = emptyList(),
     val minutes: List<Int> = emptyList(),
+    val plannerVersion: Int = 0,
+    val settingsKey: String? = null,
+    /** Immutable input for repeatable history replay; manual edits update only the affected slot. */
+    val baseline: List<PlannedDay> = emptyList(),
+    val adaptationNotes: List<String> = emptyList(),
+    val forecast: List<VolumeDto> = emptyList(),
+    val historyCount: Int = 0,
+    val forecastWeek: Int? = null,
 )
 
 @Serializable
@@ -114,9 +129,13 @@ class PlanRepository(
         val active = programDao.active()
         val oldDays = active?.let { programDao.days(it.id) }.orEmpty().sortedBy { it.day.seqIndex }
         val generated = active?.source == SOURCE_GENERATED
+        val currentSettings = settings.current()
+        val oldBaseline = active?.let { decodeExplanation(it.explanationJson)?.baseline }.orEmpty()
         val mesocycle = if (generated) active!!.mesocycleIndex + if (nextMesocycle) 1 else 0 else 0
         val locked = if (generated) {
-            oldDays.flatMapIndexed { i, d -> d.exercises.filter { it.locked }.map { LockedSlot(i, it.toSlot(infos[it.exerciseId])) } }
+            oldDays.flatMapIndexed { i, d -> d.exercises.filter { row ->
+                row.locked || decodeReasons(row.explanationJson).any { it.startsWith("Подходы изменены тобой:") }
+            }.map { LockedSlot(i, it.toSlot(infos[it.exerciseId])) } }
         } else {
             emptyList()
         }
@@ -126,7 +145,7 @@ class PlanRepository(
             historyE1rm = states.mapNotNull { (id, s) -> decodeHistory(s.e1rmHistoryJson).lastOrNull()?.let { id to it } }.toMap(),
             workingWeights = states.mapNotNull { (id, s) -> s.workingWeightKg?.let { id to it } }.toMap(),
         )
-        val program = ProgramGenerator(config.withMinSets(settings.current().minSets)).generate(
+        val program = ProgramGenerator(config.withMinSets(currentSettings.minSets)).generate(
             ProgramGenerator.Input(
                 profile = profile,
                 catalog = infos.values.toList(),
@@ -134,7 +153,10 @@ class PlanRepository(
                 busyCounts = workoutDao.busyCounts().associate { it.exerciseId to it.count },
                 locked = locked,
                 mesocycleIndex = mesocycle,
-                accessoryWarmupSets = settings.current().accessoryWarmupSets,
+                accessoryWarmupSets = currentSettings.accessoryWarmupSets,
+                restMode = currentSettings.supersetRestMode,
+                preferred = if (nextMesocycle) emptyList() else oldBaseline.takeIf { it.isNotEmpty() }?.map { it.slots }
+                    ?: oldDays.map { day -> day.exercises.sortedBy { it.position }.map { it.toSlot(infos[it.exerciseId]) } },
             ),
         )
         val names = infos.mapValues { it.value.name }
@@ -164,8 +186,11 @@ class PlanRepository(
             shortfalls = p.shortfalls,
             volume = p.volume.map { VolumeDto(it.group.code, it.sets, it.min, it.max, it.targetLow, it.targetHigh, it.priority) },
             minutes = p.days.map { it.estimatedMinutes },
+            plannerVersion = AdaptivePlanner.VERSION,
+            settingsKey = planningKey(configs.config(), settings.current()),
+            baseline = p.days,
         )
-        programDao.insertProgramTree(
+        val id = programDao.insertProgramTree(
             ProgramEntity(
                 name = p.name,
                 source = SOURCE_GENERATED,
@@ -183,6 +208,8 @@ class PlanRepository(
             ),
             p.days.map { d -> d.title to d.slots.map { it.toEntity() } },
         )
+        refreshAdaptivePlan()
+        id
     }
 
     suspend fun startNewMesocycle(): Long? {
@@ -192,17 +219,24 @@ class PlanRepository(
 
     // --- manual edits -------------------------------------------------------------------------------
 
-    suspend fun setLocked(plannedId: Long, locked: Boolean) {
-        val row = programDao.planned(plannedId) ?: return
-        programDao.updatePlanned(row.copy(locked = locked))
+    suspend fun setLocked(plannedId: Long, locked: Boolean) = db.withTransaction {
+        val row = programDao.planned(plannedId) ?: return@withTransaction
+        val updated = row.copy(locked = locked)
+        programDao.updatePlanned(updated)
+        rememberManualSlot(updated)
+        refreshAdaptivePlan()
     }
 
     /**
-     * Raises every exercise of the active program to the lifter's minimum of sets, once per change of the
-     * setting (and once after an update that introduced it). Lowering the minimum leaves the program alone,
-     * and a later manual «−» on one exercise is respected.
+     * Compatibility entry point for bootstrap/settings. Generated plans are rebuilt with all constraints
+     * together, never by raising rows in isolation. A workout already in progress is left intact.
      */
     suspend fun applyMinSets() {
+        if (programDao.active()?.source == SOURCE_GENERATED) {
+            refreshAdaptivePlan()
+            return
+        }
+        if (workoutDao.active() != null) return
         val min = settings.current().minSets
         if (settings.appliedMinSets() == min) return
         db.withTransaction {
@@ -214,18 +248,21 @@ class PlanRepository(
         settings.setAppliedMinSets(min)
     }
 
-    suspend fun changeSets(plannedId: Long, delta: Int) {
-        val row = programDao.planned(plannedId) ?: return
+    suspend fun changeSets(plannedId: Long, delta: Int) = db.withTransaction {
+        val row = programDao.planned(plannedId) ?: return@withTransaction
         val sets = (row.sets + delta).coerceIn(1, MAX_MANUAL_SETS)
-        if (sets == row.sets) return
-        programDao.updatePlanned(row.copy(sets = sets, explanationJson = addReason(row.explanationJson, "Подходы изменены тобой: ${row.sets} → $sets.")))
+        if (sets == row.sets) return@withTransaction
+        val updated = row.copy(sets = sets, explanationJson = addReason(row.explanationJson, "Подходы изменены тобой: ${row.sets} → $sets."))
+        programDao.updatePlanned(updated)
+        rememberManualSlot(updated)
+        refreshAdaptivePlan()
     }
 
     /** Replaces the exercise in the program; the rep range follows the new exercise, the weight is re-estimated. */
-    suspend fun replacePlanned(plannedId: Long, newExerciseId: String) {
-        val row = programDao.planned(plannedId) ?: return
+    suspend fun replacePlanned(plannedId: Long, newExerciseId: String) = db.withTransaction {
+        val row = programDao.planned(plannedId) ?: return@withTransaction
         val infos = catalog.exerciseInfos()
-        val info = infos[newExerciseId] ?: return
+        val info = infos[newExerciseId] ?: return@withTransaction
         val profile = profiles.current() ?: Profile()
         val config = configs.config()
         val repMin = maxOf(row.repMin, info.repMin).takeIf { it <= minOf(row.repMax, info.repMax) } ?: info.repMin
@@ -253,7 +290,114 @@ class PlanRepository(
                 explanationJson = encodeReasons(reasons),
             ),
         )
+        programDao.planned(plannedId)?.let { rememberManualSlot(it) }
+        refreshAdaptivePlan()
     }
+
+    /** Also called for a permanent substitution made during a workout. No session rows are changed. */
+    suspend fun rememberManualSlot(row: PlannedExerciseEntity) {
+        val program = programDao.active() ?: return
+        val explanation = decodeExplanation(program.explanationJson) ?: return
+        val day = programDao.day(row.programDayId)?.day ?: return
+        if (day.programId != program.id || day.seqIndex !in explanation.baseline.indices) return
+        val infos = catalog.exerciseInfos()
+        val baseline = explanation.baseline.toMutableList()
+        val slots = baseline[day.seqIndex].slots.toMutableList()
+        if (row.position !in slots.indices) return
+        slots[row.position] = row.toSlot(infos[row.exerciseId])
+        baseline[day.seqIndex] = baseline[day.seqIndex].copy(slots = slots)
+        programDao.setExplanation(program.id, JSON.encodeToString(explanation.copy(baseline = baseline)))
+    }
+
+    /**
+     * Runs on launch, planning settings changes, finish, feedback and history edits. Regeneration archives
+     * the old program only on an algorithm/settings change; normal replay keeps program/day/slot IDs.
+     */
+    suspend fun refreshAdaptivePlan(): Unit = db.withTransaction {
+        if (workoutDao.active() != null) return@withTransaction
+        val program = programDao.active()?.takeIf { it.source == SOURCE_GENERATED } ?: return@withTransaction
+        val profile = profiles.current() ?: return@withTransaction
+        val config = configs.config()
+        val prefs = settings.current()
+        val explanation = decodeExplanation(program.explanationJson)
+        val key = planningKey(config, prefs)
+        if (explanation == null || explanation.plannerVersion != AdaptivePlanner.VERSION || explanation.settingsKey != key || explanation.baseline.isEmpty()) {
+            apply(preview(profile), profile)
+            return@withTransaction
+        }
+        val infos = catalog.exerciseInfos()
+        val stored = programDao.days(program.id).sortedBy { it.day.seqIndex }
+        // Refuse to zip incompatible data (e.g. a hand-edited backup); rebuilding restores a valid baseline.
+        if (stored.size != explanation.baseline.size || stored.indices.any { d ->
+            stored[d].exercises.sortedBy { it.position }.map { it.exerciseId } != explanation.baseline[d].slots.map { it.exerciseId }
+        }) {
+            apply(preview(profile), profile)
+            return@withTransaction
+        }
+        val baseline = explanation.baseline.mapIndexed { d, day ->
+            val rows = stored[d].exercises.sortedBy { it.position }
+            day.copy(slots = day.slots.mapIndexed { index, slot ->
+                slot.copy(targetWeightKg = rows[index].targetWeightKg, locked = rows[index].locked)
+            })
+        }
+        val cycle = workoutDao.finishedInMesocycle(program.mesocycleIndex)
+        val cycleIds = cycle.map { it.id }.toSet()
+        val sessions = (cycle + workoutDao.recentFinishedAll(RECENT_HISTORY_LIMIT)).distinctBy { it.id }
+        val history = sessions.map { session ->
+            val slots = workoutDao.slots(session.id)
+            CompletedWorkout(
+                id = session.id,
+                startedAt = session.startedAt,
+                weekIndex = session.weekIndex.takeIf { session.id in cycleIds },
+                dayIndex = session.dayIndex,
+                hard = session.feeling == 1 || session.checkin()?.isHard(config) == true,
+                deload = session.deload,
+                recoveryAdjusted = session.deload || !session.planNote.isNullOrBlank(),
+                work = slots.groupBy { it.slot.exerciseId }.map { (id, parts) ->
+                    val work = parts.flatMap { part -> part.sets.filter { SetKind.fromCode(it.kind).countsAsWork }.map { it to part.slot } }
+                    CompletedWork(id, parts.sumOf { it.slot.sets }, work.size,
+                        belowRepTarget = work.isNotEmpty() && work.count { (set, slot) ->
+                            (set.reps != null && set.reps < slot.repMin) || (set.durationSec != null && set.durationSec < slot.repMin)
+                        } * 2 >= work.size,
+                    )
+                },
+            )
+        }
+        val effectiveConfig = config.withMinSets(prefs.minSets)
+        val plan = AdaptivePlanner(effectiveConfig).adapt(
+            baseline, profile, infos, history, program.weekIndex, program.nextDayIndex,
+            deload = program.weekIndex >= program.weeks - 1 || program.deloadSessionsLeft > 0,
+            accessoryWarmupSets = prefs.accessoryWarmupSets,
+            restMode = prefs.supersetRestMode,
+            asOfMillis = clock(),
+        )
+        stored.forEachIndexed { d, day ->
+            day.exercises.sortedBy { it.position }.zip(plan.days[d].slots).forEach { (row, slot) ->
+                val updated = row.copy(sets = slot.sets, explanationJson = encodeReasons(slot.reasons))
+                if (updated != row) programDao.updatePlanned(updated)
+            }
+        }
+        val workload = Workload(effectiveConfig, profile, infos, prefs.accessoryWarmupSets, prefs.supersetRestMode)
+        val volume = workload.lines(workload.volume(plan.days.flatMap { it.slots }))
+        val timeNotes = plan.days.filter { workload.minutes(it.slots) > workload.budgetMinutes }.map {
+            "${it.title}: оценка ${it.estimatedMinutes} мин превышает выбранные ${profile.sessionMinutes}; закреплённые упражнения и ручные правки сохранены."
+        }
+        val updated = explanation.copy(
+            volume = volume.map { it.toDto() },
+            minutes = plan.days.map { it.estimatedMinutes },
+            shortfalls = workload.shortfalls(volume) + timeNotes,
+            adaptationNotes = plan.notes,
+            forecast = plan.forecast.map { it.toDto() },
+            historyCount = plan.historyCount,
+            forecastWeek = program.weekIndex,
+        )
+        if (updated != explanation) programDao.setExplanation(program.id, JSON.encodeToString(updated))
+    }
+
+    private fun planningKey(config: GeneratorConfig, prefs: AppSettings) =
+        "${AdaptivePlanner.VERSION}:${JSON.encodeToString(GeneratorConfig.serializer(), config).hashCode()}:${prefs.minSets}:${prefs.accessoryWarmupSets}:${prefs.supersetRestAfterEach}"
+
+    private fun VolumeLine.toDto() = VolumeDto(group.code, sets, min, max, targetLow, targetHigh, priority)
 
     // --- sessions -----------------------------------------------------------------------------------
 
@@ -409,6 +553,7 @@ class PlanRepository(
         val program = programDao.active() ?: return
         programDao.setDeloadSessionsLeft(program.id, programDao.days(program.id).size)
         programDao.setDeloadOffer(program.id, null)
+        refreshAdaptivePlan()
     }
 
     suspend fun declineDeload() {
@@ -496,6 +641,7 @@ class PlanRepository(
         const val MAX_MANUAL_SETS = 8
         private const val DEFAULT_RIR_MIN = 1
         private const val DEFAULT_RIR_MAX = 2
+        private const val RECENT_HISTORY_LIMIT = 24
 
         val JSON = Json { ignoreUnknownKeys = true }
         private val STRINGS = ListSerializer(String.serializer())

@@ -15,6 +15,8 @@ import app.podkhod.domain.plan.Profile
 import app.podkhod.domain.plan.ProgramGenerator
 import app.podkhod.domain.plan.StrengthData
 import app.podkhod.domain.plan.Style
+import app.podkhod.domain.plan.Workload
+import app.podkhod.domain.workout.SupersetRestMode
 import app.podkhod.domain.weights.Implement
 import app.podkhod.domain.weights.Inventory
 import app.podkhod.domain.weights.LoadScheme
@@ -131,6 +133,28 @@ class GeneratorAcceptanceTest {
     @Test
     fun generationIsDeterministic() {
         assertEquals(generate(threeDays), generate(threeDays))
+    }
+
+    @Test
+    fun allSupportedFloorsAndRestModesHaveHonestMetricsAndNoGhostPartners() {
+        for (floor in 2..4) for (days in 2..4) for (minutes in listOf(40, 45, 60, 75)) for (mode in SupersetRestMode.entries) {
+            val profile = Profile(daysPerWeek = days, sessionMinutes = minutes)
+            val cfg = config.withMinSets(floor)
+            val program = ProgramGenerator(cfg).generate(ProgramGenerator.Input(profile, catalog, restMode = mode))
+            val metrics = Workload(cfg, profile, byId, restMode = mode)
+            val measured = metrics.volume(program.days.flatMap { it.slots })
+            program.volume.forEach { line ->
+                assertEquals("$floor/$days/$minutes/$mode ${line.group}", measured.getValue(line.group), line.sets, 1e-9)
+                if (!line.withinTarget) assertTrue(program.shortfalls.any { it.startsWith(app.podkhod.domain.plan.Fmt.group(line.group)) })
+            }
+            program.days.forEach { day ->
+                assertEquals(day.slots.size, day.slots.map { it.exerciseId }.toSet().size)
+                assertTrue(day.slots.all { it.sets >= floor })
+                assertEquals(metrics.day(day.title, day.slots).estimatedMinutes, day.estimatedMinutes)
+                day.slots.mapNotNull { it.supersetGroup }.groupBy { it }.forEach { (_, members) -> assertEquals(2, members.size) }
+                if (metrics.minutes(day.slots) > metrics.budgetMinutes) assertTrue(program.notes.any { it.startsWith(day.title) && it.contains("мин") })
+            }
+        }
     }
 
     @Test

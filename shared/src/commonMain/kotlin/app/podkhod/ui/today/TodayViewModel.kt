@@ -77,7 +77,10 @@ class TodayViewModel(
     }
 
     fun skip() {
-        viewModelScope.launch { programs.skipNextDay() }
+        viewModelScope.launch {
+            programs.skipNextDay()
+            plans.refreshAdaptivePlan()
+        }
     }
 
     fun acceptDeload() {

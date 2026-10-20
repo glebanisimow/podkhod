@@ -9,6 +9,7 @@ import app.podkhod.domain.model.Muscle
 import app.podkhod.domain.weights.Inventory
 import app.podkhod.domain.weights.LoadScheme
 import app.podkhod.domain.weights.Loads
+import app.podkhod.domain.workout.SupersetRestMode
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -28,6 +29,9 @@ class ProgramGenerator(private val config: GeneratorConfig) {
         val locked: List<LockedSlot> = emptyList(),
         val mesocycleIndex: Int = 0,
         val accessoryWarmupSets: Int = 1,
+        val restMode: SupersetRestMode = SupersetRestMode.AFTER_ROUND,
+        /** Prefer familiar eligible exercises inside a cycle, without pinning their old set counts. */
+        val preferred: List<List<PlannedSlot>> = emptyList(),
     )
 
     private class Pick(
@@ -65,6 +69,7 @@ class ProgramGenerator(private val config: GeneratorConfig) {
         val perSession = config.perSession(profile.style, profile.sessionMinutes)
         val budgetMin = profile.sessionMinutes * (1.0 + config.timing.tolerance)
         val schemes = HashMap<String, LoadScheme>()
+        val workload = Workload(config, profile, input.catalog.associateBy { it.id }, input.accessoryWarmupSets, input.restMode)
 
         fun scheme(info: ExerciseInfo): LoadScheme = schemes.getOrPut(info.id) { Loads.scheme(info, inventory) }
 
@@ -124,7 +129,12 @@ class ProgramGenerator(private val config: GeneratorConfig) {
                 val role = SlotRole.fromCode(slot.role) ?: return@forEachIndexed
                 val marker = i == firstCompound && d < config.mesocycle.markers
                 val usedToday = picks.map { it.info.id }.toSet()
-                when (val s = select(run, slot, role, usedToday, usedAll, marker)) {
+                val familiar = input.preferred.getOrNull(d).orEmpty().asSequence()
+                    .mapNotNull { old -> run.eligible.firstOrNull { it.id == old.exerciseId } }
+                    .firstOrNull { it.id !in usedToday && matches(slot, it, 0) }
+                val selection = familiar?.let { Selection.Chosen(it, listOf("Сохранено знакомое упражнение текущего цикла; объём пересчитан.")) }
+                    ?: select(run, slot, role, usedToday, usedAll, marker)
+                when (val s = selection) {
                     is Selection.Chosen -> {
                         val effective = if (role == SlotRole.ISOLATION && s.info.kind != ExerciseKind.ISOLATION) SlotRole.ACCESSORY else role
                         picks += prescribe(run, s.info, effective, marker, i, s.reasons)
@@ -141,6 +151,8 @@ class ProgramGenerator(private val config: GeneratorConfig) {
         balance(run, dayPicks, templates, notes)
         dayPicks.forEach { assignSupersets(run, it) }
         dayPicks.indices.forEach { d -> fitTime(run, dayPicks, d, templates[d].title, notes, protectTargets = true) }
+        spreadLightWork(run, dayPicks, templates, notes)
+        dayPicks.forEach { assignSupersets(run, it) }
 
         val weights = StartingWeights(
             config,
@@ -158,7 +170,8 @@ class ProgramGenerator(private val config: GeneratorConfig) {
             }
             pk.partner?.let { other ->
                 pk.reasons += "Суперсет ${pk.superset} с «${other.info.name}»: " +
-                    (if (pk.antagonist) "антагонисты" else "неконкурирующие группы") + " — один отдых на круг."
+                    (if (pk.antagonist) "антагонисты" else "неконкурирующие группы") +
+                    (if (input.restMode == SupersetRestMode.AFTER_ROUND) " — один отдых на круг." else " — отдых после каждого упражнения.")
             }
         }
 
@@ -535,8 +548,10 @@ class ProgramGenerator(private val config: GeneratorConfig) {
             val pick = prescribe(run, s.info, actualRole, false, ADDED_INDEX, s.reasons + "Добавлено: не хватало объёма — ${Fmt.group(g)}.")
             pick.sets = config.sets.min
             picks += pick
+            assignSupersets(run, picks)
             if (minutes(run, picks) > run.budgetMin) {
                 picks.removeAt(picks.lastIndex)
+                assignSupersets(run, picks)
                 continue
             }
             notes += "${templates[d].title}: добавлено «${s.info.name}» — не хватало объёма (${Fmt.group(g)})."
@@ -559,38 +574,7 @@ class ProgramGenerator(private val config: GeneratorConfig) {
 
     // ---- time ----
 
-    private fun workSec(p: Pick): Int = if (p.info.measure == Measure.SECONDS) p.repMax else config.timing.workSec
-
-    private fun minutes(run: Run, picks: List<Pick>): Double {
-        val t = config.timing
-        var sec = 0.0
-        val seen = HashSet<Pick>()
-        picks.forEach { p ->
-            if (p in seen) return@forEach
-            seen += p
-            val q = p.partner
-            if (q != null && q in picks) {
-                seen += q
-                val rounds = minOf(p.sets, q.sets)
-                val rest = maxOf(p.restSec, q.restSec)
-                sec += rounds * (workSec(p) + workSec(q) + rest)
-                val big = if (p.sets >= q.sets) p else q
-                sec += (big.sets - rounds) * (workSec(big) + big.restSec)
-            } else {
-                sec += p.sets * (workSec(p) + p.restSec)
-            }
-        }
-        picks.forEach { p ->
-            sec += t.transitionSec
-            val s = run.scheme(p.info)
-            sec += 60.0 * when {
-                s is LoadScheme.Barbell && p.role == SlotRole.COMPOUND -> t.barbellWarmupMin
-                s is LoadScheme.NoLoad || s is LoadScheme.Added -> 0.0
-                else -> t.lightWarmupSetMin * run.input.accessoryWarmupSets
-            }
-        }
-        return sec / 60.0
-    }
+    private fun minutes(run: Run, picks: List<Pick>): Double = run.workload.minutes(picks.map { it.toSlot() })
 
     /** Cuts sets, lightest roles first, until day [d] fits; with [protectTargets] no group drops below its low target. */
     private fun fitTime(run: Run, dayPicks: List<MutableList<Pick>>, d: Int, title: String, notes: MutableList<String>, protectTargets: Boolean) {
@@ -613,6 +597,7 @@ class ProgramGenerator(private val config: GeneratorConfig) {
                 .maxWithOrNull(compareBy<Pick>({ it.role.rank }, { it.templateIndex }))
             if (drop != null) {
                 picks.remove(drop)
+                assignSupersets(run, picks)
                 dropped += drop.info.name
                 continue
             }
@@ -633,13 +618,54 @@ class ProgramGenerator(private val config: GeneratorConfig) {
 
     // ---- supersets ----
 
+    /** Move only light work between full-body days; upper/lower days are intentionally different. */
+    private fun spreadLightWork(run: Run, days: List<MutableList<Pick>>, templates: List<DayTemplate>, notes: MutableList<String>) {
+        if (run.days > 3) return
+        fun score(): Double {
+            val effort = days.map { run.workload.effort(it.map { p -> p.toSlot() }) }
+            val mean = effort.average()
+            return effort.sumOf { (it - mean) * (it - mean) }
+        }
+        repeat(MAX_BALANCE_STEPS) {
+            val before = score()
+            var best: Triple<Int, Int, Pick>? = null
+            var bestScore = before
+            for (from in days.indices) for (to in days.indices) {
+                if (from == to || days[to].size >= run.perSession + EXTRA_EXERCISES || days[from].size <= run.perSession - MAX_DROPPED_PER_DAY) continue
+                for (pick in days[from].toList()) {
+                    if (pick.locked || pick.marker || pick.role !in setOf(SlotRole.ISOLATION, SlotRole.CORE) || days[to].any { it.info.id == pick.info.id }) continue
+                    val position = days[from].indexOf(pick)
+                    days[from].removeAt(position)
+                    days[to].add(pick)
+                    assignSupersets(run, days[from])
+                    assignSupersets(run, days[to])
+                    val after = score()
+                    if (after + 1e-6 < bestScore && minutes(run, days[from]) <= run.budgetMin && minutes(run, days[to]) <= run.budgetMin) {
+                        best = Triple(from, to, pick)
+                        bestScore = after
+                    }
+                    days[to].remove(pick)
+                    days[from].add(position, pick)
+                    assignSupersets(run, days[from])
+                    assignSupersets(run, days[to])
+                }
+            }
+            val (from, to, pick) = best ?: return
+            days[from].remove(pick)
+            days[to].add(pick)
+            assignSupersets(run, days[from])
+            assignSupersets(run, days[to])
+            notes += "«${pick.info.name}»: ${templates[from].title} → ${templates[to].title}, чтобы ровнее распределить нагрузку с учётом тяжести упражнений и времени."
+        }
+    }
+
     private fun ordered(picks: List<Pick>): List<Pick> {
         val base = picks.sortedWith(compareBy<Pick>({ it.role.rank }, { it.templateIndex }))
         val out = mutableListOf<Pick>()
         base.forEach { p ->
             if (p in out) return@forEach
             out += p
-            p.partner?.let { if (it !in out) out += it }
+            p.partner?.let { if (it in picks && it !in out) out += it }
         }
         return out
     }

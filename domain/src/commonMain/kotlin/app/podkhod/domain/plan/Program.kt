@@ -1,5 +1,8 @@
 package app.podkhod.domain.plan
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class PlannedSlot(
     val exerciseId: String,
     val role: SlotRole,
@@ -20,6 +23,7 @@ data class PlannedSlot(
     val reasons: List<String> = emptyList(),
 )
 
+@Serializable
 data class PlannedDay(val title: String, val slots: List<PlannedSlot>, val estimatedMinutes: Int)
 
 data class VolumeLine(

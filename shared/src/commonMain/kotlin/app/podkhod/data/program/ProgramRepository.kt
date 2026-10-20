@@ -85,11 +85,15 @@ class ProgramRepository(
         }
     }
 
-    suspend fun skipNextDay() {
-        val program = dao.active() ?: return
+    suspend fun skipNextDay() = db.withTransaction {
+        val program = dao.active() ?: return@withTransaction
         val count = dao.days(program.id).size
-        if (count == 0) return
-        dao.setNextDay(program.id, ProgramRotation.next(ProgramRotation.normalize(program.nextDayIndex, count), count))
+        if (count == 0) return@withTransaction
+        val index = ProgramRotation.normalize(program.nextDayIndex, count)
+        dao.setNextDay(program.id, ProgramRotation.next(index, count))
+        if (program.source == "generated" && index == count - 1 && program.weekIndex < program.weeks) {
+            dao.setWeek(program.id, program.weekIndex + 1)
+        }
     }
 
     suspend fun advanceAfterFinish(programId: Long, finishedDayIndex: Int) {

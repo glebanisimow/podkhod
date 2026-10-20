@@ -151,6 +151,9 @@ abstract class ProgramDao {
     @Query("UPDATE program SET deload_offer = :offer WHERE id = :programId")
     abstract suspend fun setDeloadOffer(programId: Long, offer: String?)
 
+    @Query("UPDATE program SET explanation_json = :json WHERE id = :programId")
+    abstract suspend fun setExplanation(programId: Long, json: String)
+
     @Query("UPDATE program SET deload_sessions_left = :left WHERE id = :programId")
     abstract suspend fun setDeloadSessionsLeft(programId: Long, left: Int)
 
@@ -399,6 +402,17 @@ abstract class WorkoutDao {
     /** Most recent finished sessions of a program, newest first, for the check-in based deload advice. */
     @Query("SELECT * FROM workout_session WHERE status = 'finished' AND program_id = :programId ORDER BY started_at DESC LIMIT :limit")
     abstract suspend fun recentFinished(programId: Long, limit: Int): List<WorkoutSessionEntity>
+
+    /** Includes archived revisions of the same cycle, so regeneration does not lose completed work. */
+    @Query(
+        "SELECT w.* FROM workout_session w JOIN program p ON w.program_id = p.id " +
+            "WHERE w.status = 'finished' AND p.source = 'generated' AND p.mesocycle_index = :mesocycleIndex " +
+            "ORDER BY w.started_at, w.id",
+    )
+    abstract suspend fun finishedInMesocycle(mesocycleIndex: Int): List<WorkoutSessionEntity>
+
+    @Query("SELECT * FROM workout_session WHERE status = 'finished' ORDER BY started_at DESC, id DESC LIMIT :limit")
+    abstract suspend fun recentFinishedAll(limit: Int): List<WorkoutSessionEntity>
 
     @Query("DELETE FROM workout_session WHERE id = :id")
     abstract suspend fun deleteSession(id: Long)

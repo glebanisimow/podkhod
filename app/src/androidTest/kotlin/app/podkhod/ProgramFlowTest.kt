@@ -35,7 +35,8 @@ class ProgramFlowTest {
         compose.waitFor("week_strip")
         compose.onNodeWithTag("program_why").performClick()
         compose.waitFor("screen_why")
-        compose.onNodeWithTag("why_volume").assertIsDisplayed()
+        compose.onNodeWithTag("why_adaptation").assertIsDisplayed()
+        compose.onNodeWithTag("why_volume").performScrollTo().assertIsDisplayed()
     }
 
     @Test

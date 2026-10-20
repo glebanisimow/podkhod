@@ -108,7 +108,12 @@
     <string name="slot_marker">маркер</string>
 
     <string name="why_title">Почему так?</string>
-    <string name="why_volume">Объём за неделю (рабочих подходов)</string>
+    <string name="why_volume">Объём плана за полный круг</string>
+    <string name="program_adaptive">План адаптируется по истории. Учтено завершённых тренировок: %1$d. Подробности — в «Почему так?».</string>
+    <string name="program_day_work">Упражнения: %1$d · рабочие подходы: %2$d</string>
+    <string name="why_adaptation">Коррекция по истории</string>
+    <string name="why_forecast">Прогноз текущего круга · неделя %1$d</string>
+    <string name="why_forecast_hint">Выполненные рабочие подходы + план оставшихся дней. Разминка исключена, косвенная нагрузка учтена. Это прогноз, а не выполненный объём. Чек-ин перед стартом может дополнительно облегчить день.</string>
     <string name="why_volume_row">%1$s: %2$s · цель %3$s</string>
     <string name="why_shortfalls">Что не получилось</string>
     <string name="why_notes">Как собрана программа</string>
@@ -159,7 +164,7 @@
     <string name="settings_accessory_warmup">Разминка перед вспомогательными: %1$d подх.</string>
     <string name="settings_accessory_warmup_hint">Лёгкие подходы перед изоляцией и подсобными; у базовых со штангой — своя лесенка</string>
     <string name="settings_min_sets">Минимум подходов в упражнении: %1$d</string>
-    <string name="settings_min_sets_hint">Упражнения программы, где подходов меньше, поднимутся до этого числа; поштучно можно убавить на экране «Программа». В разгрузку подходов всё равно меньше</string>
+    <string name="settings_min_sets_hint">Программа пересчитается с учётом времени, объёма и истории. Ручные правки сохраняются. Для восстановления и разгрузки подходов может быть меньше. Начатая тренировка не меняется</string>
     <string name="settings_config_export">Экспорт параметров генератора</string>
     <string name="settings_config_export_hint">JSON: объёмы, схемы, отдых, шаги прогрессии</string>
     <string name="settings_config_import">Импорт параметров генератора</string>
