@@ -20,6 +20,6 @@
     <string name="update_error_incompatible">Для этой версии нужен более новый Android.</string>
     <string name="update_error_storage">Недостаточно места для обновления. Освободите память и повторите загрузку.</string>
     <string name="update_error_workout">Сначала завершите текущую тренировку — обновление перезапустит приложение.</string>
-    <string name="update_error_permission">Разрешите установку из «Подхода» в настройках Android. Нажмите «Установить обновление», чтобы открыть разрешение снова.</string>
+    <string name="update_error_permission">Разрешите установку из Protoptera GYM в настройках Android. Нажмите «Установить обновление», чтобы открыть разрешение снова.</string>
     <string name="update_error_install">Не удалось открыть установку. Попробуйте ещё раз.</string>
 </resources>

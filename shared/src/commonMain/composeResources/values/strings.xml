@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Подход</string>
+    <string name="app_name">Protoptera GYM</string>
 
     <string name="nav_today">Сегодня</string>
     <string name="nav_program">Программа</string>

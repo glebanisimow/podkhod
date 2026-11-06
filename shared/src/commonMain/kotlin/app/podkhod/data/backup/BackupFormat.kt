@@ -81,10 +81,10 @@ object BackupFormat {
 
     fun read(text: String, currentSchema: Int, catalogIds: Set<String>): BackupRead {
         val file = runCatching { json.decodeFromString(BackupFile.serializer(), text) }.getOrElse {
-            return BackupRead.Invalid(listOf("Файл не похож на копию данных «Подхода»."))
+            return BackupRead.Invalid(listOf("Файл не похож на копию данных Protoptera GYM."))
         }
         val problems = buildList {
-            if (file.format != FORMAT) add("Файл не похож на копию данных «Подхода».")
+            if (file.format != FORMAT) add("Файл не похож на копию данных Protoptera GYM.")
             if (file.formatVersion > FORMAT_VERSION) add("Копия сделана более новой версией приложения (формат ${file.formatVersion}). Обнови приложение.")
             if (file.schemaVersion > currentSchema) add("Копия сделана более новой версией приложения (${file.appVersion}). Обнови приложение.")
             (file.tables.keys - TABLES.toSet()).forEach { add("Неизвестная таблица в копии: $it.") }

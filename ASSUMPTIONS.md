@@ -6,7 +6,7 @@
 | # | Решение | Почему | Этап |
 |---|---|---|---|
 | A1 | Сборка только локально (Windows, без Android Studio). Workflow GitHub Actions лежит в репозитории, но не запускался: репозитория на GitHub нет. | В облачной песочнице 403 на dl.google.com, repo.maven.apache.org, plugins.gradle.org, services.gradle.org; GitHub-аккаунт не подключён. | 0 |
-| A2 | Название «Подход», `applicationId` `app.podkhod` (debug: `app.podkhod.debug`). | Нейтрально, без чужих торговых марок и без слова Strava. | 0 |
+| A2 | Название «Protoptera GYM» (до 2026-11-06 «Подход»), `applicationId` `app.podkhod` (debug: `app.podkhod.debug`). | Нейтрально, без чужих торговых марок и без слова Strava. | 0 |
 | A3 | DI: Koin вместо Hilt. | Нет кодогенерации, быстрее сборка, для одного модуля достаточно. | 0 |
 | A4 | Два модуля: `:domain` (чистый Kotlin) и `:app`. | Быстрые JVM-тесты логики, компилятор запрещает Android в генераторе. | 0 |
 | A5 | `compileSdk` и `targetSdk` 37 (Android 17), `minSdk` 29. | 37 — последняя стабильная платформа и максимум для AGP 9.4. | 0 |

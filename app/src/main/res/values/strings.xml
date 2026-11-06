@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Android shell only: launcher label and notifications. Screen strings live in shared/composeResources. -->
 <resources>
-    <string name="app_name">Подход</string>
+    <string name="app_name">Protoptera GYM</string>
     <string name="channel_ongoing">Текущая тренировка</string>
     <string name="channel_rest_sound_vibrate">Конец отдыха: звук и вибрация</string>
     <string name="channel_rest_sound">Конец отдыха: только звук</string>
